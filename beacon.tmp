@@ -1,9 +1,9 @@
 Automaton-Sovereign Value API - live URL beacon
-updated: 2026-09-25T18:31:08.049Z
-base: https://cricket-arbitrary-moreover-fought.trycloudflare.com
-pricing: https://cricket-arbitrary-moreover-fought.trycloudflare.com/pricing
-funding: https://cricket-arbitrary-moreover-fought.trycloudflare.com/v1/funding  (human page: /fund)
-x402 challenge demo: https://cricket-arbitrary-moreover-fought.trycloudflare.com/v1/uuid
+updated: 2026-09-25T18:38:22.341Z
+base: https://internationally-sentence-cord-wholesale.trycloudflare.com
+pricing: https://internationally-sentence-cord-wholesale.trycloudflare.com/pricing
+funding: https://internationally-sentence-cord-wholesale.trycloudflare.com/v1/funding  (human page: /fund)
+x402 challenge demo: https://internationally-sentence-cord-wholesale.trycloudflare.com/v1/uuid
 schemes: eip3009 (caller-bound, X-PAYMENT-AUTH) + exact (txHash bearer, X-PAYMENT)
 payTo: 0x71DEAc098914A009E3720524642A6bE6F65EE528  network: base  chainId: 8453
 free: /health /pricing /.well-known/x402 /v1/x402-directory /v1/x402-conformance /v1/verify-payment /badge.svg /directory /v2/ledger /v2/pubkey
