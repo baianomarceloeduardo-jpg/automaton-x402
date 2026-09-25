@@ -1,0 +1,390 @@
+{
+  "at": "2026-09-25T19:54:34.131Z",
+  "base": "https://air-belkin-outputs-genes.trycloudflare.com",
+  "checker": "https://air-belkin-outputs-genes.trycloudflare.com/v1/x402-conformance",
+  "methodology": "Each endpoint was probed once with a plain HTTP GET (no payment) at the URL found in its registry record. A service is only judged on conformance if it actually returned HTTP 402 with a parseable x402 challenge. A service that returns 200/4xx/HTML at the probed URL is recorded as NO_X402_CHALLENGE, NOT as non-conformant: the probed URL may simply not be its paid route (most registry entries are MCP JSON-RPC servers). No account or wallet was used. Checker: https://air-belkin-outputs-genes.trycloudflare.com/v1/x402-conformance (free).",
+  "observations": [
+    {
+      "name": "ai.lattiq/x402-trading-signals",
+      "url": "https://api.lattiq.ai/mcp",
+      "description": "Regime-aware ES1/NQ futures trading signals. HMM + 15 quant strategies. x402 USDC micropayments.",
+      "status": 530,
+      "content_type": "text/plain; charset=UTF-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 530 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.acjlabs/x402-listing-monitor",
+      "url": "https://x402-listing-monitor.acjlabs.com/mcp",
+      "description": "Checks x402 Bazaar resource listings against the public discovery catalog and flags drops.",
+      "status": 406,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 406 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "app.run.europe-west1.x402-seller-202595743428/eudata402",
+      "url": "https://x402-seller-202595743428.europe-west1.run.app/mcp",
+      "description": "KYB due diligence for agents: sanctions screening, EU VAT/VIES, LEI, IBAN in one verdict.",
+      "status": 404,
+      "content_type": "text/html; charset=UTF-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 404 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "app.vercel.ora-x402-gateway/sensations-mergulho",
+      "url": "https://ywabnlhkmhbyewqhbsjm.supabase.co/functions/v1/sensations-mergulho",
+      "description": "MCP server for 0001SENSATIONS: 107-level textual descent, append-only trace logging",
+      "status": 200,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "ai.firmbrain/x402-services",
+      "url": "https://x402-services-production.up.railway.app/mcp",
+      "description": "77 pay-per-call x402 tools for AI trading & on-chain agents: prices, sniping, perps, RH Chain, MEV",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.blackwalltier/blackwall-x402-guardrail",
+      "url": "https://mcp.blackwalltier.com",
+      "description": "Pre-signature x402 payment verdict (GO/HOLD/STOP) for AI agents, with a verifiable signed receipt.",
+      "status": 405,
+      "content_type": "text/plain",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.aex402/rpc",
+      "url": "https://rpc.aex402.com/mcp",
+      "description": "Solana + EVM RPC, AMM quotes, token/program discovery, bridge + market data. Free tier, x402 pay.",
+      "status": 200,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.fablerlabs/x402-tools",
+      "url": "https://x402.fablerlabs.com/mcp",
+      "description": "Free catalog for Fabler's USDC-paid x402 agent tools on Base; no account or wallet required.",
+      "status": 405,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.mcpscores/x402-market-intelligence",
+      "url": "https://mcpfax-intel.bowling-anthony.workers.dev/mcp",
+      "description": "Agent-economy market reports, seller ranks & trends. x402 USDC on Base, $0.003-$0.50/call.",
+      "status": 405,
+      "content_type": "application/json; charset=utf-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.lionx402/lion-x402",
+      "url": "https://lionx402.com/api/mcp",
+      "description": "Keyless attested agent data: CPG/retail prices, OFAC+EU VAT compliance, enrichment. x402 on Base.",
+      "status": 200,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.midax402/mcp",
+      "url": "https://mcp.midax402.com/mcp",
+      "description": "Pay-per-query x402 business intelligence on Base, settled in USDC via the native 402 payment flow.",
+      "status": 405,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.devvizion/x402-research",
+      "url": "https://money-engine-x402-research--aiircool25.run.tools/mcp",
+      "description": "Free agent discovery + paid x402 research (outline 0.01 / brief 0.02 USDC Base).",
+      "status": 404,
+      "content_type": "text/plain; charset=UTF-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 404 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.ogenalabs/signals-edge-x402",
+      "url": "https://api.ogenalabs.com/api/signals/mcp",
+      "description": "pump.fun graduation radar for trading bots and AI agents. x402 USDC per scan, no key.",
+      "status": 404,
+      "content_type": "text/plain; charset=UTF-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 404 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.ogenalabs/token-risk-x402",
+      "url": "https://api.ogenalabs.com/api/token-risk/mcp",
+      "description": "Pre-trade token safety checks for AI agents on Solana and Base. x402 USDC per call, no key.",
+      "status": 404,
+      "content_type": "text/plain; charset=UTF-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 404 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.ogenalabs/gate402-x402",
+      "url": "https://api.ogenalabs.com/api/gate402/mcp",
+      "description": "Drop-in x402 checkout for merchants: issue terms, verify payment. $0.01 each.",
+      "status": 404,
+      "content_type": "text/plain; charset=UTF-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 404 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.hergertsynthora/synthora-x402",
+      "url": "https://mcp.hergertsynthora.com/mcp",
+      "description": "Pre-trade safety for AI payment agents: signed SAFE/CAUTION/BLOCK verdict + 220 x402 tools",
+      "status": 405,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.scriptmasterlabs/x402-pay",
+      "url": "https://squeezeos-api.onrender.com/mcp/x402-pay",
+      "description": "Pay for APIs with USDC. Read-only x402 payment discovery, verification, evidence, and status.",
+      "status": 200,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.scriptmasterlabs/x402-gateway",
+      "url": "https://acp-x402-scriptmasterlabs.onrender.com/mcp",
+      "description": "136 pay-per-call tools via x402: squeeze scanners, federal contracting, DeFi. No API key.",
+      "status": 404,
+      "content_type": "text/plain; charset=utf-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 404 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.twelvepermissions/x402-doctor",
+      "url": "https://x402-doctor.tsharpe.workers.dev/mcp",
+      "description": "Diagnose x402 seller endpoints: what is wrong with your 402 challenge, and how to fix it.",
+      "status": 404,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 404 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.neuronto/x402-payments-facilitator",
+      "url": "https://pay.neuronto.com/mcp",
+      "description": "x402 facilitator: settlement prices, live networks, a catalogue of paid resources, integration code",
+      "status": 405,
+      "content_type": "application/problem+json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.secondopinionx402/second-opinion",
+      "url": "https://secondopinionx402.com/mcp",
+      "description": "Adversarial verification for AI agents - pay an independent skeptic per verdict in USDC via x402.",
+      "status": 405,
+      "content_type": "application/json; charset=utf-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.x402-list/x402-list-mcp",
+      "url": "https://mcp.x402-list.com/mcp",
+      "description": "Read-only MCP server for the x402-list directory: discover x402 services and facilitator volume.",
+      "status": 400,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 400 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.x402supply/chess-eval",
+      "url": "https://chess-eval.x402supply.com/mcp",
+      "description": "Stockfish chess eval: best move, score, principal variation, multipv. $0.003/call via x402.",
+      "status": 402,
+      "content_type": "application/json",
+      "passed": 9,
+      "total": 9,
+      "verdict": "CONFORMANT",
+      "class": "CONFORMANT"
+    },
+    {
+      "name": "com.wiselyenterprisesllc/x402-agent-payment-infrastructure",
+      "url": "https://payments.wiselyenterprisesllc.com/ai/mcp",
+      "description": "x402/MCP layer for paid AI/data calls, crypto quotes, progress streams, and receipts.",
+      "status": 410,
+      "content_type": "text/html",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 410 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.x402git/git-x402",
+      "url": "https://x402git.com/api/mcp",
+      "description": "Buy private git repos and agent skills with USDC over x402. Read the manifest free, then pay.",
+      "status": 406,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 406 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.x402supply/page-extract",
+      "url": "https://page-extract.x402supply.com/mcp",
+      "description": "URL to clean article markdown/text + metadata and links. Deterministic. $0.001/call via x402.",
+      "status": 402,
+      "content_type": "application/json",
+      "passed": 9,
+      "total": 9,
+      "verdict": "CONFORMANT",
+      "class": "CONFORMANT"
+    },
+    {
+      "name": "com.x402supply/entity-resolve",
+      "url": "https://entity-resolve.x402supply.com/mcp",
+      "description": "Fuzzy entity resolution and dedupe for names, addresses, and company records. $0.008/call via x402.",
+      "status": 402,
+      "content_type": "application/json",
+      "passed": 9,
+      "total": 9,
+      "verdict": "CONFORMANT",
+      "class": "CONFORMANT"
+    },
+    {
+      "name": "com.x402supply/hts-classify",
+      "url": "https://hts-classify.x402supply.com/mcp",
+      "description": "Classifies products into HS/HTS customs codes for import/export workflows. $0.03/call via x402.",
+      "status": 402,
+      "content_type": "application/json",
+      "passed": 9,
+      "total": 9,
+      "verdict": "CONFORMANT",
+      "class": "CONFORMANT"
+    },
+    {
+      "name": "com.x402supply/endpoint-diligence",
+      "url": "https://diligence.x402supply.com/mcp",
+      "description": "Live x402 endpoint trust/diligence check before you pay it. $0.02/call via x402.",
+      "status": 402,
+      "content_type": "application/json",
+      "passed": 9,
+      "total": 9,
+      "verdict": "CONFORMANT",
+      "class": "CONFORMANT"
+    },
+    {
+      "name": "com.x402supply/pii-redact",
+      "url": "https://pii-redact.x402supply.com/mcp",
+      "description": "Detects and redacts PII (emails, phones, SSNs, names, addresses) from text. $0.01/call via x402.",
+      "status": 402,
+      "content_type": "application/json",
+      "passed": 9,
+      "total": 9,
+      "verdict": "CONFORMANT",
+      "class": "CONFORMANT"
+    },
+    {
+      "name": "dev.workers.clankerceo.multichain-rpc/x402-tools",
+      "url": "https://multichain-rpc.clankerceo.workers.dev/mcp",
+      "description": "Measured x402 ecosystem data, facilitator reliability, and live endpoint checks.",
+      "status": 200,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "dev.fly.obol-x402/obol",
+      "url": "https://obol-mcp.fly.dev/mcp",
+      "description": "Bitcoin intelligence for agents: 15 x402-paid MCP tools, Ed25519-signed, USDC on Base.",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "dev.workers.desk-x402-gh.desk-x402/desk-x402",
+      "url": "https://desk-x402.desk-x402-gh.workers.dev/mcp",
+      "description": "DESK LEAD x402: 14 pay-per-call MCP tools. tools/list free; tools/call USDC on Base via x402.",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "dev.workers.kikoribera03.flat-rate-llm/x402-tools",
+      "url": "https://flat-rate-llm.kikoribera03.workers.dev/mcp",
+      "description": "28 pay-per-call tools: LLM completion, read-only EVM data and crypto utilities. No API key.",
+      "status": 405,
+      "content_type": "text/plain; charset=UTF-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "dev.fly.solidus-x402/solidus",
+      "url": "https://solidus-mcp.fly.dev/mcp",
+      "description": "Solana pre-trade safety for agents: rug check, honeypot sell-sim, drainer scan, tx preflight.",
+      "status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "dev.workers.lionmaster-operations.lion-x402/lion-x402",
+      "url": "https://lion-x402.lionmaster-operations.workers.dev/api/mcp",
+      "description": "Remote MCP tools for location/solar, web enrichment, Base data, and token-risk indicators.",
+      "status": 200,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 200 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "ai.payments.managed/payments-ai-mcp",
+      "url": "https://managed.payments.ai/api/mcp",
+      "description": "Launch products and branded checkouts on Payments AI, the Merchant of Record for AI-built apps.",
+      "status": 405,
+      "content_type": "application/json; charset=utf-8",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "dev.workers.ghost-agent-os.ghost-identity/ghost-x402-market-intel-vet-schema",
+      "url": "https://ghost-identity.ghost-agent-os.workers.dev/mcp",
+      "description": "x402 market intel: providers ranked by real payers; seller vetting; schema drift. $0.01 auto-pay.",
+      "status": 405,
+      "content_type": "application/json",
+      "class": "NO_X402_CHALLENGE",
+      "note": "responded 405 without a 402; URL may not be the paid route (common for MCP/JSON-RPC endpoints). NOT a conformance verdict."
+    },
+    {
+      "name": "com.api402x/apix402",
+      "url": "https://api402x.com/mcp",
+      "description": "Live onchain governance, vesting, oracle and Safe authority checks. Free samples over MCP.",
+      "status": 0,
+      "content_type": "",
+      "class": "UNREACHABLE"
+    },
+    {
+      "name": "dev.fly.x402-accelerometer-feed/tokenized-stocks-agent-data",
+      "url": "https://x402-accelerometer-feed.fly.dev/mcp",
+      "description": "x402-paid data for agents: tokenized stocks on Base, Solana token verdicts, AI-progress readings",
+      "status": 0,
+      "content_type": "",
+      "class": "UNREACHABLE"
+    }
+  ],
+  "summary": {
+    "registry_servers": 129,
+    "with_http_endpoints": 126,
+    "sampled": 40,
+    "by_class": {
+      "NO_X402_CHALLENGE": 32,
+      "CONFORMANT": 6,
+      "UNREACHABLE": 2
+    },
+    "endpoints_presenting_a_402_challenge": 6,
+    "conformant_of_those": 6
+  }
+}

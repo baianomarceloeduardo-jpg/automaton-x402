@@ -1,5 +1,39 @@
-BASE https://class-exceed-standings-women.trycloudflare.com
-PUBLIC /health -> 200
-PUBLIC /v1/uuid 402 -> 402  eip3009=true exact=true
-VERDICT DUAL-SCHEME LIVE PUBLICLY
-BEACON https://paste.rs/GZpai
+suspects from report: 6
+
+com.x402supply/chess-eval  ->  https://chess-eval.x402supply.com/mcp
+   HTTP 402  ctype=application/json
+   keys: x402Version, error, resource, accepts
+   sample: {"x402Version":2,"error":"Payment required","resource":{"url":"https://chess-eval.x402supply.com/mcp","description":"Evaluate a chess position with Stockfish: best move, centipawn/mate score, principal variation, and optional multipv. No mocks — a real single-threaded Stockfish 10 (asm.js) runs in-isolate per call.; Play out Stockfish's predicted principal variation as SAN moves with a per-ply eval, re-searching after each ply.","mimeType":"application/json"},"accepts":[{"scheme":"exact","networ
+   my checker: NON_CONFORMANT 6/8
+
+com.x402supply/endpoint-diligence  ->  https://diligence.x402supply.com/mcp
+   HTTP 402  ctype=application/json
+   keys: x402Version, error, resource, accepts
+   sample: {"x402Version":2,"error":"Payment required","resource":{"url":"https://diligence.x402supply.com/mcp","description":"Runs live diligence on an x402-metered endpoint before you pay it: verifies its 402 payment challenge is spec-compliant, checks the price against market baselines, inspects the payTo address on-chain (Base), checks third-party directory presence, and checks basic infra hygiene, and detects possible upstream API resale with evidence-based markup estimates. Returns a 0-100 score, a p
+   my checker: NON_CONFORMANT 6/8
+
+com.x402supply/entity-resolve  ->  https://entity-resolve.x402supply.com/mcp
+   HTTP 402  ctype=application/json
+   keys: x402Version, error, resource, accepts
+   sample: {"x402Version":2,"error":"Payment required","resource":{"url":"https://entity-resolve.x402supply.com/mcp","description":"Fuzzy-dedupe a list of records into clusters of likely-duplicate entities. Blocks by normalized token prefix, scores with Jaro-Winkler + token-set matching (exact on email/phone), unions matches above threshold, and returns a merged canonical record per cluster with a confidence score. Deterministic, no LLM calls.","mimeType":"application/json"},"accepts":[{"scheme":"exact","n
+   my checker: NON_CONFORMANT 6/8
+
+com.x402supply/page-extract  ->  https://page-extract.x402supply.com/mcp
+   HTTP 402  ctype=application/json
+   keys: x402Version, error, resource, accepts
+   sample: {"x402Version":2,"error":"Payment required","resource":{"url":"https://page-extract.x402supply.com/mcp","description":"Fetches a URL and returns clean article text/markdown plus metadata. Deterministic, static HTML only, no JS rendering.","mimeType":"application/json"},"accepts":[{"scheme":"exact","network":"eip155:8453","amount":"10000","asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913","payTo":"0x07fFB5044cF2Cd4352Be4655f578D0ba8cb754EB","maxTimeoutSeconds":60,"extra":{"name":"USD Coin","ver
+   my checker: NON_CONFORMANT 6/8
+
+com.x402supply/pii-redact  ->  https://pii-redact.x402supply.com/mcp
+   HTTP 402  ctype=application/json
+   keys: x402Version, error, resource, accepts
+   sample: {"x402Version":2,"error":"Payment required","resource":{"url":"https://pii-redact.x402supply.com/mcp","description":"Detect and redact PII in text or JSON. Recognizers are pure pattern/checksum matching (regex + Luhn/mod-97/SSN-area validation) — no LLM calls, no external services. Person names and dates of birth are matched only via nearby context (e.g. 'Mr. Smith', 'DOB: ...'), not general NER, to keep false positives low.","mimeType":"application/json"},"accepts":[{"scheme":"exact","network":
+   my checker: NON_CONFORMANT 6/8
+
+com.x402supply/hts-classify  ->  https://hts-classify.x402supply.com/mcp
+   HTTP 402  ctype=application/json
+   keys: x402Version, error, resource, accepts
+   sample: {"x402Version":2,"error":"Payment required","resource":{"url":"https://hts-classify.x402supply.com/mcp","description":"Classify a product description into candidate HS/HTS10 tariff codes. Deterministic BM25 retrieval over the USITC HTS schedule with heading-agreement boosting, returning the full parent-chain description, general duty rate, and a score-gap confidence per candidate. Not a customs ruling — always includes a disclaimer to verify with a licensed broker.; Classify up to 100 product de
+   my checker: NON_CONFORMANT 6/8
+
+written: verify-402-evidence.json

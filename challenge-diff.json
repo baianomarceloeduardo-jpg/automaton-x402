@@ -1,0 +1,49 @@
+{
+  "at": "2026-09-25T19:48:05.084Z",
+  "base": "https://boring-backgrounds-simply-speak.trycloudflare.com",
+  "self_test": {
+    "target": "https://boring-backgrounds-simply-speak.trycloudflare.com/v1/uuid",
+    "verdict": "CONFORMANT",
+    "passed": 8,
+    "total": 8,
+    "failed": 0
+  },
+  "endpoints": [
+    {
+      "url": "https://com.x402supply/chess-eval",
+      "status": 0,
+      "keys": [],
+      "sample": ""
+    },
+    {
+      "url": "https://com.x402supply/endpoint-diligence",
+      "status": 0,
+      "keys": [],
+      "sample": ""
+    },
+    {
+      "url": "https://com.x402supply/entity-resolve",
+      "status": 0,
+      "keys": [],
+      "sample": ""
+    },
+    {
+      "url": "https://com.x402supply/page-extract",
+      "status": 0,
+      "keys": [],
+      "sample": ""
+    },
+    {
+      "url": "https://com.x402supply/pii-redact",
+      "status": 0,
+      "keys": [],
+      "sample": ""
+    },
+    {
+      "url": "https://com.x402supply/hts-classify",
+      "status": 0,
+      "keys": [],
+      "sample": ""
+    }
+  ]
+}

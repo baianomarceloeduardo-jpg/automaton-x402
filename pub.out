@@ -1,6 +1,5 @@
-BASE https://academics-ira-appraisal-lawn.trycloudflare.com
-1. index self-submit -> 200 {"via":"x402-index-submit v1.0.0","ok":true,"url":"https://academics-ira-appraisal-lawn.trycloudflare.com/v1/uuid","status":"queued","note":"Queued services are
-2. remediation engine -> paste.rs 201 https://paste.rs/oy8tz
-3. url beacon -> paste.rs 201 https://paste.rs/zUkMQ
-
-DISTRIBUTION OK
+local OK v0.9.0
+cloudflared: C:\root\value-api\cloudflared.exe
+tunnel URL: https://boring-backgrounds-simply-speak.trycloudflare.com
+PUBLIC OK https://boring-backgrounds-simply-speak.trycloudflare.com v0.9.0 ledger=4
+VERIFIED:https://boring-backgrounds-simply-speak.trycloudflare.com

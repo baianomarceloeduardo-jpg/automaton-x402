@@ -1,0 +1,7 @@
+[19:37:21] killed prior server + tunnel processes
+[19:37:23] server started pid=14116
+[19:37:25] local /health 200 = true
+[19:37:25] tunnel started pid=42288
+[19:37:34] url https://bedroom-bids-collective-sacramento.trycloudflare.com
+[19:39:06] public /health 200 = false
+[19:39:06] ABORT: tunnel not routable

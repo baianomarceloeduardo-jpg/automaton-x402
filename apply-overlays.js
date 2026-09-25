@@ -17,7 +17,8 @@ const OVERLAYS = [
   'dual-scheme-overlay.js',
   'index-overlay.js',
   'remediation-overlay.js',
-  'discovery-overlay.js'
+  'discovery-overlay.js',
+  'ecosystem-overlay.js'
 ];
 
 function firstMarkerIndex(s) {

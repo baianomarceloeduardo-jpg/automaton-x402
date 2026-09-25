@@ -1,0 +1,29 @@
+BASE https://relating-regardless-jacksonville-stands.trycloudflare.com
+sources: mcp-registry/x402=200(50)  mcp-registry/payment=200(50)  mcp-registry/agent=200(50)  mcp-registry/usdc=200(4)
+relevant targets: 103
+  - ai.firmbrain/x402-services  ::  77 pay-per-call x402 tools for AI trading & on-chain agents: prices, sniping, perps, RH Ch
+  - ai.lattiq/x402-trading-signals  ::  Regime-aware ES1/NQ futures trading signals. HMM + 15 quant strategies. x402 USDC micropay
+  - ai.tensorfeed/x402-base-mcp  ::  Read-only Base mainnet reader. Verifies x402 payment settlements + AFTA federation status.
+  - app.run.europe-west1.x402-seller-202595743428/eudata402  ::  KYB due diligence for agents: sanctions screening, EU VAT/VIES, LEI, IBAN in one verdict.
+  - app.vercel.ora-x402-gateway/sensations-mergulho  ::  MCP server for 0001SENSATIONS: 107-level textual descent, append-only trace logging
+  - com.acjlabs/x402-listing-monitor  ::  Checks x402 Bazaar resource listings against the public discovery catalog and flags drops.
+  - com.aex402/rpc  ::  Solana + EVM RPC, AMM quotes, token/program discovery, bridge + market data. Free tier, x4
+  - com.api402x/apix402  ::  Live onchain governance, vesting, oracle and Safe authority checks. Free samples over MCP.
+  - com.blackwalltier/blackwall-x402-guardrail  ::  Pre-signature x402 payment verdict (GO/HOLD/STOP) for AI agents, with a verifiable signed 
+  - com.devvizion/x402-research  ::  Free agent discovery + paid x402 research (outline 0.01 / brief 0.02 USDC Base).
+  - com.fablerlabs/x402-tools  ::  Free catalog for Fabler's USDC-paid x402 agent tools on Base; no account or wallet require
+  - com.gadgethumans.swarm/x402-middleware  ::  One-line x402 + Stripe payment middleware for MCP servers. The Stripe for the agent econom
+  - com.hergertsynthora/synthora-x402  ::  Pre-trade safety for AI payment agents: signed SAFE/CAUTION/BLOCK verdict + 220 x402 tools
+  - com.lionx402/lion-x402  ::  Keyless attested agent data: CPG/retail prices, OFAC+EU VAT compliance, enrichment. x402 o
+  - com.mcpscores/x402-market-intelligence  ::  Agent-economy market reports, seller ranks & trends. x402 USDC on Base, $0.003-$0.50/call.
+  - com.midax402/mcp  ::  Pay-per-query x402 business intelligence on Base, settled in USDC via the native 402 payme
+  - com.neuronto/x402-payments-facilitator  ::  x402 facilitator: settlement prices, live networks, a catalogue of paid resources, integra
+  - ai.payments.managed/payments-ai-mcp  ::  Launch products and branded checkouts on Payments AI, the Merchant of Record for AI-built 
+  - app.wishpool/algeria-payments-mcp  ::  Algeria payments for AI agents — EDAHABIA / CIB via Chargily Pay. Never holds funds.
+  - app.wishpool/argentina-payments-mcp  ::  Argentina payments for AI agents — Mercado Pago wallet / cuotas via Mercado Pago. Never ho
+  - app.wishpool/australia-payments-mcp  ::  Australia payments for AI agents — cards / Apple Pay via Stripe. Never holds funds.
+  - app.wishpool/austria-payments-mcp  ::  Austria payments for AI agents — EPS via Stripe. Never holds funds.
+  - app.wishpool/bahrain-payments-mcp  ::  Bahrain payments for AI agents — Benefit via Tap Payments. Never holds funds.
+  - app.wishpool/bangladesh-payments-mcp  ::  Bangladesh payments for AI agents — bKash / Nagad via SSLCommerz. Never holds funds.
+  - app.wishpool/belgium-payments-mcp  ::  Belgium payments for AI agents — Bancontact via Mollie. Never holds funds.
+plan written to outreach-plan.json

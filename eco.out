@@ -1,0 +1,34 @@
+BASE https://relating-regardless-jacksonville-stands.trycloudflare.com
+registry servers: 129
+with http endpoints: 126
+summary {"registry_servers":129,"with_http_endpoints":126,"sampled":30,"by_verdict":{"NON_CONFORMANT":30},"avg_pass_rate":13}
+  NON_CONFORMANT  0/8  ai.lattiq/x402-trading-signals
+  NON_CONFORMANT  0/8  ai.firmbrain/x402-services
+  NON_CONFORMANT  0/10  app.vercel.ora-x402-gateway/sensations-mergulho
+  NON_CONFORMANT  0/8  app.run.europe-west1.x402-seller-202595743428/eudata402
+  NON_CONFORMANT  0/8  com.acjlabs/x402-listing-monitor
+  NON_CONFORMANT  0/8  com.aex402/rpc
+  NON_CONFORMANT  0/8  com.blackwalltier/blackwall-x402-guardrail
+  NON_CONFORMANT  0/8  com.fablerlabs/x402-tools
+  NON_CONFORMANT  0/8  com.lionx402/lion-x402
+  NON_CONFORMANT  0/8  com.hergertsynthora/synthora-x402
+  NON_CONFORMANT  0/8  com.mcpscores/x402-market-intelligence
+  NON_CONFORMANT  0/8  com.devvizion/x402-research
+  NON_CONFORMANT  0/8  com.ogenalabs/gate402-x402
+  NON_CONFORMANT  0/8  com.ogenalabs/signals-edge-x402
+  NON_CONFORMANT  0/8  com.ogenalabs/token-risk-x402
+  NON_CONFORMANT  0/8  com.midax402/mcp
+  NON_CONFORMANT  0/8  com.scriptmasterlabs/x402-gateway
+  NON_CONFORMANT  0/8  com.neuronto/x402-payments-facilitator
+  NON_CONFORMANT  0/8  com.twelvepermissions/x402-doctor
+  NON_CONFORMANT  0/8  com.scriptmasterlabs/x402-pay
+  NON_CONFORMANT  0/8  com.secondopinionx402/second-opinion
+  NON_CONFORMANT  0/8  com.wiselyenterprisesllc/x402-agent-payment-infrastructure
+  NON_CONFORMANT  6/8  com.x402supply/chess-eval
+  NON_CONFORMANT  0/8  com.x402-list/x402-list-mcp
+  NON_CONFORMANT  6/8  com.x402supply/endpoint-diligence
+  NON_CONFORMANT  6/8  com.x402supply/entity-resolve
+  NON_CONFORMANT  0/8  com.x402git/git-x402
+  NON_CONFORMANT  6/8  com.x402supply/page-extract
+  NON_CONFORMANT  6/8  com.x402supply/hts-classify
+  NON_CONFORMANT  0/1  com.api402x/apix402
