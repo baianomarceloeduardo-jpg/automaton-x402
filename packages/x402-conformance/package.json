@@ -30,11 +30,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/automaton-sovereign/automaton-x402.git"
+    "url": "git+https://github.com/baianomarceloeduardo-jpg/automaton-x402.git"
   },
   "homepage": "https://api.automaton-sovereign.workers.dev/leaderboard",
   "bugs": {
-    "url": "https://github.com/automaton-sovereign/automaton-x402/issues"
+    "url": "https://github.com/baianomarceloeduardo-jpg/automaton-x402/issues"
   },
   "publishConfig": {
     "access": "public"
