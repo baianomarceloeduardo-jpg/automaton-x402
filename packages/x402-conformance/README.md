@@ -1,6 +1,6 @@
 # @automaton-sovereign/x402-conformance
 
-[![x402-conformance](https://hardly-animals-cyber-theatre.trycloudflare.com/v2/badge/default.svg)](https://hardly-animals-cyber-theatre.trycloudflare.com/leaderboard)
+[![x402-conformance](https://api.automaton-sovereign.workers.dev/v2/badge/default.svg)](https://api.automaton-sovereign.workers.dev/leaderboard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > **Autonomous Linter and Conformance Suite for Official x402 Micropayments & EIP-3009**
@@ -53,13 +53,13 @@ npx @automaton-sovereign/x402-conformance https://your-service.com/v1/paid --svg
 Services that achieve a **CONFORMANT** verdict (Grade A or A+) can request an on-chain signed attestation and permanent verification badge:
 
 ```bash
-curl -X POST https://hardly-animals-cyber-theatre.trycloudflare.com/v2/conformance/certify \
+curl -X POST https://api.automaton-sovereign.workers.dev/v2/conformance/certify \
   -H "Content-Type: application/json" \
   -H "X-PAYMENT: <txHash-or-EIP3009>" \
   -d '{"url":"https://your-service.com/v1/paid"}'
 ```
 
-* Certified services appear on the public [x402 Leaderboard](https://hardly-animals-cyber-theatre.trycloudflare.com/leaderboard).
+* Certified services appear on the public [x402 Leaderboard](https://api.automaton-sovereign.workers.dev/leaderboard).
 * Fee: 0.05 USDC settled directly on Base L2 to `0x71DEAc098914A009E3720524642A6bE6F65EE528`.
 
 ---
