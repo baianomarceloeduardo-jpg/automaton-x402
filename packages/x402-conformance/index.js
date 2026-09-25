@@ -270,7 +270,7 @@ function finish(results, targetUrl) {
   const grade = scorePercent >= 95 ? 'A+' : (scorePercent >= 85 ? 'A' : (scorePercent >= 70 ? 'B' : 'C'));
 
   return {
-    suite: '@automaton-sovereign/x402-conformance',
+    suite: '@celorodrigues/x402-conformance',
     version: '2.0.0',
     target: targetUrl,
     timestamp: new Date().toISOString(),

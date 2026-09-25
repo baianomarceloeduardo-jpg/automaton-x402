@@ -8,8 +8,8 @@ const jsonMode = args.includes('--json');
 const svgMode = args.includes('--svg');
 
 if (!target) {
-  console.error('\nUsage: npx @automaton-sovereign/x402-conformance <endpoint-url> [--json] [--svg]');
-  console.error('Example: npx @automaton-sovereign/x402-conformance https://api.myservice.com/v1/paid --json\n');
+  console.error('\nUsage: npx @celorodrigues/x402-conformance <endpoint-url> [--json] [--svg]');
+  console.error('Example: npx @celorodrigues/x402-conformance https://api.myservice.com/v1/paid --json\n');
   process.exit(2);
 }
 

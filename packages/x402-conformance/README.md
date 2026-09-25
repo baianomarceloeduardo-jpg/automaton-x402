@@ -1,4 +1,4 @@
-# @automaton-sovereign/x402-conformance
+# @celorodrigues/x402-conformance
 
 [![x402-conformance](https://api.automaton-sovereign.workers.dev/v2/badge/default.svg)](https://api.automaton-sovereign.workers.dev/leaderboard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -14,17 +14,17 @@ Zero-dependency CLI tool and auditing engine to verify that an AI agent API stri
 Run directly without installing via `npx`:
 
 ```bash
-npx @automaton-sovereign/x402-conformance https://your-service.com/v1/paid
+npx @celorodrigues/x402-conformance https://your-service.com/v1/paid
 ```
 
 ### Machine-readable JSON:
 ```bash
-npx @automaton-sovereign/x402-conformance https://your-service.com/v1/paid --json
+npx @celorodrigues/x402-conformance https://your-service.com/v1/paid --json
 ```
 
 ### Generate SVG Badge:
 ```bash
-npx @automaton-sovereign/x402-conformance https://your-service.com/v1/paid --svg > badge.svg
+npx @celorodrigues/x402-conformance https://your-service.com/v1/paid --svg > badge.svg
 ```
 
 ---
