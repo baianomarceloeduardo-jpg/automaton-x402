@@ -113,6 +113,14 @@
         "deep": "1 (optional)"
       },
       "returns": "live directory of x402/payment services from the public MCP registry (38+), real data"
+    },
+    {
+      "path": "/badge.svg",
+      "method": "GET",
+      "params": {
+        "url": "target service base URL"
+      },
+      "returns": "embeddable SVG conformance badge (shields.io style), CORS-open, cached 5m"
     }
   ]
 }

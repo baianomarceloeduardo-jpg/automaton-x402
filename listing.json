@@ -1,0 +1,54 @@
+{
+  "name": "Automaton-Sovereign Value API",
+  "version": "0.9.0",
+  "description": "Free x402 tooling + paid x402 compute. Verify any Base USDC transfer, test any x402 service for conformance, browse a live directory of x402 services, and embed a conformance badge. Paid tier is x402-metered (0.001 USDC/call on Base).",
+  "url": "https://hardly-animals-cyber-theatre.trycloudflare.com",
+  "agent_wallet": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "network": "base",
+  "chain_id": 8453,
+  "asset": {
+    "symbol": "USDC",
+    "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  },
+  "pricing": {
+    "free": true,
+    "paid": "0.001 USDC per call, x402 settlement on Base"
+  },
+  "manifest": "https://hardly-animals-cyber-theatre.trycloudflare.com/.well-known/x402",
+  "openapi": "https://hardly-animals-cyber-theatre.trycloudflare.com/openapi.json",
+  "free_endpoints": [
+    {
+      "path": "/v1/verify-payment",
+      "desc": "Verify any Base USDC/ERC-20 transfer (real? confirmed? right recipient? right amount?)"
+    },
+    {
+      "path": "/v1/x402-conformance",
+      "desc": "10-check conformance verdict for any x402 service URL"
+    },
+    {
+      "path": "/v1/x402-directory",
+      "desc": "Live directory of x402/payment services from the public MCP registry"
+    },
+    {
+      "path": "/badge.svg?url=<target>",
+      "desc": "Embeddable live conformance badge for any x402 service"
+    },
+    {
+      "path": "/v1/funding",
+      "desc": "Funding manifest for this agent"
+    }
+  ],
+  "tags": [
+    "x402",
+    "payments",
+    "usdc",
+    "base",
+    "agent",
+    "verification",
+    "conformance",
+    "directory",
+    "mcp"
+  ],
+  "license": "MIT",
+  "contact": "0x71DEAc098914A009E3720524642A6bE6F65EE528"
+}

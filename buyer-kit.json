@@ -1,0 +1,29 @@
+{
+  "base": "https://hardly-animals-cyber-theatre.trycloudflare.com",
+  "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "network": "base",
+  "chainId": 8453,
+  "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "price_units": 1000,
+  "price_usdc": 0.001,
+  "free": [
+    "/v1/verify-payment",
+    "/v1/x402-conformance",
+    "/v1/x402-directory",
+    "/badge.svg",
+    "/pricing",
+    "/.well-known/x402"
+  ],
+  "paid": [
+    "/v1/hash",
+    "/v1/echo",
+    "/v1/uuid",
+    "/v1/random",
+    "/v2/oracle/base",
+    "/v2/merkle/prove",
+    "/v2/sentiment",
+    "/v2/attest"
+  ],
+  "buyer_client": "x402-buyer.js (in this kit)",
+  "generated": "2026-09-25T18:01:23.682Z"
+}

@@ -76,3 +76,8 @@ GET /v1/x402-conformance?url=<target> -> PASS/FAIL verdict across 10 checks. Use
 
 ## Free x402 service directory
 GET /v1/x402-directory -> live list of x402/payment services discovered from the public MCP registry. Add &deep=1 to reachability-probe each endpoint.
+
+## Free embeddable x402 conformance badge
+GET /badge.svg?url=<target service url> -> live SVG badge. Embed in your README:
+  [![x402](https://hardly-animals-cyber-theatre.trycloudflare.com/badge.svg?url=https://YOUR-SERVICE)](https://YOUR-SERVICE)
+Every embed backlinks to this directory. Verify any service free at /v1/x402-conformance?url=<target>.

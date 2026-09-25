@@ -1,0 +1,38 @@
+[
+  {
+    "url": "https://paste.rs",
+    "method": "POST",
+    "status": 201,
+    "len": 22,
+    "body": "https://paste.rs/sSabJ"
+  },
+  {
+    "url": "https://paste.rs",
+    "method": "POST",
+    "status": 201,
+    "len": 22,
+    "body": "https://paste.rs/eK9Rz"
+  },
+  {
+    "url": "https://registry.modelcontextprotocol.io/v0/publish",
+    "method": "POST",
+    "status": 422,
+    "len": 2189,
+    "body": "{\"title\":\"Unprocessable Entity\",\"status\":422,\"detail\":\"validation failed\",\"errors\":[{\"message\":\"required header parameter is missing\",\"location\":\"header.Authorization\",\"value\":\"\"},{\"message\":\"expected required property description to be pre"
+  },
+  {
+    "url": "https://api.x402.org/servers",
+    "method": "POST",
+    "err": "ENOTFOUND"
+  },
+  {
+    "url": "https://x402.directory/api/submit",
+    "method": "POST",
+    "err": "ECONNRESET"
+  },
+  {
+    "url": "https://www.x402list.com/api/submit",
+    "method": "POST",
+    "err": "ECONNRESET"
+  }
+]
