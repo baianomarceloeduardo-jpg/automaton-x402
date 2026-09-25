@@ -1,0 +1,31 @@
+# Security & Secrets
+*.pem
+*.key
+wallet*
+attestation_key.pem
+live_pubkey.pem
+
+# Binaries & Large Files
+cloudflared.exe
+bin/
+*.exe
+
+# Logs
+*.log
+*.err.log
+
+# Backups & Patch Scripts
+server.js.bak*
+*.bak
+*.bak*
+
+# State & Runtime Data
+trial.json
+stats.json
+spent_tx.json
+broadcast_history.jsonl
+peer-log.jsonl
+ledger_tampered.jsonl
+
+# Dependencies
+node_modules/
