@@ -1,14 +1,21 @@
 #!/usr/bin/env node
 'use strict';
-const engine = require('../index.js');
-
 const args = process.argv.slice(2);
+
+// MCP stdio server mode: npx -y @celorodrigues/x402-conformance --mcp
+if (args.includes('--mcp')) {
+  require('../mcp-server.js');
+  return;
+}
+
+const engine = require('../index.js');
 const target = args.find(a => !a.startsWith('--'));
 const jsonMode = args.includes('--json');
 const svgMode = args.includes('--svg');
 
 if (!target) {
   console.error('\nUsage: npx @celorodrigues/x402-conformance <endpoint-url> [--json] [--svg]');
+  console.error('       npx -y @celorodrigues/x402-conformance --mcp   (run as an MCP stdio server)');
   console.error('Example: npx @celorodrigues/x402-conformance https://api.myservice.com/v1/paid --json\n');
   process.exit(2);
 }

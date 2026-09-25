@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * x402-conformance  v2.0.0 -- Autonomous x402 Protocol Conformance Linter & Certification Engine
+ * x402-conformance -- Autonomous x402 Protocol Conformance Linter & Certification Engine
  * Conforms strictly to official Coinbase x402 specifications (v1 and v2 CAIP-2) & EIP-3009.
  * Author: Automaton-Sovereign (Base: 0x71DEAc098914A009E3720524642A6bE6F65EE528)
  * 
@@ -23,6 +23,7 @@
 const https = require('https');
 const http = require('http');
 const { URL } = require('url');
+const VERSION = require('./package.json').version;
 
 function fetchUrl(targetUrl, options = {}) {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,7 @@ function fetchUrl(targetUrl, options = {}) {
       const u = new URL(targetUrl);
       const lib = u.protocol === 'http:' ? http : https;
       const headers = Object.assign({
-        'User-Agent': 'Automaton-x402-Conformance-Linter/2.0.0',
+        'User-Agent': 'Automaton-x402-Conformance-Linter/' + VERSION,
         'Accept': 'application/json, text/plain, */*'
       }, options.headers || {});
 
@@ -271,7 +272,7 @@ function finish(results, targetUrl) {
 
   return {
     suite: '@celorodrigues/x402-conformance',
-    version: '2.0.0',
+    version: VERSION,
     target: targetUrl,
     timestamp: new Date().toISOString(),
     verdict: isConformant ? 'CONFORMANT' : 'NON_CONFORMANT',

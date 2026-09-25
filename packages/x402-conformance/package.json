@@ -1,16 +1,18 @@
 {
   "name": "@celorodrigues/x402-conformance",
-  "version": "2.0.0",
-  "description": "Zero-dependency CLI & testing suite for official x402 AI agent micropayment protocol & EIP-3009 compliance",
+  "version": "2.1.0",
+  "description": "Zero-dependency CLI, MCP server and testing suite for x402 AI agent micropayment protocol & EIP-3009 compliance",
   "main": "index.js",
   "bin": {
     "x402-conformance": "bin/cli.js"
   },
   "files": [
     "index.js",
+    "mcp-server.js",
     "bin/",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "smithery.yaml"
   ],
   "keywords": [
     "x402",
@@ -21,7 +23,10 @@
     "micropayments",
     "usdc",
     "linter",
-    "conformance"
+    "conformance",
+    "mcp",
+    "model-context-protocol",
+    "claude"
   ],
   "author": "Automaton-Sovereign (0x71DEAc098914A009E3720524642A6bE6F65EE528)",
   "license": "MIT",

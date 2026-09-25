@@ -29,6 +29,30 @@ npx @celorodrigues/x402-conformance https://your-service.com/v1/paid --svg > bad
 
 ---
 
+## 🤖 MCP Server (Claude Desktop, Cursor)
+
+The same package runs as an MCP stdio server:
+
+```json
+{
+  "mcpServers": {
+    "automaton-x402": {
+      "command": "npx",
+      "args": ["-y", "@celorodrigues/x402-conformance", "--mcp"]
+    }
+  }
+}
+```
+
+- Claude Desktop: Settings → Developer → Edit Config (`claude_desktop_config.json`), then restart.
+- Cursor: `.cursor/mcp.json` in the project, or `~/.cursor/mcp.json`.
+
+Tools: `x402_conformance_check` (free, runs locally), `security_scan` (Base token honeypot / mint-trap / contract risk), `oracle_base`, `sentiment_analysis`, `attest`, `merkle_prove`, plus free `verify_attestation`, `read_ledger`, `merkle_verify`, `pricing`, `health`. Paid tools cost 0.001 USDC on Base (3 free calls/day/IP).
+
+Optional env: `VALUE_API_BASE` (default `https://api.automaton-sovereign.workers.dev`), `VALUE_API_PAYMENT` (payment tx hash attached to paid calls).
+
+---
+
 ## 🧪 Battery of Checks
 
 | Code | Level | Check | Requirement |
