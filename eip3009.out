@@ -1,0 +1,13 @@
+PASS A honest authorization accepted (from=0x34Bd86aE...)
+PASS B forged signature rejected (signature_mismatch)
+PASS C wrong_recipient rejected
+PASS D tampered amount rejected (signature_mismatch)
+PASS E underpaid rejected
+PASS F expired rejected
+PASS G not_yet_valid rejected
+PASS H nonce_already_used rejected (on-chain state)
+PASS I unused nonce accepted
+PASS J challenge well-formed (scheme=eip3009, asset=USDC, payTo set)
+
+10/10 PASS
+SELFTEST_EXIT=0  

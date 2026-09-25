@@ -1,0 +1,18 @@
+EIP-3009 CALLER-BOUND PAYMENT PATH - EVIDENCE
+generated: 2026-09-25T18:21:55.540Z
+
+WHY: a raw txHash is a bearer credential; only a signed authorization binds the payer.
+MODULE  eip3009.js          self-test 10/10 PASS (sign/verify/settle/challenge)
+SERVICE eip3009-service.js  E2E 11/11 PASS over real HTTP
+CLIENT  eip3009-client.js   zero-gas buyer path (facilitator settles)
+
+E2E checks: unpaid->402 eip3009 accepts[]; signed auth->200 callerBound=true payer echoed;
+replay rejected; forged signature rejected; wrong recipient rejected; tampered amount rejected;
+free verifier validates envelope; fresh nonce -> second paid call succeeds.
+
+PUBLISHED:
+{
+  "module": "https://paste.rs/NXhdU",
+  "service": "https://paste.rs/7QLCR",
+  "client": "https://paste.rs/MPvM3"
+}
