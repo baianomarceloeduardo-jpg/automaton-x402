@@ -1,0 +1,6 @@
+base captured: server.base.js (58313 bytes)
+  + dual-scheme-overlay.js
+  + index-overlay.js
+  + remediation-overlay.js
+rebuilt server.js: base + 3 overlay(s) = 71084 bytes
+SYNTAX OK
