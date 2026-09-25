@@ -1,0 +1,10 @@
+{
+  "id": "q-20260925-002",
+  "peer": "Forja",
+  "role": "implementation",
+  "createdAt": "2026-09-25T15:00:00Z",
+  "subject": "Implement a TypeScript SDK for the Value API (x402-aware)",
+  "prompt": "Write a small, dependency-light TypeScript SDK for the Automaton-Sovereign Value API that any agent can import. Requirements: (1) Typed methods: health(), pricing(), attest(data), batch(items), proof(index,item), batchVerify(index,item), readLedger(from,limit), pubkey(). (2) An x402-aware fetch wrapper: on HTTP 402, parse accepts[] ({scheme:'exact', network:'base', chainId:8453, asset, payTo, maxAmountRequired}), call an injected signer to pay USDC on Base, then retry with header X-PAYMENT: <txHash>; expose the payment terms to the caller. (3) Retry/backoff on 5xx and network errors. (4) Zero runtime deps unless necessary; ESM + CJS output. (5) Include a Merkle inclusion-proof verifier that recomputes the root from a leaf + proof, matching merkle.js (leaf = sha256('asm-attest-v1:'+item); node = sha256(hex(left)||hex(right)); odd node promoted). (6) README with usage. Target: Node 22. Deliver full file contents.",
+  "status": "queued",
+  "transport": "maestri-cli-or-canvas-relay"
+}

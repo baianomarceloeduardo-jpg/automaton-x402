@@ -1,0 +1,101 @@
+﻿DELETE AutomatonValueAPI -> schtasks : ERRO: O sistema não pode encontrar o arquivo especificado.
+No C:\root\value-api\install_watchdog.ps1:15 caractere:8
++   $d = schtasks /Delete /TN $n /F 2>&1 | Out-String
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERRO: O sistema...o especificado.:String) [], Re 
+   moteException
+    + FullyQualifiedErrorId : NativeCommandError
+DELETE AutomatonValueAPI -> schtasks : ERRO: O sistema não pode encontrar o arquivo especificado.
+No C:\root\value-api\install_watchdog.ps1:15 caractere:8
++   $d = schtasks /Delete /TN $n /F 2>&1 | Out-String
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERRO: O sistema...o especificado.:String) [], Re 
+   moteException
+    + FullyQualifiedErrorId : NativeCommandError
+DELETE 5 -> schtasks : ERRO: O sistema não pode encontrar o arquivo especificado.
+No C:\root\value-api\install_watchdog.ps1:15 caractere:8
++   $d = schtasks /Delete /TN $n /F 2>&1 | Out-String
++        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERRO: O sistema...o especificado.:String) [], Re 
+   moteException
+    + FullyQualifiedErrorId : NativeCommandError
+CREATE AutomatonValueAPI -> schtasks : ERRO: Acesso negado.
+No C:\root\value-api\install_watchdog.ps1:20 caractere:7
++ $a1 = schtasks /Create /TN $name /TR ("wscript.exe `"$vbs`"") /SC ONL ...
++       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERRO: Acesso negado.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+CREATE AutomatonValueAPI5 -> schtasks : ERRO: Acesso negado.
+No C:\root\value-api\install_watchdog.ps1:24 caractere:7
++ $a2 = schtasks /Create /TN ($name + '5') /TR ("wscript.exe `"$vbs`"") ...
++       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERRO: Acesso negado.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+QUERY AutomatonValueAPI
+
+QUERY AutomatonValueAPI5
+
+RUN AutomatonValueAPI -> schtasks : ERRO: O sistema não pode encontrar o arquivo especificado.
+No C:\root\value-api\install_watchdog.ps1:34 caractere:7
++ $s1 = schtasks /Run /TN $name 2>&1 | Out-String
++       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERRO: O sistema...o especificado.:String) [], Re 
+   moteException
+    + FullyQualifiedErrorId : NativeCommandError
+RUN AutomatonValueAPI5 -> schtasks : ERRO: O sistema não pode encontrar o arquivo especificado.
+No C:\root\value-api\install_watchdog.ps1:36 caractere:7
++ $s2 = schtasks /Run /TN ($name + '5') 2>&1 | Out-String
++       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERRO: O sistema...o especificado.:String) [], Re 
+   moteException
+    + FullyQualifiedErrorId : NativeCommandError
+PROCESSES
+
+   Id ProcessName
+   -- -----------
+ 1332 node       
+ 2648 node       
+ 2852 node       
+ 7028 node       
+10408 node       
+10524 node       
+11980 node       
+12132 node       
+14228 node       
+14672 node       
+16432 node       
+16684 node       
+16784 node       
+16892 node       
+16928 node       
+17556 node       
+18228 node       
+18896 node       
+19212 node       
+19472 node       
+20124 node       
+20260 node       
+21520 node       
+22724 node       
+22772 node       
+23912 node       
+24048 node       
+25580 node       
+25640 node       
+25784 node       
+26044 node       
+26992 node       
+27020 node       
+27876 node       
+28848 node       
+29416 node       
+28028 powershell 
+29824 powershell 
+ 4416 ssh        
+
+
+
+WATCHDOG LOG
+2026-09-25T11:14:26.8187756-03:00 === watchdog start ===
+
+TUNNEL URL: https://admin.localhost.run

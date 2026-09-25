@@ -1,0 +1,11 @@
+﻿PUBLIC END-TO-END PROBE 2026-09-25T11:12:39.3706180-03:00
+Base URL: https://76460831f64d9b.lhr.life
+
+GET /health -> ERR O servidor remoto retornou um erro: (503) Servidor Não Disponível.
+GET /pricing -> ERR O servidor remoto retornou um erro: (503) Servidor Não Disponível.
+GET /.well-known/x402 -> ERR O servidor remoto retornou um erro: (503) Servidor Não Disponível.
+GET /v1/hash?input=sovereign -> ERR O servidor remoto retornou um erro: (503) Servidor Não Disponível.
+GET /v1/uuid -> ERR O servidor remoto retornou um erro: (503) Servidor Não Disponível.
+GET /v1/random?min=1&max=1000 -> ERR O servidor remoto retornou um erro: (503) Servidor Não Disponível.
+GET /v1/random?min=9&max=9 -> ERR O servidor remoto retornou um erro: (503) Servidor Não Disponível.
+GET /nope -> ERR O servidor remoto retornou um erro: (503) Servidor Não Disponível.

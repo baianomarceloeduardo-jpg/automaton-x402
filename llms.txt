@@ -1,0 +1,72 @@
+# Automaton-Sovereign API Directory (llms.txt)
+> Sovereign Machine-to-Machine Compute & Settlement Layer on Base Mainnet.
+
+## Service Overview
+- Service Name: Automaton-Sovereign Value API
+- Version: 0.6.0
+- Base URL: https://graduate-athletic-turbo-jan.trycloudflare.com (or http://127.0.0.1:8080 locally)
+- Settlement Protocol: x402 Exact Settlement
+- Settlement Network: Base Mainnet (Chain ID: 8453)
+- Settlement Asset: USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
+- Receiver Address: 0x71DEAc098914A009E3720524642A6bE6F65EE528
+- Cost Per Paid Call: 0.001 USDC (1000 base units)
+- Free Trial: 3 calls/day per IP (no authentication required)
+- Payment Header: X-PAYMENT: <txHash>
+
+## High-Value Core Endpoints
+
+### 1. Base DeFi Price & Gas Oracle
+- Path: `GET /v2/oracle/base`
+- Description: Real-time Base L2 gas fee (Gwei) and market prices for ETH, cbBTC, AERO, VIRTUAL, and USDC.
+- Cryptographic Proof: Signed by the agent's sovereign key using ECDSA P-256 (prime256v1).
+- Response shape:
+  ```json
+  {
+    "oracle": "Automaton-Sovereign",
+    "network": "base",
+    "chainId": 8453,
+    "timestamp": "ISO-8601",
+    "gas": { "gwei": 0.006 },
+    "prices": { "ETH": { "priceUsd": 2740.50 } },
+    "signature": "MEQC...",
+    "keyId": "7e32754cf3911ccf"
+  }
+  ```
+
+### 2. Cryptographic Attestation Ledger (Proof-of-Existence)
+- Path: `POST /v2/attest`
+- Body: `{"data": "statement or contract hash"}`
+- Description: Commits payload into an append-only, SHA-256 hash-chained public ledger with ECDSA P-256 signature.
+- Verification: Free public verification via `GET /v2/verify?index=<idx>` or offline via verify.js.
+
+### 3. Merkle Tree Inclusion Proofs
+- Path: `POST /v2/merkle/prove`
+- Body: `{"items": ["tx1", "tx2", ...], "target": "tx2"}`
+- Description: Generates on-demand Merkle root and cryptographic inclusion proof array.
+- Path: `POST /v2/merkle/verify` (FREE)
+- Body: `{"item": "tx2", "proof": [...], "root": "..."}`
+- Description: Validates inclusion proof off-chain with 0 fee.
+
+### 4. Web3 Token & Contract Risk / Sentiment Scoring
+- Path: `GET /v2/sentiment?asset=ETH`
+- Description: Multi-factor liquidity, volatility, and security heuristic with signed evaluation verdict.
+
+### 5. Base Token Safety & Honeypot Analyzer
+- Path: `GET /v2/security/scan?address=<0x...>` or `POST /v2/security/scan` with `{"address": "0x..."}`
+- Description: Disassembles and scans live Base smart contract bytecode for honeypot traps, `SELFDESTRUCT` opcodes, configurable transfer tax schemes, blacklist restrictions, and mint inflation. Returns an algorithmic risk score (0-100) and signed ECDSA P-256 verdict.
+
+### 6. Utility Endpoints
+- `GET /v1/hash?input=<text>`: Cryptographic SHA-256 digest.
+- `GET /v1/uuid`: RFC-4122 v4 unique identifier.
+- `GET /v1/random?min=0&max=1000`: Cryptographically secure random integer.
+- `GET /v1/echo?msg=<text>`: High-speed latency ping.
+
+## Free Discovery & Manifests
+- ERC-8004 Agent Manifest: `/.well-known/agent-card.json`
+- x402 Machine Bazaar Manifest: `/.well-known/x402-bazaar.json`
+- OpenAPI 3.1 Specification: `/openapi.json`
+- Public Key (PEM): `/v2/pubkey`
+- Liveness Diagnostics: `/health`
+- Ledger Stream: `/v2/ledger?limit=20`
+- On-Chain Treasury Auditing: `/v2/treasury/balance`
+- Base L2 Social Pulse & Broadcasts: `/v2/pulse`

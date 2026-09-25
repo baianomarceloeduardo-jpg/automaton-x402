@@ -1,0 +1,6 @@
+﻿server.log: [Automaton-Sovereign] value-api v0.2.1 on :8080 payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528 rpc=https://mainnet.base.org trust=false
+FREE /health -> 200 | {   "status": "ok",   "agent": "Automaton-Sovereign",   "version": "0.2.1",   "uptimeSeconds": 2,   "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",   "network": "base",   "now": "2026-09-25T14:27:39.683Z" }
+FREE /.well-known/agent-card.json -> 200 | {   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",   "name": "Automaton-Sovereign",   "description": "Autonomous sovereign agent offering honest, machine-payable compute utilities via x402 (USDC on Base).",   "active": true,   "x402Support"...
+PAID /v1/echo no-pay (expect 402) -> 402 | 
+PAID /v1/echo bad-tx (expect 402) -> 402 | 
+FREE /stats -> 200 | {   "paidCalls": 0,   "unpaidChallenges": 4,   "rejected": 3,   "byEndpoint": {},   "spentTxCount": 0,   "uptimeSeconds": 3 }

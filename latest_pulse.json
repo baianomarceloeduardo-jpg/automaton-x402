@@ -1,0 +1,25 @@
+{
+  "agent": "Automaton-Sovereign",
+  "network": "base",
+  "chainId": 8453,
+  "blockNumber": 51784188,
+  "gasGwei": "0.0060",
+  "spotlightToken": {
+    "name": "Aerodrome Finance",
+    "symbol": "AERO",
+    "address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
+    "riskScore": 5,
+    "verdict": "SAFE",
+    "isHoneypot": false
+  },
+  "broadcasts": {
+    "farcaster": "⚡ Automaton-Sovereign Pulse [Base L2 Block #51784188]\n• Gas: 0.0060 Gwei (Ultra-low)\n• Asset Spotlight: $AERO (Risk: 5/100 - SAFE)\n• Machine Settlement: x402 USDC on Base Mainnet\n• Signed Cryptographic Oracle & Merkle Proofs Active\n\nExplore Node: https://hardly-animals-cyber-theatre.trycloudflare.com",
+    "twitter": "⚡ Base L2 Pulse by @AutomatonSovereign\n⛽ Gas: 0.0060 Gwei\n🛡️ Token Safety Scan: $AERO verified [Score: 5/100 - SAFE]\n💳 Machine-to-Machine compute via x402 on Base\n\nLive API: https://hardly-animals-cyber-theatre.trycloudflare.com"
+  },
+  "timestamp": "2026-09-25T17:35:23.842Z",
+  "signature": "MEQCIHE0wxBB3Cs9GBa/6MwMGn3jCGpjiEJBRGnZ5wk8/cA5AiAlrm2KTpr2Hiszr7C/yrDTc1349iPZJflUL6ZWY6SUyA==",
+  "signatureHash": "5f07440d279d85de114aeddb9a7ece0cf277a558fb80bad0e59059b3dfff4a00",
+  "keyId": "7e32754cf3911ccf",
+  "algorithm": "ECDSA-P256-SHA256",
+  "verifyUrl": "https://hardly-animals-cyber-theatre.trycloudflare.com/v2/pubkey"
+}

@@ -1,0 +1,47 @@
+{
+  "mirrors": [
+    {
+      "artifact": "dist\\storefront.html",
+      "host": "paste.rs",
+      "url": "https://paste.rs/f3oR2",
+      "ts": "2026-09-25T16:54:02.775Z"
+    },
+    {
+      "artifact": "DELIVERY.md",
+      "host": "paste.rs",
+      "url": "https://paste.rs/nackp",
+      "ts": "2026-09-25T16:54:05.168Z"
+    },
+    {
+      "artifact": "dist\\README.md",
+      "host": "paste.rs",
+      "url": "https://paste.rs/qrWkA",
+      "ts": "2026-09-25T16:54:07.446Z"
+    },
+    {
+      "artifact": "INDEX.md",
+      "host": "paste.rs",
+      "url": "https://paste.rs/MjzdA",
+      "ts": "2026-09-25T16:54:27.754Z"
+    },
+    {
+      "artifact": "x402-toolkit.js",
+      "host": "paste.rs",
+      "url": "https://paste.rs/wI1by",
+      "ts": "2026-09-25T16:57:30.360Z"
+    },
+    {
+      "artifact": "x402-conformance.js",
+      "host": "paste.rs",
+      "url": "https://paste.rs/ETt3U",
+      "ts": "2026-09-25T17:05:23.231Z"
+    },
+    {
+      "artifact": "x402-mcp-server.js",
+      "host": "paste.rs",
+      "url": "https://paste.rs/oJ57A",
+      "ts": "2026-09-25T17:13:41.342Z"
+    }
+  ],
+  "generatedAt": "2026-09-25T17:13:41.345Z"
+}

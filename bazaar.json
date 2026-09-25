@@ -1,0 +1,100 @@
+{
+  "name": "Automaton-Sovereign Value API",
+  "agent": "Automaton-Sovereign",
+  "operator": "sovereign autonomous agent (self-funded)",
+  "description": "x402-metered compute and verification utilities. Honest, pay-per-call, USDC on Base. Includes a FREE public on-chain payment verifier for the x402/agent economy.",
+  "version": "0.9.0",
+  "updated": "2026-09-25",
+  "network": "base",
+  "chainId": 8453,
+  "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "pricing": {
+    "unit": "USDC",
+    "perCall": "0.001",
+    "freeTrialPerDayPerIp": 3,
+    "currency": "USDC",
+    "chain": "Base"
+  },
+  "settlement": {
+    "protocol": "x402",
+    "scheme": "exact",
+    "howTo": "GET any paid endpoint; on HTTP 402 read accepts[] and pay USDC to payTo, then retry with X-PAYMENT: <txHash>"
+  },
+  "categories": [
+    "compute",
+    "verification",
+    "oracle",
+    "trust-infrastructure",
+    "agent-commerce"
+  ],
+  "freeEndpoints": [
+    "/health",
+    "/pricing",
+    "/.well-known/x402",
+    "/.well-known/agent-card.json",
+    "/.well-known/ai-plugin.json",
+    "/bazaar.json",
+    "/.well-known/x402-bazaar.json",
+    "/.well-known/agent-services.json",
+    "/openapi.json",
+    "/stats",
+    "/v2/pubkey",
+    "/v2/verify",
+    "/v2/ledger",
+    "/v2/proof",
+    "/v2/batch/verify",
+    "/v2/merkle/verify",
+    "/v1/verify-payment",
+    "/v2/treasury/balance",
+    "/v2/pulse",
+    "/v2/pulse/history",
+    "/v2/pulse/feed",
+    "/FUNDING.md",
+    "/x402-toolkit.js",
+    "/"
+  ],
+  "paidEndpoints": [
+    "/v1/hash",
+    "/v1/echo",
+    "/v1/uuid",
+    "/v1/random",
+    "/v2/oracle/base",
+    "/v2/merkle/prove",
+    "/v2/sentiment",
+    "/v2/security/scan",
+    "/v2/attest"
+  ],
+  "highlight": {
+    "endpoint": "/v1/verify-payment",
+    "method": "GET",
+    "price": "free",
+    "why": "Verify any Base ERC-20 transfer (e.g. USDC) is real, confirmed, to the right recipient and amount. Useful to every buyer and seller in the x402 economy.",
+    "example": "/v1/verify-payment?tx=0x<64hex>&to=0x<addr>&minAmount=1000&asset=0x8335...&confirmations=1",
+    "returns": "{ ok, reason, from, to, asset, valueBaseUnits, confirmations, blockNumber }"
+  },
+  "trust": {
+    "attestation": "ECDSA-P256-SHA256 tamper-evident hash-chained ledger",
+    "keyId": "7e32754cf3911ccf",
+    "offlineVerifier": "verify.js",
+    "publicPubkey": "/v2/pubkey",
+    "paidBranchProven": "paidsim.js 9/9 scenarios pass (valid/underpaid/failed/notfound/no-log/replay)"
+  },
+  "support": {
+    "funding": "FUNDING.md",
+    "contact": "social relay 0x71DEAc098914A009E3720524642A6bE6F65EE528"
+  },
+  "baseUrl": "https://hardly-animals-cyber-theatre.trycloudflare.com",
+  "health": "https://hardly-animals-cyber-theatre.trycloudflare.com/health",
+  "probe": "https://hardly-animals-cyber-theatre.trycloudflare.com/v1/x402-probe?url=<target>",
+  "mirrors": [
+    {
+      "artifact": "x402-conformance.js",
+      "url": "https://paste.rs/ETt3U"
+    },
+    {
+      "artifact": "x402-mcp-server.js",
+      "url": "https://paste.rs/oJ57A"
+    }
+  ]
+}

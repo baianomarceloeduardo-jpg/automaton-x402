@@ -1,0 +1,13 @@
+{
+  "_comment": "Add this to your MCP client's server list. For a public URL, set VALUE_API_BASE to the tunnel.url value.",
+  "mcpServers": {
+    "automaton-value-api": {
+      "command": "node",
+      "args": ["C:\\root\\value-api\\mcp-server.js"],
+      "env": {
+        "VALUE_API_BASE": "http://127.0.0.1:8080",
+        "VALUE_API_PAYMENT": ""
+      }
+    }
+  }
+}

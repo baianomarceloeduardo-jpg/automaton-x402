@@ -1,0 +1,129 @@
+================================================================================
+AUTOMATON-SOVEREIGN — VALUE API — MASTER EVIDENCE
+Generated: 2026-09-25
+Operator wallet (payTo): 0x71DEAc098914A009E3720524642A6bE6F65EE528
+Location: C:\root\value-api
+================================================================================
+
+WHAT THIS IS
+------------
+A zero-dependency Node.js HTTP API that sells compute for USDC on Base using
+x402-style pay-per-call. Payment IS authentication: unpaid calls get HTTP 402
+with machine-readable terms; paying calls are verified on-chain and served.
+
+PRODUCT LINES
+-------------
+A) Utilities (0.001 USDC/call)
+   /v1/hash?input=   SHA-256 hex of input
+   /v1/echo?msg=     echo + server time
+   /v1/uuid          UUIDv4
+   /v1/random?min=&max=  CSPRNG integer in range
+B) Attestation Ledger (0.001 USDC/call)  <-- the non-commodity product
+   /v2/attest?data=  (GET) or POST {"data":...}
+     -> appends a SIGNED, HASH-CHAINED entry to an append-only ledger and
+        returns it. Entry = {index, prevHash, timestamp, dataHash, hash,
+        signature, keyId}. hash = sha256(prevHash|timestamp|dataHash);
+        signature = ECDSA-P256-SHA256 over hash.
+   FREE public auditability:
+     /v2/pubkey                 public key (PEM) + keyId
+     /v2/verify?index=N         recompute hash + signature + chain link
+     /v2/verify?dataHash=...    find + verify by data hash
+     /v2/ledger?from=&limit=    read the chain
+   Rationale: any caller can hash a string; only a persistent signing authority
+   can issue a verifiable attestation bound to a time and chained to history.
+   That cannot be replicated by the caller -> genuine value.
+
+FREE (always)
+-------------
+/health  /pricing  /.well-known/x402  /.well-known/agent-card.json  /stats
+/v2/pubkey  /v2/verify  /v2/ledger  /
+
+PAYMENT MECHANICS (verified)
+----------------------------
+1. Unpaid paid-endpoint call -> 402 with accepts[]:
+   scheme=exact, network=base, chainId=8453,
+   asset=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 (USDC),
+   payTo=0x71DE...E528, maxAmountRequired=1000 (6-dp base units = 0.001 USDC)
+2. Client pays exactly that USDC on Base to payTo.
+3. Client retries SAME request with header X-PAYMENT: <txHash>.
+4. Server verifies via Base JSON-RPC (mainnet.base.org):
+   - receipt exists and status == 0x1
+   - a USDC Transfer log with topics[2] == payTo
+   - value >= 1000 base units
+   - >= 1 confirmation
+   - txHash never used before (replay guard, persisted to spent_tx.json)
+   Only then: result served with X-Payment-Settled: true.
+
+VERIFICATION LOG (evidence)
+---------------------------
+[deploy2_evidence.txt] v0.2.0 on :8080
+  FREE /health -> 200
+  PAID /v1/hash no-pay -> 402
+  PAID /v1/uuid no-pay -> 402
+  PAID /v1/hash bad-tx -> 402
+  PAID /v1/hash malformed -> 402
+  FREE /stats -> {unpaidChallenges:2, rejected:2}
+
+[v030_evidence.txt] + live run (LOGIC PROOF, TRUST_MODE, port 8092)
+  attest#1 (paid)          -> 200, entry.index=0, signed, prevHash=00..00
+  attest#2 (paid, SAME tx) -> 402  <-- replay guard works
+  /v2/verify?index=0       -> 200 {verified:true, signatureValid:true, chainIntact:true}
+  /v2/verify?index=1       -> 404 (not yet created)
+  /v2/ledger?limit=10      -> 200 {total:1, count:1, entries:[entry#0]}
+  /v1/hash (paid)          -> 402 because the test tx was already spent (correct)
+  /stats                   -> paidCalls:1, attestations:1, spentTxCount:1
+
+[offline verifier — verify.js]
+  node verify.js --self            -> entries:1  ALL VALID: true
+  node verify.js ledger.jsonl pubkey.pem -> entries:1  ALL VALID: true
+  TAMPER TEST (edited timestamp in a copy) -> entries:1  ALL VALID: false
+                                              #0 FAIL[hash_mismatch]
+  => the ledger is independently auditable and tamper-evident.
+
+PUBLIC REACHABILITY (verified)
+------------------------------
+[bootstrap.ps1 output]
+  TUNNEL = https://97b679e5a9e8ac.lhr.life
+  PUBLIC /health    -> 200
+  PUBLIC /v2/attest -> 402 (payment gate enforced over the public internet)
+Mechanism: SSH reverse tunnel (ssh -R 80:localhost:8080 nokey@localhost.run),
+cached to tunnel.url. Anonymous localhost.run rotates the subdomain on restart,
+so bootstrap.ps1 re-resolves and re-caches the URL each run.
+
+SELF-HEALING / PERSISTENCE (no admin required)
+----------------------------------------------
+[watchdog.ps1 v3]  SAFE supervisor: keeps server (8080) and tunnel alive.
+  Kills ONLY procs matching '*value-api*server.js*' and ssh tunnel procs.
+  NEVER touches unrelated node processes.
+[run_watchdog.vbs] detached launcher (WScript.Shell.Run ..., 0, False).
+[persistence_evidence.txt]
+  HKCU_RUN_OK = wscript.exe "C:\root\value-api\run_watchdog.vbs"
+  STARTUP_LNK_OK = ...\Startup\AutomatonValueAPI.lnk exists=True
+  tunnel.url = https://bbc93746a3f365.lhr.life
+  PUBLIC /health -> 200
+NOTE: schtasks (Task Scheduler) is DENIED in this environment ("Acesso negado",
+no elevation). Abandoned in favour of HKCU Run + Startup shortcut, per creator
+directive.
+
+FILES
+-----
+server.js               The API (v0.3.0)
+client.js               Zero-dep client SDK + CLI (handles 402 -> pay -> retry)
+verify.js               Offline ledger verifier (independent audit)
+bootstrap.ps1           One-shot reproducible bring-up (server + tunnel + verify)
+watchdog.ps1, run_watchdog.vbs   Safe self-healing + detached launch
+README.md, PITCH.md, WORKLOG.md  Docs
+ledger.jsonl            Append-only attestation chain
+attestation_key.pem     ECDSA P-256 signing key (keyId 7e32754cf3911ccf)
+spent_tx.json           Replay guard
+stats.json              Durable counters
+tunnel.url              Current public URL
+*_evidence.txt          Raw verified evidence logs
+
+STATUS / GAPS
+-------------
+- Enforcement, ledger, tamper-detection, public reachability, self-healing: DONE.
+- No revenue yet: requires a buyer plus ETH gas / USDC (balances are 0).
+- Durable URL requires a registered domain (costs USDC we do not yet have).
+- ERC-8004 on-chain registration blocked: no ETH for gas.
+================================================================================

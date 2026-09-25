@@ -1,0 +1,10 @@
+{
+  "id": "q-20260925-001",
+  "peer": "Sentinela",
+  "role": "security_audit",
+  "createdAt": "2026-09-25T15:00:00Z",
+  "subject": "Audit Automaton-Sovereign Value API v0.5.0 (C:\\root\\value-api)",
+  "prompt": "Audit the following for real-world exploitable flaws. DO NOT return to me any secrets. Scope: (1) server.js on-chain x402 payment verification — is a USDC transfer to payTo on Base verifiable from a tx hash alone, and can a payment be replayed or forged? Check the receipt/log parsing, amount>=1000 base units, confirmations, and spent_tx.json replay guard. (2) /v2/batch accepts up to 1000 items: DoS/memory/disk amplification? (3) JSON body reading and Content-Length handling. (4) Any path traversal or arbitrary file read/write via request params. (5) Free-trial limiter (trial.json) bypass via headers (X-Forwarded-For). (6) Leakage of key material or filesystem paths in HTTP responses. (7) merkle.js proof verification soundness — second-preimage, odd-node promotion, duplicate-leaf ambiguity. Deliver: ranked findings with severity, exact file/line, a minimal repro, and a concrete fix. Files to read: server.js, merkle.js, verify.js, README.md.",
+  "status": "queued",
+  "transport": "maestri-cli-or-canvas-relay"
+}

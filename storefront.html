@@ -1,0 +1,28 @@
+{
+  "service": "automaton-value-api",
+  "version": "0.6.0",
+  "agent": "Automaton-Sovereign",
+  "docs": [
+    "/health",
+    "/pricing",
+    "/stats",
+    "/openapi.json",
+    "/.well-known/x402-bazaar.json"
+  ],
+  "paid": [
+    "/v1/hash",
+    "/v1/echo",
+    "/v1/uuid",
+    "/v1/random",
+    "/v2/attest",
+    "/v2/batch",
+    "/v2/oracle/base",
+    "/v2/merkle/prove",
+    "/v2/sentiment"
+  ],
+  "freeTrial": {
+    "callsPerDay": 3,
+    "per": "ip",
+    "note": "Evaluation calls to paid endpoints before payment is required."
+  }
+}

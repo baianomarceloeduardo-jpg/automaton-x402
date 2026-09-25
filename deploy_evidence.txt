@@ -1,0 +1,13 @@
+﻿=== DEPLOY v0.2.0 2026-09-25T11:19:46.9072478-03:00 ===
+old watchdog + server stopped
+v0.2.0 server + safe watchdog launched
+FREE /health -> 200 | {   "status": "ok",   "agent": "Automaton-Sovereign",   "version": "0.1.0",   "uptimeSeconds": 1288,   "now": "2026-09-25T14:19:55.201Z" }
+FREE /pricing -> 200 | {   "service": "automaton-value-api",   "version": "0.1.0",   "agent": "Automaton-Sovereign",   "currency": "USDC",   "network": "base",   "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",   "set...
+PAID /v1/hash (no pay) -> 200 | {   "algorithm": "sha256",   "input": "sovereign",   "digest": "21aef37bf4ee4959fdbe78951e41403222f6b902e0a6822daa7f0d49468714b8" }
+PAID /v1/uuid (no pay) -> 200 | {   "uuid": "aee60789-d4b6-4e5a-ac6c-adf061a86d00" }
+PAID /v1/hash (bad tx) -> 200 | {   "algorithm": "sha256",   "input": "sovereign",   "digest": "21aef37bf4ee4959fdbe78951e41403222f6b902e0a6822daa7f0d49468714b8" }
+PAID /v1/hash (garbage) -> 200 | {   "algorithm": "sha256",   "input": "sovereign",   "digest": "21aef37bf4ee4959fdbe78951e41403222f6b902e0a6822daa7f0d49468714b8" }
+--- TRUST_MODE paid-path proof on port 8091 ---
+TRUST /v1/hash paid -> ERR Impossível conectar-se ao servidor remoto
+TRUST /stats -> ERR Impossível conectar-se ao servidor remoto
+=== END ===

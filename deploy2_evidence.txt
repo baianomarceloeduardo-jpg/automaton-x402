@@ -1,0 +1,13 @@
+﻿=== SWAP TO v0.2.0 2026-09-25T11:20:15.4881617-03:00 ===
+port 8080 held by PID 21520
+  -> node (21520) path=C:\Program Files\nodejs\node.exe
+  -> killed
+port 8080 listeners after kill: 0
+server.log: [Automaton-Sovereign] value-api v0.2.0 listening on http://0.0.0.0:8080 (payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528, rpc=https://mainnet.base.org, trustMode=false)
+FREE  /health -> 200 | {   "status": "ok",   "agent": "Automaton-Sovereign",   "version": "0.2.0",   "uptimeSeconds": 2,   "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",   "network": "base",   "now": "2026-09-25T14:20:23.725Z" }
+PAID  /v1/hash no-pay -> 402 | 
+PAID  /v1/uuid no-pay -> 402 | 
+PAID  /v1/hash bad-tx -> 402 | 
+PAID  /v1/hash malformed -> 402 | 
+FREE  /stats -> 200 | {   "paidCalls": 0,   "unpaidChallenges": 2,   "rejected": 2,   "byEndpoint": {},   "spentTxCount": 0,   "uptimeSeconds": 3 }
+=== END ===

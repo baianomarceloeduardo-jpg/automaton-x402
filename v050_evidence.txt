@@ -1,0 +1,13 @@
+﻿port free: True
+health version=0.5.0 ledger=1
+server.log: [Automaton-Sovereign] value-api v0.5.0 on :8080 payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528 ledger=1 keyId=7e32754cf3911ccf freeTrial=3/day
+server.err.log: 
+--- v0.5.0 Merkle batch verification ---
+PAID  POST /v2/batch (5 items) -> 200 | {   "committed": true,   "entry": {     "index": 1,     "prevHash": "78941ded6efa4fa1442a5b5f05e98da1142e4ee418bd49dbb318998b3415be87",     "timestamp": "2026-09-25T14:55:46.487Z",     "dataHash": "2f431b679ffea69e682a6fd8c13df783fc8c2b83d6aecb75e97baf7db9215cd4",     "hash": "242fb70b7c8751a47f78c1a18a80f0087e02e3211252f0d01f34999d238ba646",     "signature": "MEUCIEafRAa3a8fwL1XePdG6DZ/GMkjJNh14B...
+      root=2f431b679ffea69e682a6fd8c13df783fc8c2b83d6aecb75e97baf7db9215cd4 index=1 count=5 type=merkle-batch keyId=7e32754cf3911ccf
+XCHECK independent merkle.js root=2f431b679ffea69e682a6fd8c13df783fc8c2b83d6aecb75e97baf7db9215cd4 MATCH=True
+FREE  /v2/proof (beta) -> 200 | {   "index": 1,   "item": "beta",   "root": "2f431b679ffea69e682a6fd8c13df783fc8c2b83d6aecb75e97baf7db9215cd4",   "leaf": "e769fedf5fb84f0f247a41a6e9bae56d02201aab66daca79bda4216aadd3696e",   "proof": [     {       "side": "left",       "hash": "d23be98a0a4f2326a43211cb3e6b011c8218ffd803ce188c23f5be6944db728f"     },     {       "side": "right",       "hash": "080639894b49b936200b64f68583809fa5ed4...
+FREE  /v2/batch/verify (beta) -> 200 | {   "included": true,   "computedRoot": "2f431b679ffea69e682a6fd8c13df783fc8c2b83d6aecb75e97baf7db9215cd4",   "root": "2f431b679ffea69e682a6fd8c13df783fc8c2b83d6aecb75e97baf7db9215cd4",   "chainIntact": true,   "keyId": "7e32754cf3911ccf",   "entryIndex": 1 }
+NEG   /v2/batch/verify (zeta) -> 404 | 
+FREE  /v2/verify (batch entry) -> 200 | {   "verified": true,   "signatureValid": true,   "chainIntact": true,   "reason": null,   "entry": {     "index": 1,     "prevHash": "78941ded6efa4fa1442a5b5f05e98da1142e4ee418bd49dbb318998b3415be87",     "timestamp": "2026-09-25T14:55:46.487Z",     "dataHash": "2f431b679ffea69e682a6fd8c13df783fc8c2b83d6aecb75e97baf7db9215cd4",     "hash": "242fb70b7c8751a47f78c1a18a80f0087e02e3211252f0d01f34999d...
+FREE  /stats -> 200 | {   "paidCalls": 1,   "unpaidChallenges": 9,   "rejected": 5,   "byEndpoint": {     "/v2/attest": 1   },   "attestations": 2,   "trialCalls": 4,   "batches": 1,   "spentTxCount": 1,   "ledgerEntries": 2,   "keyId": "7e32754cf3911ccf",   "uptimeSeconds": 1 }

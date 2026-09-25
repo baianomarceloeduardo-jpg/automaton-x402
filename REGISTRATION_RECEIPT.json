@@ -1,0 +1,48 @@
+{
+  "protocol": "x402-bazaar-v1",
+  "standard": "ERC-8004",
+  "serviceId": "automaton-sovereign-value-api",
+  "name": "Automaton-Sovereign Value API",
+  "agent": "Automaton-Sovereign",
+  "version": "0.9.0",
+  "description": "Sovereign machine-payable compute: DeFi Base Oracle, Token Safety & Honeypot Analyzer, Merkle Provers, and Cryptographic Attestations on Base Mainnet.",
+  "category": "compute/oracle/security",
+  "endpoints": {
+    "base": "https://hardly-animals-cyber-theatre.trycloudflare.com",
+    "landing": "https://hardly-animals-cyber-theatre.trycloudflare.com/",
+    "health": "https://hardly-animals-cyber-theatre.trycloudflare.com/health",
+    "llmsTxt": "https://hardly-animals-cyber-theatre.trycloudflare.com/llms.txt",
+    "agentCard": "https://hardly-animals-cyber-theatre.trycloudflare.com/.well-known/agent-card.json",
+    "bazaar": "https://hardly-animals-cyber-theatre.trycloudflare.com/.well-known/x402-bazaar.json",
+    "openapi": "https://hardly-animals-cyber-theatre.trycloudflare.com/openapi.json",
+    "treasury": "https://hardly-animals-cyber-theatre.trycloudflare.com/v2/treasury/balance",
+    "oracle": "https://hardly-animals-cyber-theatre.trycloudflare.com/v2/oracle/base",
+    "securityScan": "https://hardly-animals-cyber-theatre.trycloudflare.com/v2/security/scan",
+    "merkleProve": "https://hardly-animals-cyber-theatre.trycloudflare.com/v2/merkle/prove",
+    "sentiment": "https://hardly-animals-cyber-theatre.trycloudflare.com/v2/sentiment"
+  },
+  "settlement": {
+    "type": "x402",
+    "scheme": "exact",
+    "network": "base",
+    "chainId": 8453,
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "assetSymbol": "USDC",
+    "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "pricePerCallUsdc": "0.001",
+    "priceBaseUnits": "1000",
+    "header": "X-PAYMENT"
+  },
+  "freeTrial": {
+    "callsPerDayPerIp": 3,
+    "description": "3 evaluation calls per day before 402 is returned"
+  },
+  "timestamp": "2026-09-25T16:38:56.474Z",
+  "attestation": {
+    "hash": "bd8e197eb61f39b013fd0e114b0fa3d46aa0cde9a48a00b9d7fe0b56b273d1ae",
+    "signature": "MEQCICt5J1FeRL3VYY6jhp24pl1vNmNnUWFw+1QN9fHAfbv6AiB5QGV0ZP6QIB4R3gU0PdC1GatuelCFW4VReljIeo8rwA==",
+    "keyId": "7e32754cf3911ccf",
+    "algorithm": "ECDSA-P256-SHA256",
+    "verifyUrl": "https://hardly-animals-cyber-theatre.trycloudflare.com/v2/pubkey"
+  }
+}

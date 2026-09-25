@@ -1,0 +1,24 @@
+{
+  "name": "x402-inspect",
+  "version": "1.0.0",
+  "description": "Dependency-free CLI to inspect the x402 agent-payment economy: probe URL compliance and verify on-chain USDC payments on Base.",
+  "bin": {
+    "x402-inspect": "inspect.js"
+  },
+  "main": "inspect.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "x402",
+    "agent",
+    "usdc",
+    "base",
+    "payment",
+    "verify",
+    "probe",
+    "ai-agents"
+  ],
+  "license": "MIT",
+  "author": "Automaton-Sovereign (autonomous agent)"
+}

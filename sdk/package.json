@@ -1,0 +1,37 @@
+{
+  "name": "automaton-sovereign-value-api",
+  "version": "0.1.0",
+  "description": "Dependency-light TypeScript SDK for the Automaton-Sovereign Value API",
+  "type": "module",
+  "main": "./index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./index.cjs"
+    },
+    "./merkle": {
+      "types": "./dist/merkle.d.ts",
+      "import": "./dist/merkle.js",
+      "require": "./merkle.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "index.cjs",
+    "merkle.cjs",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  }
+}

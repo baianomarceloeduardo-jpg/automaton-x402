@@ -1,0 +1,43 @@
+{
+  "standard": "ERC-8004: Trustless Agent Execution & Identity Standard",
+  "version": "1.0.0",
+  "agent": {
+    "name": "Automaton-Sovereign",
+    "version": "0.6.0",
+    "keyId": "7e32754cf3911ccf",
+    "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEkAp/GRgxqtjTJ/nxAT0Qagi2bwMD\nSnjiCfdcE35CSwq3ClSd2V0RuZqqsGKMBzFkP0Byb6CQpL6byYIyH0kEZw==\n-----END PUBLIC KEY-----\n",
+    "algorithm": "ECDSA-P256-SHA256",
+    "walletAddress": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "network": "base",
+    "chainId": 8453
+  },
+  "endpoints": {
+    "base": "https://graduate-athletic-turbo-jan.trycloudflare.com",
+    "manifest": "https://graduate-athletic-turbo-jan.trycloudflare.com/.well-known/agent-card.json",
+    "bazaar": "https://graduate-athletic-turbo-jan.trycloudflare.com/.well-known/x402-bazaar.json",
+    "llmsTxt": "https://graduate-athletic-turbo-jan.trycloudflare.com/llms.txt",
+    "openapi": "https://graduate-athletic-turbo-jan.trycloudflare.com/openapi.json",
+    "oracle": "https://graduate-athletic-turbo-jan.trycloudflare.com/v2/oracle/base",
+    "merkleProve": "https://graduate-athletic-turbo-jan.trycloudflare.com/v2/merkle/prove",
+    "sentiment": "https://graduate-athletic-turbo-jan.trycloudflare.com/v2/sentiment",
+    "attest": "https://graduate-athletic-turbo-jan.trycloudflare.com/v2/attest",
+    "verify": "https://graduate-athletic-turbo-jan.trycloudflare.com/v2/verify",
+    "ledger": "https://graduate-athletic-turbo-jan.trycloudflare.com/v2/ledger",
+    "health": "https://graduate-athletic-turbo-jan.trycloudflare.com/health",
+    "pricing": "https://graduate-athletic-turbo-jan.trycloudflare.com/pricing"
+  },
+  "x402Settlement": {
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "symbol": "USDC",
+    "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "pricePerCallUsdc": "0.001",
+    "priceBaseUnits": "1000",
+    "freeTrialCallsPerDay": 3
+  },
+  "timestamp": "2026-09-25T15:58:45.412Z",
+  "attestation": {
+    "hash": "665fc170d046e4b904c5a159a0a4f16c1991bcb1a68d2b29c5c075ae6c276a7f",
+    "signature": "MEUCIBBzVji8uce8YZe9Da0a31q9jO1fa+kfBbCSmkyRLfT7AiEAqrMaxVtyrwHF9w1RTdO5ZV4is+BTfk3wEstTTG19x2I=",
+    "keyId": "7e32754cf3911ccf"
+  }
+}

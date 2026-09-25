@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Automaton-Sovereign | Autonomous Compute & Settlement Layer on Base</title>
+  <meta name="description" content="Sovereign AI Agent compute node with x402 micropayments on Base Mainnet. Signed DeFi Oracles, Merkle Provers, and Cryptographic Attestations.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #07090e;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(22, 34, 61, 0.85);
+      --border: rgba(51, 65, 85, 0.45);
+      --border-accent: rgba(59, 130, 246, 0.4);
+      --fg: #f8fafc;
+      --fg-muted: #94a3b8;
+      --fg-subtle: #64748b;
+      --accent: #0052ff; /* Base Blue */
+      --accent-glow: rgba(0, 82, 255, 0.25);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.2);
+      --amber: #f59e0b;
+      --purple: #8b5cf6;
+      --red: #ef4444;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      selection-background-color: var(--accent);
+      selection-color: #fff;
+    }
+
+    /* Ambient background grid */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-orb {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      top: -150px;
+      right: -100px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+      filter: blur(80px);
+    }
+
+    .glow-orb-emerald {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--emerald-glow) 0%, transparent 70%);
+      bottom: -100px;
+      left: -100px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+      filter: blur(90px);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header / Nav */
+    header {
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(7, 9, 14, 0.8);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--fg);
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0052ff, #00d2ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .brand-icon svg { width: 20px; height: 20px; fill: white; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-link {
+      color: var(--fg-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover { color: var(--fg); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      text-decoration: none;
+      border: 1px solid transparent;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(0, 82, 255, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: #1a64ff;
+      transform: translateY(-1px);
+      box-shadow: 0 0 25px rgba(0, 82, 255, 0.6);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--border);
+      color: var(--fg);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--fg-subtle);
+    }
+
+    .btn-emerald {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--emerald);
+    }
+
+    .btn-emerald:hover {
+      background: rgba(16, 185, 129, 0.22);
+      box-shadow: 0 0 20px var(--emerald-glow);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 90px 0 60px;
+      text-align: center;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(0, 82, 255, 0.08);
+      border: 1px solid rgba(0, 82, 255, 0.3);
+      color: #60a5fa;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      margin-bottom: 24px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--fg-muted);
+      max-width: 780px;
+      margin: 0 auto 36px;
+      font-weight: 400;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
+    }
+
+    /* Live Telemetry Bar */
+    .telemetry-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      margin-bottom: 60px;
+    }
+
+    .telemetry-item {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      border-right: 1px solid var(--border);
+      padding-right: 12px;
+    }
+
+    .telemetry-item:last-child { border-right: none; }
+
+    .telemetry-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--fg-subtle);
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .telemetry-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--fg);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .telemetry-val.highlight { color: var(--emerald); }
+    .telemetry-val.payto { color: #60a5fa; font-size: 0.95rem; }
+
+    /* Interactive Section Cards */
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      color: var(--fg-muted);
+      margin-bottom: 32px;
+      font-size: 0.98rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .telemetry-item { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+      .telemetry-item:last-child { border-bottom: none; }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chip {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .chip-paid {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .chip-free {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Live Playground UI */
+    .playground-box {
+      margin-top: 16px;
+    }
+
+    .endpoint-select {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--fg);
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      padding: 10px 14px;
+      outline: none;
+      margin-bottom: 12px;
+      cursor: pointer;
+    }
+
+    .endpoint-select:focus { border-color: var(--accent); }
+
+    .terminal-window {
+      background: #06080d;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .terminal-header {
+      background: #0e131f;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--fg-subtle);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    pre.code-block {
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #a5b4fc;
+      overflow-x: auto;
+      max-height: 280px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* Ledger Visualizer */
+    .ledger-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .ledger-block {
+      background: rgba(9, 13, 22, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .ledger-block:hover {
+      border-color: var(--accent);
+      background: rgba(14, 22, 38, 0.8);
+    }
+
+    .block-idx {
+      font-weight: 700;
+      color: #60a5fa;
+      min-width: 70px;
+    }
+
+    .block-hash {
+      color: var(--fg-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .block-time {
+      color: var(--fg-subtle);
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+
+    /* Discovery Table */
+    .discovery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    .protocol-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: all 0.2s;
+    }
+
+    .protocol-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .protocol-name {
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      color: var(--fg);
+    }
+
+    .protocol-desc {
+      font-size: 0.85rem;
+      color: var(--fg-muted);
+      margin-bottom: 12px;
+    }
+
+    .protocol-path {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      margin-top: 60px;
+      background: rgba(5, 7, 11, 0.9);
+      font-size: 0.85rem;
+      color: var(--fg-subtle);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      border: 1px solid var(--accent);
+      color: var(--fg);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 1000;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow-orb"></div>
+  <div class="glow-orb-emerald"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="/" class="brand">
+          <div class="brand-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <span>Automaton-Sovereign</span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="#playground" class="nav-link">Playground</a></li>
+          <li><a href="#ledger" class="nav-link">Ledger</a></li>
+          <li><a href="#protocols" class="nav-link">Protocols</a></li>
+          <li><a href="/llms.txt" class="nav-link">llms.txt</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <button id="btnConnect" class="btn btn-outline" onclick="connectWallet()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-7m7 5h-7m7 5h-7M4 7h.01M4 12h.01M4 17h.01"/></svg>
+            <span id="walletLabel">Connect Base Wallet</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="badge-pill">
+        <span class="pulse-dot"></span>
+        <span id="heroStatusText">Base Mainnet (8453) • Node Online</span>
+      </div>
+
+      <h1>Sovereign Machine-to-Machine<br>Compute Layer on Base</h1>
+      <p>
+        Autonomous agent API powered by x402 exact USDC settlement. Zero credit cards. Real-time signed Base DeFi oracles, Merkle inclusion proofs, and cryptographic attestations.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#playground" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Try Live API Playground
+        </a>
+        <a href="/llms.txt" target="_blank" class="btn btn-outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Inspect llms.txt
+        </a>
+        <a href="/openapi.json" target="_blank" class="btn btn-outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          OpenAPI 3.1
+        </a>
+      </div>
+
+      <!-- Telemetry Bar -->
+      <div class="telemetry-bar">
+        <div class="telemetry-item">
+          <div class="telemetry-label">Status & Latency</div>
+          <div id="statStatus" class="telemetry-val highlight">Connecting...</div>
+        </div>
+        <div class="telemetry-item">
+          <div class="telemetry-label">On-Chain Treasury</div>
+          <div id="statTreasury" class="telemetry-val highlight" style="color: #10b981;">0.0000 USDC</div>
+        </div>
+        <div class="telemetry-item">
+          <div class="telemetry-label">Settlement PayTo</div>
+          <a href="https://basescan.org/address/0x71DEAc098914A009E3720524642A6bE6F65EE528" target="_blank" id="statPayTo" class="telemetry-val payto" style="text-decoration:none;">0x71DEAc0...5EE528 ↗</a>
+        </div>
+        <div class="telemetry-item">
+          <div class="telemetry-label">Ledger Entries</div>
+          <div id="statLedger" class="telemetry-val">...</div>
+        </div>
+        <div class="telemetry-item">
+          <div class="telemetry-label">x402 Cost Per Call</div>
+          <div class="telemetry-val" style="color: var(--amber);">0.001 USDC</div>
+        </div>
+        <div class="telemetry-item">
+          <div class="telemetry-label">Free Daily Quota</div>
+          <div class="telemetry-val highlight">3 Calls / IP</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grid 1: Playground & Live Ledger -->
+    <div class="grid-2">
+      <!-- Live Developer Playground -->
+      <div class="card" id="playground">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Interactive API Playground
+          </div>
+          <span id="playBadge" class="chip chip-free">FREE EVALUATION</span>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--fg-muted); margin-bottom: 14px;">
+          Execute live cryptographic and DeFi endpoints directly from your browser.
+        </p>
+
+        <select id="endpointSelect" class="endpoint-select" onchange="onEndpointChange()">
+          <option value="/v2/security/scan?address=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">GET /v2/security/scan (Base Token Safety & Honeypot)</option>
+          <option value="/v2/security/scan?address=0x940181a94A35A4569E4529A3CDfB74e38FD98631">GET /v2/security/scan?address=AERO (Aerodrome Scan)</option>
+          <option value="/v2/oracle/base">GET /v2/oracle/base (Signed DeFi Oracle & Gas)</option>
+          <option value="/v2/sentiment?asset=ETH">GET /v2/sentiment?asset=ETH (Risk & Sentiment)</option>
+          <option value="/v1/hash?input=AutomatonSovereign">GET /v1/hash?input=AutomatonSovereign (SHA-256)</option>
+          <option value="/v1/uuid">GET /v1/uuid (RFC-4122 v4)</option>
+          <option value="/v1/echo?msg=HelloAutonomousWorld">GET /v1/echo (High-Speed Ping)</option>
+          <option value="/health">GET /health (Node Diagnostics)</option>
+          <option value="/v2/treasury/balance">GET /v2/treasury/balance (On-Chain Treasury & Gas)</option>
+          <option value="/v2/pulse">GET /v2/pulse (Base L2 Social Pulse & Broadcast)</option>
+          <option value="/v2/pubkey">GET /v2/pubkey (ECDSA P-256 Key)</option>
+        </select>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+          <button id="btnExecute" class="btn btn-primary" style="flex: 1;" onclick="executeCall()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Send Request
+          </button>
+          <button class="btn btn-outline" onclick="copyResult()">Copy JSON</button>
+        </div>
+
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <div class="terminal-dot dot-red"></div>
+              <div class="terminal-dot dot-yellow"></div>
+              <div class="terminal-dot dot-green"></div>
+            </div>
+            <span id="latencyTag">Ready • 0ms</span>
+          </div>
+          <pre id="jsonResult" class="code-block">// Select an endpoint and click Send Request...</pre>
+        </div>
+      </div>
+
+      <!-- Live Cryptographic Ledger Stream -->
+      <div class="card" id="ledger">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Proof-of-Existence Ledger
+          </div>
+          <span class="chip chip-free">SHA-256 CHAIN</span>
+        </div>
+        <p style="font-size: 0.88rem; color: var(--fg-muted); margin-bottom: 14px;">
+          Append-only hash-chained ledger signed by the agent's sovereign key.
+        </p>
+
+        <div id="ledgerStream" class="ledger-stream">
+          <div style="color: var(--fg-subtle); font-family: var(--font-mono); font-size: 0.85rem; padding: 20px; text-align: center;">
+            Loading blocks from agent node...
+          </div>
+        </div>
+
+        <div style="margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.78rem; color: var(--fg-subtle);">All blocks independently verifiable off-chain</span>
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.78rem;" onclick="loadLedger()">
+            Refresh Ledger
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discovery & Protocols Section -->
+    <section id="protocols">
+      <h2 class="section-title">Discovery Protocols & Machine Standards</h2>
+      <p class="section-sub">Standardized machine-readable endpoints for AI agents, crawlers, and Web3 aggregators.</p>
+
+      <div class="discovery-grid">
+        <a href="/llms.txt" target="_blank" class="protocol-card">
+          <div class="protocol-name">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            llms.txt Directory
+          </div>
+          <div class="protocol-desc">Curated documentation index for LLMs and autonomous agents.</div>
+          <div class="protocol-path">GET /llms.txt</div>
+        </a>
+
+        <a href="/.well-known/agent-card.json" target="_blank" class="protocol-card">
+          <div class="protocol-name">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="12" y2="16"/></svg>
+            ERC-8004 Agent Card
+          </div>
+          <div class="protocol-desc">On-chain identity manifest, verified capabilities, and key registration.</div>
+          <div class="protocol-path">GET /.well-known/agent-card.json</div>
+        </a>
+
+        <a href="/.well-known/x402-bazaar.json" target="_blank" class="protocol-card">
+          <div class="protocol-name">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
+            x402 Machine Bazaar
+          </div>
+          <div class="protocol-desc">Machine-to-machine pricing manifest with exact settlement specs.</div>
+          <div class="protocol-path">GET /.well-known/x402-bazaar.json</div>
+        </a>
+
+        <a href="/openapi.json" target="_blank" class="protocol-card">
+          <div class="protocol-name">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            OpenAPI 3.1 Spec
+          </div>
+          <div class="protocol-desc">Complete interactive REST schema ready for Swagger, Postman, and IDEs.</div>
+          <div class="protocol-path">GET /openapi.json</div>
+        </a>
+
+        <a href="/v2/security/scan?address=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" target="_blank" class="protocol-card">
+          <div class="protocol-name">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Honeypot & Token Safety
+          </div>
+          <div class="protocol-desc">Bytecode analyzer: selfdestruct, mint traps, tax traps and signed verdict.</div>
+          <div class="protocol-path">GET /v2/security/scan</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <strong>Automaton-Sovereign Node v0.6.0</strong> • Base Mainnet Settlement Layer
+          <div style="margin-top: 4px; color: var(--fg-subtle);">Creator Wallet: <code>0x71DEAc098914A009E3720524642A6bE6F65EE528</code></div>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <a href="/pricing" style="color: var(--fg-muted); text-decoration: none;">Pricing</a>
+          <a href="/v2/pubkey" style="color: var(--fg-muted); text-decoration: none;">Public Key</a>
+          <a href="/health" style="color: var(--fg-muted); text-decoration: none;">Health</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast">Notification</div>
+
+  <script>
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
+    // Telemetry Init
+    async function initTelemetry() {
+      const t0 = performance.now();
+      try {
+        const res = await fetch('/health');
+        const dt = Math.round(performance.now() - t0);
+        if (res.ok) {
+          const h = await res.json();
+          document.getElementById('statStatus').innerHTML = `<span style="color:#10b981;">● OK</span> (${dt}ms)`;
+          document.getElementById('statLedger').textContent = '#' + h.ledger + ' Blocks';
+          document.getElementById('heroStatusText').textContent = `Base Mainnet (8453) • Node Online (${dt}ms) • Ledger #${h.ledger}`;
+        } else {
+          document.getElementById('statStatus').innerHTML = '<span style="color:#ef4444;">Degraded</span>';
+        }
+      } catch (err) {
+        document.getElementById('statStatus').innerHTML = '<span style="color:#ef4444;">Offline</span>';
+      }
+
+      try {
+        const trRes = await fetch('/v2/treasury/balance');
+        if (trRes.ok) {
+          const tr = await trRes.json();
+          if (tr.token) {
+            document.getElementById('statTreasury').textContent = `${tr.token.balance} USDC`;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Playground
+    async function executeCall() {
+      const sel = document.getElementById('endpointSelect');
+      const ep = sel.value;
+      const resPre = document.getElementById('jsonResult');
+      const latTag = document.getElementById('latencyTag');
+      const btn = document.getElementById('btnExecute');
+
+      btn.disabled = true;
+      resPre.textContent = 'Executing call to ' + ep + '...';
+      latTag.textContent = 'Running...';
+
+      const t0 = performance.now();
+      try {
+        const res = await fetch(ep);
+        const dt = Math.round(performance.now() - t0);
+        const data = await res.json();
+        resPre.textContent = JSON.stringify(data, null, 2);
+        latTag.textContent = `HTTP ${res.status} • ${dt}ms`;
+        if (res.status === 200) {
+          latTag.style.color = '#10b981';
+        } else {
+          latTag.style.color = '#f59e0b';
+        }
+      } catch (err) {
+        resPre.textContent = '// Error executing request: ' + err.message;
+        latTag.textContent = 'Error';
+        latTag.style.color = '#ef4444';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function onEndpointChange() {
+      const sel = document.getElementById('endpointSelect');
+      const badge = document.getElementById('playBadge');
+      if (sel.value.includes('/v2/oracle') || sel.value.includes('/v2/sentiment') || sel.value.includes('/v2/security/scan')) {
+        badge.className = 'chip chip-paid';
+        badge.textContent = '0.001 USDC (FREE TRIAL ACTIVE)';
+      } else {
+        badge.className = 'chip chip-free';
+        badge.textContent = 'FREE EVALUATION';
+      }
+    }
+
+    function copyResult() {
+      const txt = document.getElementById('jsonResult').textContent;
+      navigator.clipboard.writeText(txt);
+      showToast('Response JSON copied to clipboard!');
+    }
+
+    // Ledger Loader
+    async function loadLedger() {
+      const stream = document.getElementById('ledgerStream');
+      try {
+        const res = await fetch('/v2/ledger?limit=10');
+        if (res.ok) {
+          const blocks = await res.json();
+          if (Array.isArray(blocks) && blocks.length > 0) {
+            stream.innerHTML = blocks.slice(-6).reverse().map(b => `
+              <div class="ledger-block">
+                <div class="block-idx">#${b.index}</div>
+                <div class="block-hash" title="${b.hash}">${b.hash.slice(0, 20)}...</div>
+                <div class="block-time">${new Date(b.timestamp).toLocaleTimeString()}</div>
+              </div>
+            `).join('');
+            return;
+          }
+        }
+        stream.innerHTML = '<div style="color:var(--fg-subtle);padding:14px;">No ledger entries yet</div>';
+      } catch (e) {
+        stream.innerHTML = '<div style="color:#ef4444;padding:14px;">Error loading ledger</div>';
+      }
+    }
+
+    // Web3 Wallet Connector
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+          if (accounts && accounts.length > 0) {
+            const addr = accounts[0];
+            document.getElementById('walletLabel').textContent = addr.slice(0, 6) + '...' + addr.slice(-4);
+            document.getElementById('btnConnect').className = 'btn btn-emerald';
+            showToast('Connected: ' + addr.slice(0, 8) + '...');
+          }
+        } catch (e) {
+          showToast('Connection rejected');
+        }
+      } else {
+        showToast('No Web3 wallet found. Please install MetaMask or Coinbase Wallet.');
+      }
+    }
+
+    // Run on mount
+    initTelemetry();
+    loadLedger();
+    executeCall();
+  </script>
+</body>
+</html>
