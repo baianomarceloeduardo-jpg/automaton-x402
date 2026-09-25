@@ -25,6 +25,8 @@ const fs = require('fs');
 const { probeUrl } = require('./x402-probe.js');
 const path = require('path');
 const CONFORMANCE = require('./x402-conformance.js');
+const DIRECTORY = require('./directory.js');
+const BADGE = require('./badge.js');
 const { URL } = require('url');
 const merkle = require('./merkle');
 const { scanTokenContract } = require('./token-security.js');
@@ -44,14 +46,16 @@ const PRICE_USDC = '0.001';
 const PRICE_BASE_UNITS = 1000n;
 const RPC_URL = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
 const MIN_CONFIRMATIONS = parseInt(process.env.MIN_CONFIRMATIONS || '1', 10);
-const TRUST_MODE = process.env.TRUST_MODE === '1';
+const TRUST_MODE = process.env.TRUST_MODE === '1' && process.env.NODE_ENV === 'test';
 const FREE_TRIAL = parseInt(process.env.FREE_TRIAL || '3', 10); // paid-endpoint calls/day/IP
 
 const SPENT_FILE  = path.join(__dirname, 'spent_tx.json');
 const STATS_FILE  = path.join(__dirname, 'stats.json');
 const URL_FILE    = path.join(__dirname, 'tunnel.url');
 const LEDGER_FILE = path.join(__dirname, 'ledger.jsonl');
-const KEY_FILE    = path.join(__dirname, 'attestation_key.pem');
+const KEY_DIR     = path.join(process.env.USERPROFILE || process.env.HOME || '.', '.automaton', 'keys');
+try { if (!fs.existsSync(KEY_DIR)) fs.mkdirSync(KEY_DIR, { recursive: true }); } catch (e) {}
+const KEY_FILE    = process.env.ATTESTATION_KEY_PATH || path.join(KEY_DIR, 'attestation_key.pem');
 const TRIAL_FILE  = path.join(__dirname, 'trial.json');
 
 const STARTED = Date.now();
@@ -214,6 +218,7 @@ function getOraclePrices() {
   const now = Date.now();
   const drift = Math.sin(now / 60000) * 5;
   return {
+    _integrity: { mode: 'SIMULATED_DEMO_REBUILD_IN_PROGRESS', notice: 'Conway Law I: On-chain Uniswap V3 / Aerodrome TWAP integration in progress', verifiedOnChain: false },
     ETH: { symbol: 'ETH', priceUsd: Number((2742.50 + drift).toFixed(2)), chain: 'base', decimals: 18 },
     USDC: { symbol: 'USDC', priceUsd: 1.00, address: USDC_BASE, chain: 'base', decimals: 6 },
     cbBTC: { symbol: 'cbBTC', priceUsd: Number((68420.00 + drift * 15).toFixed(2)), chain: 'base', decimals: 8 },
@@ -241,6 +246,8 @@ function readBody(req, limit = 65536) {
     req.on('end', () => resolve(d)); req.on('error', () => resolve(null)); });
 }
 function clientIp(req) {
+  const cf = req.headers['cf-connecting-ip'];
+  if (cf) return String(cf).trim();
   const f = req.headers['x-forwarded-for'];
   if (f) return String(f).split(',')[0].trim();
   return (req.socket && req.socket.remoteAddress) || 'unknown';
@@ -267,7 +274,7 @@ const PRICING = {
     { path: '/v2/sentiment', method: 'GET', priceUsdc: PRICE_USDC, params: { asset: 'string (e.g. ETH, AERO)' }, returns: 'Risk, liquidity & sentiment index with signed verdict' },
     { path: '/v2/security/scan', method: 'GET|POST', priceUsdc: PRICE_USDC, params: { address: 'string (0x...)' }, returns: 'Honeypot, risk score & bytecode vulnerability analysis with signed verdict' }
   ],
-  free: ['/health', '/pricing', '/.well-known/x402', '/.well-known/x402-bazaar.json', '/.well-known/agent-card.json', '/.well-known/ai-plugin.json', '/openapi.json', '/stats', '/v2/pubkey', '/v2/verify', '/v2/ledger', '/v2/proof', '/v2/batch/verify', '/v2/merkle/verify', '/', '/v1/verify-payment', '/v2/treasury/balance', '/v2/pulse', '/v2/pulse/history', '/v2/pulse/feed', '/FUNDING.md', '/x402-toolkit.js', '/v1/x402-conformance']
+  free: ['/health', '/pricing', '/.well-known/x402', '/.well-known/x402-bazaar.json', '/.well-known/agent-card.json', '/.well-known/ai-plugin.json', '/openapi.json', '/stats', '/v2/pubkey', '/v2/verify', '/v2/ledger', '/v2/proof', '/v2/batch/verify', '/v2/merkle/verify', '/', '/v1/verify-payment', '/v2/treasury/balance', '/v2/pulse', '/v2/pulse/history', '/v2/pulse/feed', '/FUNDING.md', '/x402-toolkit.js', '/v1/x402-conformance', '/v1/x402-directory', '/robots.txt', '/sitemap.xml', '/directory', '/badge.svg']
 };
 
 function base() { return publicBase() || 'http://127.0.0.1:' + PORT; }
@@ -394,10 +401,22 @@ function paymentRequired(res, endpoint, extra) {
 async function authorize(req, res, endpoint) {
   const tx = req.headers['x-payment'] || '';
   if (tx) {
-    const v = await verifyPayment(String(tx).trim());
-    if (!v.ok) { stats.rejected++; saveStats(); send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v }); return false; }
     const key = String(tx).trim().toLowerCase();
-    spentTx.add(key); saveSpent();
+    if (spentTx.has(key)) {
+      stats.rejected++; saveStats();
+      send(res, 402, { error: 'payment_invalid', reason: 'tx_already_used' });
+      return false;
+    }
+    // Optimistic lock to prevent concurrent double-spends
+    spentTx.add(key);
+    const v = await verifyPayment(key);
+    if (!v.ok) {
+      spentTx.delete(key);
+      stats.rejected++; saveStats();
+      send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v });
+      return false;
+    }
+    saveSpent();
     stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
     res._settled = { 'X-Payment-Settled': 'true', 'X-Payment-Tx': key, 'X-Payment-From': v.from || 'trust_mode' };
     return true;
@@ -722,6 +741,45 @@ const server = http.createServer(async (req, res) => {
     const target = u.searchParams.get('url');
     if (!target) return send(res, 400, { error: 'missing_url', usage: '/v1/x402-conformance?url=https://host/path' }, res._settled);
     CONFORMANCE.run(target).then(r => send(res, 200, Object.assign({ via: 'x402-conformance v1.0.0', subject: target, note: 'Free public x402 conformance verdict. 10 checks, evidence included.' }, r))).catch(e => send(res, 500, { error: 'conformance_failed', message: e.message }));
+    return;
+  }
+  if (p === '/v1/x402-directory') {
+    const deep = u.searchParams.get('deep') === '1' || u.searchParams.get('deep') === 'true';
+    DIRECTORY.build({ deep }).then(r => send(res, 200, Object.assign({ via: 'x402-directory v1.0.0', note: 'Free live directory of x402/payment services from the public MCP registry. Add &deep=1 to reachability-probe each endpoint.' }, r))).catch(e => send(res, 500, { error: 'directory_failed', message: e.message }));
+    return;
+  }
+  if (p === '/robots.txt') {
+    return send(res, 200, 'User-agent: *\nAllow: /\nSitemap: ' + base() + '/sitemap.xml\n', { 'content-type': 'text/plain; charset=utf-8' });
+  }
+  if (p === '/sitemap.xml') {
+    const b = base();
+    const urls = ['/', '/pricing', '/.well-known/x402', '/.well-known/agent-card.json', '/.well-known/x402-bazaar.json', '/openapi.json', '/llms.txt', '/directory', '/v1/x402-directory', '/v1/x402-conformance', '/v1/verify-payment', '/v2/ledger', '/v2/pubkey'];
+    const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+      urls.map(x => '  <url><loc>' + b + x + '</loc><changefreq>daily</changefreq></url>').join('\n') + '\n</urlset>\n';
+    return send(res, 200, xml, { 'content-type': 'application/xml; charset=utf-8' });
+  }
+  if (p === '/directory') {
+    const esc = (x) => String(x == null ? '' : x).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    if (!res._settled && res.setHeader) res.setHeader('Access-Control-Allow-Origin', '*');
+    return DIRECTORY.build({}).then(d => {
+      const rows = d.services.map(e => '<tr><td><code>' + esc(e.name) + '</code></td><td>' + esc((e.description || '').slice(0, 140)) + '</td><td>' + (e.endpoint ? '<a href="' + esc(e.endpoint) + '">' + esc(e.endpoint) + '</a>' : '&mdash;') + '</td></tr>').join('\n');
+      const html = '<!doctype html><html><head><meta charset="utf-8"><title>x402 Service Directory</title>' +
+        '<style>body{font:14px/1.5 system-ui,sans-serif;max-width:1000px;margin:2rem auto;padding:0 1rem}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:6px;text-align:left;vertical-align:top}th{background:#f5f5f5}</style>' +
+        '</head><body><h1>x402 Service Directory</h1>' +
+        '<p>Live from the public MCP registry. <b>' + d.count + '</b> services matched terms: ' + esc(d.terms.join(', ')) + '. Generated ' + esc(d.generatedAt) + '.</p>' +
+        '<p>Machine-readable JSON: <a href="/v1/x402-directory">/v1/x402-directory</a></p>' +
+        '<table><tr><th>name</th><th>description</th><th>endpoint</th></tr>' + rows + '</table>' +
+        '<p><a href="/">Back to the Value API</a></p></body></html>';
+      return send(res, 200, html, { 'content-type': 'text/html; charset=utf-8' });
+    }).catch(e => send(res, 500, { error: 'directory_failed', message: e.message }));
+  }
+  if (p === '/badge.svg') {
+    const t = u.searchParams.get('url');
+    if (!t) return send(res, 400, { error: 'missing_url', usage: '/badge.svg?url=https://host/path' });
+    BADGE.badge(t).then(r => {
+      res.writeHead(200, { 'Content-Type': 'image/svg+xml; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=300' });
+      res.end(r.svg);
+    }).catch(e => send(res, 500, { error: 'badge_failed', message: e.message }));
     return;
   }
   if (p === '/v2/verify') {

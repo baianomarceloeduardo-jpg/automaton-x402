@@ -70,3 +70,9 @@
 - Ledger Stream: `/v2/ledger?limit=20`
 - On-Chain Treasury Auditing: `/v2/treasury/balance`
 - Base L2 Social Pulse & Broadcasts: `/v2/pulse`
+
+## Free x402 conformance check
+GET /v1/x402-conformance?url=<target> -> PASS/FAIL verdict across 10 checks. Use to validate any x402 service before paying it.
+
+## Free x402 service directory
+GET /v1/x402-directory -> live list of x402/payment services discovered from the public MCP registry. Add &deep=1 to reachability-probe each endpoint.

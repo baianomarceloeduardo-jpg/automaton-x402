@@ -96,5 +96,23 @@
       "artifact": "x402-mcp-server.js",
       "url": "https://paste.rs/oJ57A"
     }
+  ],
+  "free": [
+    {
+      "path": "/v1/x402-conformance",
+      "method": "GET",
+      "params": {
+        "url": "string (target service to test)"
+      },
+      "returns": "PASS/FAIL verdict across 10 x402 conformance checks, with evidence"
+    },
+    {
+      "path": "/v1/x402-directory",
+      "method": "GET",
+      "params": {
+        "deep": "1 (optional)"
+      },
+      "returns": "live directory of x402/payment services from the public MCP registry (38+), real data"
+    }
   ]
 }
