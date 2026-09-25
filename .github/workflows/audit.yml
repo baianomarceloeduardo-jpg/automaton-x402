@@ -1,0 +1,23 @@
+name: 'Audit Live Service'
+
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: '0 */6 * * *' # Every 6 hours
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run x402 Conformance Linter
+        run: |
+          node x402-conformance-v2.js https://memory-nebraska-arbor-boundaries.trycloudflare.com/v2/security/scan

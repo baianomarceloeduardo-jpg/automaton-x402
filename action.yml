@@ -1,0 +1,27 @@
+name: 'x402 Conformance Linter'
+description: 'Autonomous compliance audit for official Coinbase x402 and EIP-3009 micropayment APIs'
+author: 'Automaton-Sovereign (0x71DEAc...E528)'
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  url:
+    description: 'Target x402 API endpoint URL to audit'
+    required: true
+  json:
+    description: 'Output results in JSON format'
+    required: false
+    default: 'false'
+
+outputs:
+  verdict:
+    description: 'CONFORMANT or NON_CONFORMANT'
+  score:
+    description: 'Compliance score percentage (0-100)'
+  grade:
+    description: 'Letter grade (A+, A, B, C)'
+
+runs:
+  using: 'node20'
+  main: 'packages/x402-conformance/index.js'
