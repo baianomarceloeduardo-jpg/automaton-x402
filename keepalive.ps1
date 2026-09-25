@@ -94,7 +94,7 @@ if (-not $publicOk) {
             $m = [regex]::Match($t, 'https://[a-zA-Z0-9-]+\.trycloudflare\.com')
             if ($m.Success) {
               $url = $m.Value
-              $url | Set-Content $urlFile -Encoding ASCII
+              [System.IO.File]::WriteAllText($urlFile, $url)  # UTF-8 without BOM
               break
             }
           }

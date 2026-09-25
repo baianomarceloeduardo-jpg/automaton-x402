@@ -109,7 +109,7 @@ function Ensure-Tunnel {
           $m = [regex]::Match($content, 'https://[a-zA-Z0-9-]+\.trycloudflare\.com')
           if ($m.Success) {
             $newUrl = $m.Value
-            $newUrl | Set-Content $urlf -Encoding UTF8
+            [System.IO.File]::WriteAllText($urlf, $newUrl)  # UTF-8 without BOM
             W ('tunnel: UP ' + $newUrl)
             Sync-Worker $newUrl
             return
