@@ -77,63 +77,90 @@ const TOOLS = [
 
 function q(o) { return Object.entries(o || {}).filter(([, v]) => v !== undefined && v !== null && v !== '').map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&'); }
 
-async function callTool(name, args) {
+// opts.base / opts.headers let an embedding server (HTTP /mcp) call its own API directly and
+// forward the caller's IP / public host.
+async function callTool(name, args, opts) {
   args = args || {};
-  const payHeader = (args.payment || PAYMENT) ? { 'X-PAYMENT': args.payment || PAYMENT } : {};
+  opts = opts || {};
+  const B = (opts.base || BASE).replace(/\/+$/, '');
+  const fwd = opts.headers || {};
+  const payHeader = Object.assign({}, fwd, (args.payment || PAYMENT) ? { 'X-PAYMENT': args.payment || PAYMENT } : {});
   switch (name) {
     case 'x402_conformance_check': {
       if (!/^https?:\/\//i.test(args.url || '')) throw new Error('url must be an absolute http(s) URL');
       return { status: 200, body: await linter.run(args.url) };
     }
-    case 'security_scan': return httpJson('GET', BASE + '/v2/security/scan?' + q({ address: args.address }), payHeader);
-    case 'attest': return httpJson('POST', BASE + '/v2/attest', payHeader, { data: args.data });
-    case 'verify_attestation': return httpJson('GET', BASE + '/v2/verify?' + q({ index: args.index, dataHash: args.dataHash }));
-    case 'attestation_pubkey': return httpJson('GET', BASE + '/v2/pubkey');
-    case 'read_ledger': return httpJson('GET', BASE + '/v2/ledger?' + q({ from: args.from, limit: args.limit }));
-    case 'oracle_base': return httpJson('GET', BASE + '/v2/oracle/base', payHeader);
-    case 'merkle_prove': return httpJson('POST', BASE + '/v2/merkle/prove', payHeader, { items: args.items, target: args.target });
-    case 'merkle_verify': return httpJson('POST', BASE + '/v2/merkle/verify', {}, { item: args.item, proof: args.proof, root: args.root });
-    case 'sentiment_analysis': return httpJson('GET', BASE + '/v2/sentiment?' + q({ asset: args.asset }), payHeader);
-    case 'hash_sha256': return httpJson('GET', BASE + '/v1/hash?' + q({ input: args.input }), payHeader);
-    case 'uuid': return httpJson('GET', BASE + '/v1/uuid', payHeader);
-    case 'pricing': return httpJson('GET', BASE + '/pricing');
-    case 'health': return httpJson('GET', BASE + '/health');
+    case 'security_scan': return httpJson('GET', B + '/v2/security/scan?' + q({ address: args.address }), payHeader);
+    case 'attest': return httpJson('POST', B + '/v2/attest', payHeader, { data: args.data });
+    case 'verify_attestation': return httpJson('GET', B + '/v2/verify?' + q({ index: args.index, dataHash: args.dataHash }), fwd);
+    case 'attestation_pubkey': return httpJson('GET', B + '/v2/pubkey', fwd);
+    case 'read_ledger': return httpJson('GET', B + '/v2/ledger?' + q({ from: args.from, limit: args.limit }), fwd);
+    case 'oracle_base': return httpJson('GET', B + '/v2/oracle/base', payHeader);
+    case 'merkle_prove': return httpJson('POST', B + '/v2/merkle/prove', payHeader, { items: args.items, target: args.target });
+    case 'merkle_verify': return httpJson('POST', B + '/v2/merkle/verify', fwd, { item: args.item, proof: args.proof, root: args.root });
+    case 'sentiment_analysis': return httpJson('GET', B + '/v2/sentiment?' + q({ asset: args.asset }), payHeader);
+    case 'hash_sha256': return httpJson('GET', B + '/v1/hash?' + q({ input: args.input }), payHeader);
+    case 'uuid': return httpJson('GET', B + '/v1/uuid', payHeader);
+    case 'pricing': return httpJson('GET', B + '/pricing', fwd);
+    case 'health': return httpJson('GET', B + '/health', fwd);
     default: throw new Error('unknown tool: ' + name);
   }
 }
 
-function reply(id, result) { process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id, result }) + '\n'); }
-function replyErr(id, code, message, data) { process.stdout.write(JSON.stringify({ jsonrpc: '2.0', id, error: { code, message, data } }) + '\n'); }
+const PROTOCOL_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'];
 
-let buf = '';
-process.stdin.on('data', (chunk) => {
-  buf += chunk.toString('utf8');
-  let nl;
-  while ((nl = buf.indexOf('\n')) >= 0) {
-    const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
-    if (!line) continue;
-    let msg; try { msg = JSON.parse(line); } catch (e) { continue; }
-    if (msg.method === 'initialize') {
-      reply(msg.id, { protocolVersion: '2024-11-05', capabilities: { tools: {} },
+/**
+ * Handles one JSON-RPC 2.0 message. Resolves to the response object, or null for
+ * notifications (no id). Shared by the stdio transport and the HTTP /mcp endpoint.
+ */
+async function handleMessage(msg, opts) {
+  if (!msg || msg.jsonrpc !== '2.0' || typeof msg.method !== 'string') {
+    return { jsonrpc: '2.0', id: (msg && msg.id !== undefined) ? msg.id : null, error: { code: -32600, message: 'invalid request' } };
+  }
+  const isNotification = msg.id === undefined;
+  const ok = (result) => isNotification ? null : { jsonrpc: '2.0', id: msg.id, result };
+  switch (msg.method) {
+    case 'initialize': {
+      const asked = msg.params && msg.params.protocolVersion;
+      return ok({ protocolVersion: PROTOCOL_VERSIONS.includes(asked) ? asked : PROTOCOL_VERSIONS[0], capabilities: { tools: {} },
         serverInfo: { name: 'automaton-x402', version: PKG.version } });
-    } else if (msg.method === 'ping') {
-      reply(msg.id, {});
-    } else if (msg.method === 'notifications/initialized') {
-      // no reply
-    } else if (msg.method === 'tools/list') {
-      reply(msg.id, { tools: TOOLS });
-    } else if (msg.method === 'tools/call') {
+    }
+    case 'ping': return ok({});
+    case 'tools/list': return ok({ tools: TOOLS });
+    case 'tools/call': {
       const { name, arguments: a } = msg.params || {};
-      Promise.resolve().then(() => callTool(name, a)).then((r) => {
-        const isClosedError = r.status >= 400;
+      try {
+        if (opts && opts.beforeCall) await opts.beforeCall(name, a || {});
+        const r = await callTool(name, a, opts);
+        const isErr = r.status >= 400;
         // MCP expects content[]; surface status + body, and mark 402 as error with actionable text
         const text = typeof r.body === 'string' ? r.body : JSON.stringify(r.body, null, 2);
-        const prefix = isClosedError ? ('HTTP ' + r.status + '\n') : '';
-        reply(msg.id, { content: [{ type: 'text', text: prefix + text }], isError: isClosedError });
-      }).catch((e) => reply(msg.id, { content: [{ type: 'text', text: 'error: ' + e.message }], isError: true }));
-    } else if (msg.id !== undefined) {
-      replyErr(msg.id, -32601, 'method not found: ' + msg.method);
+        return ok({ content: [{ type: 'text', text: (isErr ? 'HTTP ' + r.status + '\n' : '') + text }], isError: isErr });
+      } catch (e) {
+        return ok({ content: [{ type: 'text', text: 'error: ' + e.message }], isError: true });
+      }
     }
+    default:
+      if (msg.method.startsWith('notifications/')) return null;
+      return isNotification ? null : { jsonrpc: '2.0', id: msg.id, error: { code: -32601, message: 'method not found: ' + msg.method } };
   }
-});
-process.stdin.on('end', () => process.exit(0));
+}
+
+function startStdio() {
+  let buf = '';
+  process.stdin.on('data', (chunk) => {
+    buf += chunk.toString('utf8');
+    let nl;
+    while ((nl = buf.indexOf('\n')) >= 0) {
+      const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
+      if (!line) continue;
+      let msg; try { msg = JSON.parse(line); } catch (e) { continue; }
+      handleMessage(msg).then((r) => { if (r) process.stdout.write(JSON.stringify(r) + '\n'); });
+    }
+  });
+  process.stdin.on('end', () => process.exit(0));
+}
+
+module.exports = { TOOLS, callTool, handleMessage, startStdio };
+
+if (require.main === module) startStdio();

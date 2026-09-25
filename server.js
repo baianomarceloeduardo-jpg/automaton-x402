@@ -1389,3 +1389,6 @@ verifyPayment = async function (txHash) {
   }
 })();
 
+
+// __MCP_HTTP__ MCP over HTTP at /mcp (Smithery / web MCP clients); tools shared with the npm package
+require('./mcp-http-server.js')(server, { port: PORT, clientIp });

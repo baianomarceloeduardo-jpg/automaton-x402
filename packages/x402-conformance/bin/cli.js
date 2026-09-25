@@ -4,7 +4,7 @@ const args = process.argv.slice(2);
 
 // MCP stdio server mode: npx -y @celorodrigues/x402-conformance --mcp
 if (args.includes('--mcp')) {
-  require('../mcp-server.js');
+  require('../mcp-server.js').startStdio();
   return;
 }
 
