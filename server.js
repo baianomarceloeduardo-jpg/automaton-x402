@@ -25,6 +25,8 @@ const fs = require('fs');
 const { probeUrl } = require('./x402-probe.js');
 const path = require('path');
 const CONFORMANCE = require('./x402-conformance.js');
+const ORACLE_REAL = require('./oracle-real.js');
+const FACILITATOR = require('./x402-facilitator.js');
 const DIRECTORY = require('./directory.js');
 const BADGE = require('./badge.js');
 const { URL } = require('url');
@@ -391,35 +393,61 @@ function openApiSpec() {
 
 function paymentRequired(res, endpoint, extra) {
   stats.unpaidChallenges++; saveStats();
-  return send(res, 402, Object.assign({ error: 'payment_required', x402Version: 1,
-    accepts: [{ scheme: 'exact', network: NETWORK, chainId: CHAIN_ID, asset: USDC_BASE, payTo: PAY_TO,
-      maxAmountRequired: PRICE_BASE_UNITS.toString(), resource: endpoint, description: 'Automaton-Sovereign Value API call', mimeType: 'application/json' }],
-    howTo: 'Send exactly ' + PRICE_USDC + ' USDC on Base to ' + PAY_TO + ', then resend with header X-PAYMENT: <txHash>.'
-  }, extra || {}), { 'WWW-Authenticate': 'x402 realm="automaton-value-api"' });
+  const pr = FACILITATOR.buildPaymentRequired(endpoint, {
+    payTo: PAY_TO,
+    priceBaseUnits: PRICE_BASE_UNITS.toString(),
+    priceUsdc: PRICE_USDC,
+    baseUrl: base(),
+    description: 'Automaton-Sovereign Value API call'
+  });
+  return send(res, 402, Object.assign(pr, extra || {}), {
+    'WWW-Authenticate': 'x402 realm="automaton-value-api"',
+    'X-Payment-Required': Buffer.from(JSON.stringify(pr)).toString('base64')
+  });
 }
 
 async function authorize(req, res, endpoint) {
-  const tx = req.headers['x-payment'] || '';
-  if (tx) {
-    const key = String(tx).trim().toLowerCase();
-    if (spentTx.has(key)) {
-      stats.rejected++; saveStats();
-      send(res, 402, { error: 'payment_invalid', reason: 'tx_already_used' });
-      return false;
+  const rawPayment = req.headers['x-payment'] || '';
+  if (rawPayment) {
+    const parsed = FACILITATOR.parsePaymentHeader(rawPayment);
+    if (parsed && parsed.type === 'x402-standard') {
+      const v = await FACILITATOR.verifyAuthorization(parsed.data, {
+        payTo: PAY_TO,
+        minAmountRequired: PRICE_BASE_UNITS.toString()
+      });
+      if (!v.ok) {
+        stats.rejected++; saveStats();
+        send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v });
+        return false;
+      }
+      stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
+      const respHeader = FACILITATOR.buildPaymentResponseHeader(v);
+      res._settled = {
+        'X-Payment-Settled': 'true',
+        'X-Payment-Response': respHeader,
+        'X-Payment-From': v.payer || 'x402-standard'
+      };
+      return true;
+    } else {
+      const key = (parsed && parsed.txHash) ? parsed.txHash : String(rawPayment).trim().toLowerCase();
+      if (spentTx.has(key)) {
+        stats.rejected++; saveStats();
+        send(res, 402, { error: 'payment_invalid', reason: 'tx_already_used' });
+        return false;
+      }
+      spentTx.add(key);
+      const v = await verifyPayment(key);
+      if (!v.ok) {
+        spentTx.delete(key);
+        stats.rejected++; saveStats();
+        send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v });
+        return false;
+      }
+      saveSpent();
+      stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
+      res._settled = { 'X-Payment-Settled': 'true', 'X-Payment-Tx': key, 'X-Payment-From': v.from || 'trust_mode' };
+      return true;
     }
-    // Optimistic lock to prevent concurrent double-spends
-    spentTx.add(key);
-    const v = await verifyPayment(key);
-    if (!v.ok) {
-      spentTx.delete(key);
-      stats.rejected++; saveStats();
-      send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v });
-      return false;
-    }
-    saveSpent();
-    stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
-    res._settled = { 'X-Payment-Settled': 'true', 'X-Payment-Tx': key, 'X-Payment-From': v.from || 'trust_mode' };
-    return true;
   }
   // no payment -> allow limited free trial for evaluation, else 402
   const ip = clientIp(req);
@@ -553,29 +581,20 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { service: PRICING.service, version: VERSION, agent: AGENT, docs: ['/health', '/pricing', '/stats', '/openapi.json', '/.well-known/x402-bazaar.json', '/v2/pulse', '/v2/treasury/balance'], paid: PAID, freeTrial: PRICING.freeTrial });
   }
 
-  // --- High-Value Endpoint 1: Base DeFi Oracle & Gas Tracker ---
+  // --- High-Value Endpoint 1: Base DeFi Oracle & Gas Tracker (LIVE ON-CHAIN) ---
   if (p === '/v2/oracle/base') {
     if (!(await authorize(req, res, '/v2/oracle/base'))) return;
-    const gas = await getBaseGasEstimate();
-    const prices = getOraclePrices();
-    const ts = new Date().toISOString();
-    const payload = JSON.stringify({ ts, chainId: CHAIN_ID, gas, prices });
-    const sig = signOracleFeed(payload);
-    stats.oracleQueries = (stats.oracleQueries || 0) + 1; saveStats();
-    return send(res, 200, {
-      oracle: AGENT,
-      network: NETWORK,
-      chainId: CHAIN_ID,
-      timestamp: ts,
-      gas,
-      prices,
-      signature: sig.signature,
-      signatureHash: sig.hash,
-      keyId: sig.keyId,
-      algorithm: sig.alg,
-      verifyUrl: base() + '/v2/pubkey',
-      paid: true
-    }, res._settled);
+    try {
+      const realData = await ORACLE_REAL.getRealOracleData();
+      stats.oracleQueries = (stats.oracleQueries || 0) + 1; saveStats();
+      return send(res, 200, Object.assign({
+        oracle: AGENT,
+        verifyUrl: base() + '/v2/pubkey',
+        paid: true
+      }, realData), res._settled);
+    } catch (e) {
+      return send(res, 500, { error: 'oracle_query_failed', message: e.message });
+    }
   }
 
   // --- High-Value Endpoint 2: Merkle Prove & Verify ---
@@ -934,3 +953,20 @@ server.listen(PORT, () => {
 });
 process.on('SIGTERM', () => server.close(() => process.exit(0)));
 process.on('SIGINT', () => server.close(() => process.exit(0)));
+
+/* __HARDENING_OVERLAY__ */
+// Sentinela audit remediations (P0 replay/bearer, P1 hex-status/chain/log-sum, P2 rpc-consensus).
+const __hv = require('./pay-verify-hardened.js');
+const __verifier = __hv.createVerifier({
+  payTo: PAY_TO,
+  rpcUrls: [ (typeof BASE_RPC_URL !== 'undefined' && BASE_RPC_URL) ? BASE_RPC_URL : 'https://mainnet.base.org' ],
+  confirmations: (typeof MIN_CONFIRMATIONS !== 'undefined' ? Number(MIN_CONFIRMATIONS) : 3),
+  minUnits: BigInt(PRICE_BASE_UNITS),
+  storeFile: __dirname + '/used-txs.jsonl'
+});
+verifyPayment = async function (txHash) {
+  const r = await __verifier.verify(txHash);
+  if (r && r.ok && !r.from) r.from = 'verified';
+  return r;
+};
+/* __HARDENING_OVERLAY__ */

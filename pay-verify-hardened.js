@@ -125,13 +125,13 @@ function createVerifier(opts) {
 
         // P1: sum ALL transfer logs; net accounting; ignore self-transfers
         // (also neutralizes the ".find() + log-index" trick and payTo-in-a-later-log tricks)
-        let net = 0n, sawTo = false;
+        let net = 0n, sawTo = false, payer = null, payerAmt = 0n;
         for (const l of logAddresses(receipt)) {
           if (String(l.address).toLowerCase() !== USDC_BASE) continue; // only canonical USDC
           const from = topicAddr(l.topics[1]), to = topicAddr(l.topics[2]);
           const v = BigInt(l.data === '0x' ? '0x0' : l.data);
           if (from === to) continue;                    // self-transfer: no value moved
-          if (to === PAY_TO) { net += v; sawTo = true; }
+          if (to === PAY_TO) { net += v; sawTo = true; if (v > payerAmt) { payerAmt = v; payer = from; } }
           if (from === PAY_TO) net -= v;                // net out any payTo-initiated outflow
         }
         if (!sawTo) { store.release(tx, 'no_transfer_to_payTo'); return { ok: false, reason: 'no_transfer_to_payTo' }; }
@@ -139,7 +139,7 @@ function createVerifier(opts) {
 
         store.settle(tx, { amount: net.toString(), confirmations: conf });
         return {
-          ok: true, tx, amount: net.toString(), confirmations: conf,
+          ok: true, tx, from: payer, amount: net.toString(), confirmations: conf,
           // P0-b: honest disclosure — a raw txHash does NOT bind the caller.
           bearer: true,
           warning: 'txHash payment is a bearer credential: any party who observes this hash on-chain can redeem it. Use EIP-3009 for caller binding.'
