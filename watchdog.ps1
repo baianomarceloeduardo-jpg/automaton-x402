@@ -18,6 +18,19 @@ function W($m) {
   if ($Once) { Write-Host $line }
 }
 
+function Sync-Worker($targetUrl) {
+  try {
+    $res = Invoke-RestMethod 'https://api.automaton-sovereign.workers.dev/__internal/set_origin' `
+      -Method Post `
+      -Headers @{ 'x-admin-secret' = 'automaton_sovereign_tunnel_secret_7e32754c' } `
+      -Body $targetUrl `
+      -TimeoutSec 8
+    W ('worker synced to ' + $targetUrl)
+  } catch {
+    W ('worker sync error: ' + $_.Exception.Message)
+  }
+}
+
 function Health-Ok {
   try {
     $r = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:8080/health' -TimeoutSec 5
@@ -57,6 +70,7 @@ function Ensure-Tunnel {
     try {
       $r = Invoke-WebRequest -UseBasicParsing -Uri ($u + '/health') -TimeoutSec 10
       if ($r.StatusCode -eq 200 -and $r.Content -like '*Automaton-Sovereign*') {
+        Sync-Worker $u
         return # Healthy!
       }
     } catch {}
@@ -87,6 +101,7 @@ function Ensure-Tunnel {
             $newUrl = $m.Value
             $newUrl | Set-Content $urlf -Encoding UTF8
             W ('tunnel: UP ' + $newUrl)
+            Sync-Worker $newUrl
             return
           }
         }
