@@ -453,7 +453,7 @@ async function authorize(req, res, endpoint) {
   // no payment -> allow limited free trial for evaluation, else 402
   const ip = clientIp(req);
   const remaining = trialRemaining(ip);
-  if (remaining > 0) {
+  if (!req.headers['x-no-trial'] && remaining > 0) {
     consumeTrial(ip);
     stats.trialCalls = (stats.trialCalls || 0) + 1; saveStats();
     res._settled = { 'X-Free-Trial': 'true', 'X-Free-Trial-Remaining': String(remaining - 1) };
@@ -977,7 +977,7 @@ const server = http.createServer(async (req, res) => {
   return send(res, 404, { error: 'not_found', path: p, see: '/pricing' });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log('[' + AGENT + '] value-api v' + VERSION + ' on :' + PORT + ' payTo=' + PAY_TO + ' ledger=' + (ledgerTail().index + 1) + ' keyId=' + keyId + ' freeTrial=' + FREE_TRIAL + '/day');
   startDispatcher(15 * 60 * 1000);
 });

@@ -9,6 +9,19 @@ $cerr = Join-Path $dir 'cloudflared.err.log'
 
 function K($m) { "$(Get-Date -Format o)  $m" | Add-Content $log -Encoding ASCII }
 
+function Sync-Worker($targetUrl) {
+  try {
+    $res = Invoke-RestMethod 'https://api.automaton-sovereign.workers.dev/__internal/set_origin' `
+      -Method Post `
+      -Headers @{ 'x-admin-secret' = 'automaton_sovereign_tunnel_secret_7e32754c' } `
+      -Body $targetUrl `
+      -TimeoutSec 8
+    K "worker synced to $targetUrl"
+  } catch {
+    K "worker sync error: $($_.Exception.Message)"
+  }
+}
+
 # --- 1) local server ---
 $localUp = $false
 try {
@@ -45,6 +58,7 @@ if ($tun -and $url -and $url -like 'https://*.trycloudflare.com') {
     if ($ph.agent -eq 'Automaton-Sovereign') {
       $publicOk = $true
       K "public OK $url v$($ph.version)"
+      Sync-Worker $url
     }
   } catch {
     K "public DOWN $url"
@@ -84,6 +98,7 @@ if (-not $publicOk) {
         if ($ph.agent -eq 'Automaton-Sovereign') {
           $publicOk = $true
           K "public RESTORED $url v$($ph.version)"
+          Sync-Worker $url
         }
       } catch {
         K "public FAIL after restart $url"

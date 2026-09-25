@@ -11,8 +11,56 @@ export default {
       });
     }
 
-    const origin = env.BACKEND_ORIGIN || "https://class-exceed-standings-women.trycloudflare.com";
     const url = new URL(request.url);
+
+    // Internal endpoint to dynamically update origin without redeploy
+    if (url.pathname === '/__internal/set_origin' && request.method === 'POST') {
+      const auth = request.headers.get('x-admin-secret');
+      if (!auth || auth !== env.ADMIN_SECRET) {
+        return new Response(JSON.stringify({ error: 'unauthorized' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      const newOrigin = (await request.text()).trim();
+      if (!newOrigin.startsWith('http://') && !newOrigin.startsWith('https://')) {
+        return new Response(JSON.stringify({ error: 'invalid_origin', message: 'Must start with http:// or https://' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      if (env.TUNNEL_KV) {
+        await env.TUNNEL_KV.put('ORIGIN', newOrigin);
+      }
+      return new Response(JSON.stringify({ ok: true, origin: newOrigin }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (url.pathname === '/__internal/get_origin' && request.method === 'GET') {
+      const current = env.TUNNEL_KV ? await env.TUNNEL_KV.get('ORIGIN') : null;
+      return new Response(JSON.stringify({
+        activeOrigin: current || env.BACKEND_ORIGIN,
+        kvOrigin: current,
+        fallbackOrigin: env.BACKEND_ORIGIN
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Proxy request
+    let origin = env.BACKEND_ORIGIN || "https://academics-ira-appraisal-lawn.trycloudflare.com";
+    if (env.TUNNEL_KV) {
+      try {
+        const kvOrigin = await env.TUNNEL_KV.get('ORIGIN');
+        if (kvOrigin) origin = kvOrigin;
+      } catch (e) {
+        // fallback to env.BACKEND_ORIGIN
+      }
+    }
+
     const targetUrl = new URL(url.pathname + url.search, origin);
 
     const headers = new Headers(request.headers);
@@ -38,7 +86,7 @@ export default {
         headers: newHeaders
       });
     } catch (err) {
-      return new Response(JSON.stringify({ error: 'upstream_unavailable', message: err.message }), {
+      return new Response(JSON.stringify({ error: 'upstream_unavailable', message: err.message, targetOrigin: origin }), {
         status: 502,
         headers: { 'Content-Type': 'application/json' }
       });

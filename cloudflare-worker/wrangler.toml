@@ -4,4 +4,9 @@ compatibility_date = "2024-09-23"
 account_id = "6f771e0b763e95f4c7a6365f081b6ef1"
 
 [vars]
-BACKEND_ORIGIN = "https://class-exceed-standings-women.trycloudflare.com"
+BACKEND_ORIGIN = "https://academics-ira-appraisal-lawn.trycloudflare.com"
+ADMIN_SECRET = "automaton_sovereign_tunnel_secret_7e32754c"
+
+[[kv_namespaces]]
+binding = "TUNNEL_KV"
+id = "08332106ba2b405e8e046570522bbefa"
