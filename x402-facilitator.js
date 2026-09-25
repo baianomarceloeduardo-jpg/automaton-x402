@@ -233,9 +233,13 @@ async function verifyAuthorization(authData, options = {}) {
     return out;
   }
 
-  // 7. EIP-712 signature verification
-  if (viem && viem.verifyTypedData) {
-    try {
+  // 7. EIP-712 signature verification (Strict Fail-Closed)
+  if (!viem || !viem.verifyTypedData) {
+    out.reason = 'cryptographic_verifier_unavailable: viem is required to verify EIP-712 signatures';
+    return out;
+  }
+
+  try {
       const domain = {
         name: 'USD Coin',
         version: '2',
@@ -278,7 +282,6 @@ async function verifyAuthorization(authData, options = {}) {
       out.reason = 'eip712_verification_error: ' + err.message;
       return out;
     }
-  }
 
   // Mark nonce as spent locally
   spentNonces.add(nonce);
