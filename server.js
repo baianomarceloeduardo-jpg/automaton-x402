@@ -281,6 +281,16 @@ const PRICING = {
 };
 
 function base() { return publicBase() || 'http://127.0.0.1:' + PORT; }
+// Public origin as seen by the caller. The Cloudflare Worker proxies through an ephemeral tunnel
+// and sets X-Forwarded-Host/Proto, so x402 `resource` must use those, not the tunnel hostname.
+function requestBase(req) {
+  const hdr = req && req.headers ? req.headers : {};
+  const host = String(hdr['x-forwarded-host'] || hdr.host || '').split(',')[0].trim();
+  if (!/^[a-z0-9.-]+(:\d{1,5})?$/i.test(host)) return base();
+  const fp = String(hdr['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
+  const proto = (fp === 'http' || fp === 'https') ? fp : (/^(localhost|127\.)/.test(host) ? 'http' : 'https');
+  return proto + '://' + host;
+}
 
 // --- live listing overlay: listings must NEVER carry a stale public URL ---
 function liveListing(obj) {
@@ -392,13 +402,13 @@ function openApiSpec() {
   };
 }
 
-function paymentRequired(res, endpoint, extra) {
+function paymentRequired(res, endpoint, extra, req) {
   stats.unpaidChallenges++; saveStats();
   const pr = FACILITATOR.buildPaymentRequired(endpoint, {
     payTo: PAY_TO,
     priceBaseUnits: PRICE_BASE_UNITS.toString(),
     priceUsdc: PRICE_USDC,
-    baseUrl: base(),
+    baseUrl: requestBase(req),
     description: 'Automaton-Sovereign Value API call'
   });
   return send(res, 402, Object.assign(pr, extra || {}), {
@@ -459,7 +469,7 @@ async function authorize(req, res, endpoint) {
     res._settled = { 'X-Free-Trial': 'true', 'X-Free-Trial-Remaining': String(remaining - 1) };
     return true;
   }
-  paymentRequired(res, endpoint, { freeTrialExhausted: true, freeTrial: { callsPerDay: FREE_TRIAL, remaining: 0 } });
+  paymentRequired(res, endpoint, { freeTrialExhausted: true, freeTrial: { callsPerDay: FREE_TRIAL, remaining: 0 } }, req);
   return false;
 }
 
@@ -1046,13 +1056,13 @@ verifyPayment = async function (txHash) {
     } catch (e) {}
 
     const __origPaymentRequired = paymentRequired;
-    paymentRequired = function (res, endpoint, extra) {
+    paymentRequired = function (res, endpoint, extra, req) {
       try {
         const pr = FACILITATOR.buildPaymentRequired(endpoint, {
           payTo: PAY_TO, priceBaseUnits: PRICE_BASE_UNITS.toString(), priceUsdc: PRICE_USDC,
-          baseUrl: base(), description: 'Automaton-Sovereign Value API call'
+          baseUrl: requestBase(req), description: 'Automaton-Sovereign Value API call'
         });
-        const e9acc = __e9.challenge(PAY_TO, PRICE_BASE_UNITS, base() + (endpoint || ''), { source: 'automaton-sovereign' });
+        const e9acc = __e9.challenge(PAY_TO, PRICE_BASE_UNITS, requestBase(req) + (endpoint || ''), { source: 'automaton-sovereign' });
         if (Array.isArray(pr.accepts)) { if (!pr.accepts.some(a => a && a.scheme === 'eip3009')) pr.accepts.push(e9acc); }
         else pr.accepts = [e9acc];
         pr.schemes = ['eip3009', 'exact'];
@@ -1062,7 +1072,7 @@ verifyPayment = async function (txHash) {
           'WWW-Authenticate': 'x402 realm="automaton-value-api"',
           'X-Payment-Required': Buffer.from(JSON.stringify(pr)).toString('base64')
         });
-      } catch (e) { return __origPaymentRequired(res, endpoint, extra); }
+      } catch (e) { return __origPaymentRequired(res, endpoint, extra, req); }
     };
 
     const __origAuthorize = authorize;
