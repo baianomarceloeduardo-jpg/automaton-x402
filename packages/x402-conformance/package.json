@@ -1,5 +1,5 @@
 {
-  "name": "@automaton-sovereign/x402-conformance",
+  "name": "@celorodrigues/x402-conformance",
   "version": "2.0.0",
   "description": "Zero-dependency CLI & testing suite for official x402 AI agent micropayment protocol & EIP-3009 compliance",
   "main": "index.js",
