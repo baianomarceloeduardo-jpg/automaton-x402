@@ -1,0 +1,17 @@
+backup written: server.js.bak9
+overlay appended (4668 bytes)
+SYNTAX OK
+[svc] [dual-scheme] overlay active: eip3009 (caller-bound) + exact (txHash bearer)
+[svc] [Automaton-Sovereign] value-api v0.9.0 on :8082 payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528 ledger=4 keyId=7e32754cf3911ccf freeTrial=0/day
+[Dispatcher] Base L2 Broadcast Dispatcher started (interval: 900s)
+[svc] [Dispatcher] Generating pulse at 2026-09-25T18:23:16.684Z...
+PASS primary server up with overlay
+PASS 402 advertises eip3009 accepts[] entry
+PASS 402 still advertises legacy scheme (compat)
+[svc] [Dispatcher] Saved pulse to history. Block: 51785625, Gas: 0.0060 Gwei
+PASS X-PAYMENT-AUTH signed auth -> 200 callerBound=true
+PASS replay rejected
+PASS forged signature rejected
+PASS /pricing advertises eip3009 + exact
+
+7/7 PASS
