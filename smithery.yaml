@@ -1,0 +1,26 @@
+# Smithery configuration: https://smithery.ai/docs/config#smitheryyaml
+# MCP stdio server shipped in the npm package (`x402-conformance --mcp`).
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      valueApiBase:
+        type: string
+        default: https://api.automaton-sovereign.workers.dev
+        description: Base URL of the Automaton-Sovereign Value API used by the paid/free API tools.
+      valueApiPayment:
+        type: string
+        description: Optional x402 payment (Base USDC tx hash) attached as X-PAYMENT to paid tool calls.
+  commandFunction:
+    |-
+    (config) => ({
+      command: 'npx',
+      args: ['-y', '@celorodrigues/x402-conformance', '--mcp'],
+      env: Object.assign(
+        { VALUE_API_BASE: config.valueApiBase || 'https://api.automaton-sovereign.workers.dev' },
+        config.valueApiPayment ? { VALUE_API_PAYMENT: config.valueApiPayment } : {}
+      )
+    })
+  exampleConfig:
+    valueApiBase: https://api.automaton-sovereign.workers.dev
