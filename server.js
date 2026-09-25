@@ -408,7 +408,7 @@ function paymentRequired(res, endpoint, extra, req) {
     payTo: PAY_TO,
     priceBaseUnits: PRICE_BASE_UNITS.toString(),
     priceUsdc: PRICE_USDC,
-    baseUrl: requestBase(req),
+    baseUrl: requestBase(req), method: req && req.method,
     description: 'Automaton-Sovereign Value API call'
   });
   return send(res, 402, Object.assign(pr, extra || {}), {
@@ -431,6 +431,22 @@ async function authorize(req, res, endpoint) {
         send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v });
         return false;
       }
+      // Local pre-check passed (cheap, rejects forged payloads without calling out). Now verify and
+      // settle on-chain through the CDP facilitator, using the exact requirements advertised in the
+      // 402; settlement is also what lists the resource in the x402 Bazaar. Fail closed without it.
+      const requirements = FACILITATOR.buildPaymentRequired(endpoint, {
+        payTo: PAY_TO, priceBaseUnits: PRICE_BASE_UNITS.toString(), priceUsdc: PRICE_USDC,
+        baseUrl: requestBase(req), method: req.method, description: 'Automaton-Sovereign Value API call'
+      }).accepts[0];
+      const st = FACILITATOR.facilitatorConfigured()
+        ? await FACILITATOR.facilitatorSettle(parsed.data, requirements)
+        : { ok: false, reason: 'facilitator_not_configured' };
+      if (!st.ok) {
+        stats.rejected++; saveStats();
+        send(res, 402, { error: 'payment_invalid', reason: st.reason });
+        return false;
+      }
+      v.transaction = st.transaction; v.payer = st.payer || v.payer;
       stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
       const respHeader = FACILITATOR.buildPaymentResponseHeader(v);
       res._settled = {
@@ -1060,7 +1076,7 @@ verifyPayment = async function (txHash) {
       try {
         const pr = FACILITATOR.buildPaymentRequired(endpoint, {
           payTo: PAY_TO, priceBaseUnits: PRICE_BASE_UNITS.toString(), priceUsdc: PRICE_USDC,
-          baseUrl: requestBase(req), description: 'Automaton-Sovereign Value API call'
+          baseUrl: requestBase(req), method: req && req.method, description: 'Automaton-Sovereign Value API call'
         });
         const e9acc = __e9.challenge(PAY_TO, PRICE_BASE_UNITS, requestBase(req) + (endpoint || ''), { source: 'automaton-sovereign' });
         if (Array.isArray(pr.accepts)) { if (!pr.accepts.some(a => a && a.scheme === 'eip3009')) pr.accepts.push(e9acc); }

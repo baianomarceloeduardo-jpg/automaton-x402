@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@coinbase/cdp-sdk": "^1.57.0",
     "ethers": "^6.17.0"
   }
 }

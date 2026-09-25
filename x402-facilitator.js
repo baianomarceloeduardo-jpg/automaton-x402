@@ -317,6 +317,11 @@ function buildPaymentRequired(endpoint, options = {}) {
         resource: fullResource,
         description: options.description || 'Automaton-Sovereign Machine Compute',
         mimeType: 'application/json',
+        // Bazaar discovery metadata (x402 v1 shape): the CDP facilitator catalogs the
+        // resource from these requirements when it settles a payment for it.
+        outputSchema: Object.assign({
+          input: Object.assign({ type: 'http', method: (options.method || 'GET').toUpperCase(), discoverable: true }, options.inputSchema || {})
+        }, options.outputSchema ? { output: options.outputSchema } : {}),
         extra: {
           name: 'USD Coin',
           version: '2'
@@ -341,7 +346,80 @@ function buildPaymentResponseHeader(settlement) {
   return Buffer.from(JSON.stringify(payload)).toString('base64');
 }
 
+// ---------- CDP facilitator (verify + on-chain settle, Bazaar indexing) ----------
+// Mainnet x402 settlement goes through the Coinbase CDP facilitator, authenticated with a
+// short-lived JWT signed by the CDP API key (CDP_API_KEY_ID / CDP_API_KEY_SECRET).
+const CDP_HOST = 'api.cdp.coinbase.com';
+const CDP_X402_PATH = '/platform/v2/x402';
+const REQUIREMENT_FIELDS = ['scheme', 'network', 'maxAmountRequired', 'resource', 'description', 'mimeType',
+  'payTo', 'maxTimeoutSeconds', 'asset', 'outputSchema', 'extra'];
+
+let cdpCredsCache = null;
+function cdpCreds() {
+  if (cdpCredsCache) return cdpCredsCache;
+  let id = process.env.CDP_API_KEY_ID, secret = process.env.CDP_API_KEY_SECRET;
+  // Processes spawned by long-running supervisors may predate the User-scope env vars.
+  if ((!id || !secret) && process.platform === 'win32') {
+    const readUserEnv = (name) => {
+      try {
+        const out = require('child_process').execFileSync('reg', ['query', 'HKCU\\Environment', '/v', name], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+        const m = out.match(new RegExp(name + '\\s+REG_\\w+\\s+(.+)'));
+        return m ? m[1].trim() : '';
+      } catch (e) { return ''; }
+    };
+    id = id || readUserEnv('CDP_API_KEY_ID');
+    secret = secret || readUserEnv('CDP_API_KEY_SECRET');
+  }
+  if (id && secret) cdpCredsCache = { id, secret };
+  return cdpCredsCache;
+}
+
+function facilitatorConfigured() { return !!cdpCreds(); }
+
+async function cdpPost(op, body) {
+  const creds = cdpCreds();
+  if (!creds) throw new Error('cdp_credentials_missing');
+  const { generateJwt } = require('@coinbase/cdp-sdk/auth');
+  const reqPath = CDP_X402_PATH + '/' + op;
+  const jwt = await generateJwt({
+    apiKeyId: creds.id, apiKeySecret: creds.secret,
+    requestMethod: 'POST', requestHost: CDP_HOST, requestPath: reqPath, expiresIn: 120
+  });
+  const res = await fetch('https://' + CDP_HOST + reqPath, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + jwt },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(30000)
+  });
+  const text = await res.text();
+  let json = null; try { json = JSON.parse(text); } catch (e) {}
+  if (!res.ok && !json) throw new Error('facilitator_http_' + res.status + ': ' + text.slice(0, 200));
+  return json || {};
+}
+
+/**
+ * Verifies and settles an x402 v1 "exact" payment through the CDP facilitator.
+ * `requirements` must be the same accepts[] entry advertised in the 402 challenge.
+ * Returns { ok, reason, transaction, payer, network }.
+ */
+async function facilitatorSettle(paymentPayload, requirements) {
+  const reqs = {};
+  for (const k of REQUIREMENT_FIELDS) if (requirements[k] !== undefined) reqs[k] = requirements[k];
+  const body = { x402Version: paymentPayload.x402Version || 1, paymentPayload, paymentRequirements: reqs };
+  try {
+    const v = await cdpPost('verify', body);
+    if (!v.isValid) return { ok: false, reason: 'facilitator_verify_failed: ' + [v.invalidReason, v.invalidMessage || v.errorMessage || v.message].filter(Boolean).join(' - '), payer: v.payer };
+    const s = await cdpPost('settle', body);
+    if (!s.success) return { ok: false, reason: 'facilitator_settle_failed: ' + (s.errorReason || s.errorMessage || s.message || 'failed'), payer: s.payer || v.payer };
+    return { ok: true, transaction: s.transaction, payer: s.payer || v.payer, network: s.network || NETWORK };
+  } catch (e) {
+    return { ok: false, reason: 'facilitator_error: ' + e.message };
+  }
+}
+
 module.exports = {
+  facilitatorConfigured,
+  facilitatorSettle,
   parsePaymentHeader,
   verifyAuthorization,
   buildPaymentRequired,
