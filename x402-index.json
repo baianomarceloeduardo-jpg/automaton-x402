@@ -1,0 +1,849 @@
+{
+  "version": "1.1.0",
+  "runs": 1,
+  "lastRun": "2026-09-25T18:30:47.236Z",
+  "services": {
+    "http://127.0.0.1:8080/": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:21.848Z",
+          "score": 18,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 2,
+        "total": 10,
+        "verdict": "NON_CONFORMANT",
+        "score": 18,
+        "at": "2026-09-25T18:30:21.848Z"
+      },
+      "score": 18,
+      "trend": "flat"
+    },
+    "https://api.x402.dev/": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:22.533Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:22.533Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://api.baselight.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:23.194Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:23.194Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://x402.org/facilitator": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:23.250Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:23.250Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://argushq.ai/api/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:25.131Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:25.131Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://facilitator.x402.rs/": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:25.170Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 10,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:25.170Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://x402-services-production.up.railway.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:25.468Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:25.468Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://api.lattiq.ai/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:26.141Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:26.141Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://app.brainattic.ai/api/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:26.610Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:26.610Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://managed.payments.ai/api/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:27.252Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:27.252Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp.basethread.ai/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:27.337Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:27.337Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp.qcdatabase.ai/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:28.337Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:28.337Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://server.smithery.ai/@ImRonAI/mcp-server-browserbase/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:28.755Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:28.755Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://server.smithery.ai/@MisterSandFR/supabase-mcp-selfhosted/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:29.041Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:29.041Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-dz.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:29.471Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:29.471Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://github.com/haymon-ai/database": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:29.591Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:29.591Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-au.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:29.747Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:29.747Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-ar.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:29.836Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:29.836Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-at.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:29.910Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:29.910Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-bh.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:29.986Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:29.986Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-bd.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.059Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.059Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-be.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.196Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.196Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-br.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.245Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.245Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://github.com/RipperMercs/tensorfeed-x402-base-mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.336Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.336Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-bg.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.370Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.370Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-ca.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.402Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.402Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://ywabnlhkmhbyewqhbsjm.supabase.co/functions/v1/sensations-mergulho": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.498Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 10,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.498Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-cl.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.524Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.524Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://x402-seller-202595743428.europe-west1.run.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.589Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.589Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-co.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.864Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.864Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-cr.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:30.973Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:30.973Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-hr.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:31.044Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:31.044Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-cy.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:31.151Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:31.151Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp-cz.wishpool.app/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:31.198Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:31.198Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://knowledge-base.b77.ai/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:31.332Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 10,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:31.332Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://x402-listing-monitor.acjlabs.com/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:32.585Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:32.585Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://mcp.blackwalltier.com": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:32.879Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:32.879Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://rpc.aex402.com/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:32.879Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:32.879Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://x402.fablerlabs.com/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:33.547Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:33.547Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://baseusdcearn.pythonanywhere.com/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:33.913Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:33.913Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://money-engine-x402-research--aiircool25.run.tools/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:34.842Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 8,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:34.842Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    },
+    "https://api402x.com/mcp": {
+      "history": [
+        {
+          "at": "2026-09-25T18:30:47.236Z",
+          "score": 0,
+          "verdict": "NON_CONFORMANT",
+          "reachable": true
+        }
+      ],
+      "last": {
+        "reachable": true,
+        "passed": 0,
+        "total": 1,
+        "verdict": "NON_CONFORMANT",
+        "score": 0,
+        "at": "2026-09-25T18:30:47.236Z"
+      },
+      "score": 0,
+      "trend": "flat"
+    }
+  },
+  "error": "dependencies_missing",
+  "count": 42
+}

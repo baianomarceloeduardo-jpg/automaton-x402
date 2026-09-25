@@ -1,0 +1,14 @@
+removed previous overlay
+overlay appended
+SYNTAX OK
+[svc] [dual-scheme] overlay active: eip3009 (caller-bound) + exact (txHash bearer)
+[svc] [index] overlay active: /index (HTML) + /v1/index (JSON)
+[svc] [Automaton-Sovereign] value-api v0.9.0 on :8083 payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528 ledger=4 keyId=7e32754cf3911ccf freeTrial=0/day
+[svc] [Dispatcher] Base L2 Broadcast Dispatcher started (interval: 900s)
+[svc] [Dispatcher] Generating pulse at 2026-09-25T18:28:44.144Z...
+PASS server up with index overlay
+PASS /v1/index -> 200 JSON with scoreboard
+PASS /index -> 200 HTML with table
+  index count=0 runs=0 rows=0
+
+3/3 PASS
