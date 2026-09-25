@@ -4,6 +4,7 @@
 wallet*
 attestation_key.pem
 live_pubkey.pem
+cdp*
 
 # Binaries & Large Files
 cloudflared.exe
