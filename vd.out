@@ -1,0 +1,7 @@
+BASE https://sys-moore-shipped-phys.trycloudflare.com
+llms.txt -> 0 bytes=62 version_ok=false index=false remediate=false no_stale_url=true
+sitemap.xml -> 0 urls=0
+robots.txt -> 0 hasSitemap=false
+agent-card.json -> 0 capabilities=0
+/v1/index -> 0 count=0
+/remediate -> 0 fixDivs=0

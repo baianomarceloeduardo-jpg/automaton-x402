@@ -16,7 +16,8 @@ const MARKER = '\n// ===================== __';
 const OVERLAYS = [
   'dual-scheme-overlay.js',
   'index-overlay.js',
-  'remediation-overlay.js'
+  'remediation-overlay.js',
+  'discovery-overlay.js'
 ];
 
 function firstMarkerIndex(s) {

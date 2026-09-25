@@ -1,0 +1,7 @@
+name = "api"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+account_id = "6f771e0b763e95f4c7a6365f081b6ef1"
+
+[vars]
+BACKEND_ORIGIN = "https://class-exceed-standings-women.trycloudflare.com"
