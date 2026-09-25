@@ -7,7 +7,7 @@ live_pubkey.pem
 
 # Binaries & Large Files
 cloudflared.exe
-bin/
+/bin/
 *.exe
 
 # Logs
