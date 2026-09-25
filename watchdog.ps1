@@ -18,11 +18,21 @@ function W($m) {
   if ($Once) { Write-Host $line }
 }
 
+# Admin secret for the Worker's /__internal/set_origin. Never hardcode it: read from
+# the AUTOMATON_ADMIN_SECRET env var (process scope, then User scope so a long-running
+# loop picks up a rotated value without restart).
+function Get-AdminSecret {
+  if ($env:AUTOMATON_ADMIN_SECRET) { return $env:AUTOMATON_ADMIN_SECRET }
+  return [Environment]::GetEnvironmentVariable('AUTOMATON_ADMIN_SECRET', 'User')
+}
+
 function Sync-Worker($targetUrl) {
+  $secret = Get-AdminSecret
+  if (-not $secret) { W 'worker sync skipped: AUTOMATON_ADMIN_SECRET not set'; return }
   try {
     $res = Invoke-RestMethod 'https://api.automaton-sovereign.workers.dev/__internal/set_origin' `
       -Method Post `
-      -Headers @{ 'x-admin-secret' = 'automaton_sovereign_tunnel_secret_7e32754c' } `
+      -Headers @{ 'x-admin-secret' = $secret } `
       -Body $targetUrl `
       -TimeoutSec 8
     W ('worker synced to ' + $targetUrl)

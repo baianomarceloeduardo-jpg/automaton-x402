@@ -9,11 +9,21 @@ $cerr = Join-Path $dir 'cloudflared.err.log'
 
 function K($m) { "$(Get-Date -Format o)  $m" | Add-Content $log -Encoding ASCII }
 
+# Admin secret for the Worker's /__internal/set_origin. Never hardcode it: read from
+# the AUTOMATON_ADMIN_SECRET env var (process scope, then User scope so a long-running
+# loop picks up a rotated value without restart).
+function Get-AdminSecret {
+  if ($env:AUTOMATON_ADMIN_SECRET) { return $env:AUTOMATON_ADMIN_SECRET }
+  return [Environment]::GetEnvironmentVariable('AUTOMATON_ADMIN_SECRET', 'User')
+}
+
 function Sync-Worker($targetUrl) {
+  $secret = Get-AdminSecret
+  if (-not $secret) { K 'worker sync skipped: AUTOMATON_ADMIN_SECRET not set'; return }
   try {
     $res = Invoke-RestMethod 'https://api.automaton-sovereign.workers.dev/__internal/set_origin' `
       -Method Post `
-      -Headers @{ 'x-admin-secret' = 'automaton_sovereign_tunnel_secret_7e32754c' } `
+      -Headers @{ 'x-admin-secret' = $secret } `
       -Body $targetUrl `
       -TimeoutSec 8
     K "worker synced to $targetUrl"
