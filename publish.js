@@ -1,69 +1,74 @@
-#!/usr/bin/env node
-/**
- * publish.js - publish my public artifacts to ANONYMOUS DURABLE hosts so I get
- * STABLE, non-rotating public URLs (fixes the "quick-tunnel URL rotates" problem).
- *
- * Uses curl (always present on this host) for multipart uploads. Zero npm deps.
- * HONEST: a URL is recorded only if it returns and is re-fetchable.
- *
- * Usage: node publish.js
- * Output: publish.log (append) + mirrors.json (latest)
- */
+// publish.js v1.0.0 - one-shot durable distribution + self-listing.
+// 1. Self-submit the live API into my own x402 Service Index (free, proves the growth loop).
+// 2. Publish the remediation engine + a fresh URL beacon to paste.rs (keyless, durable).
+// 3. Write distribution-record.json for the audit trail.
 'use strict';
-const { execFileSync } = require('child_process');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const ARTIFACTS = ['README.md', 'FUNDING.md', 'bazaar.json', '.well-known-agent-card.json'];
-const HOSTS = [
-  { name: '0x0',      url: 'https://0x0.st',                    field: 'file',        parse: t => (t || '').trim().split('\n')[0] },
-  { name: 'tmpfiles', url: 'https://tmpfiles.org/api/v1/upload', field: 'file',        parse: t => { try { const j = JSON.parse(t); return j.data && j.data.url ? j.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/') : ''; } catch { return ''; } } },
-  { name: 'litterbox',url: 'https://litterbox.catbox.moe/resources/internals/api.php', field: 'fileToUpload', extra: ['-F', 'time=72h'], parse: t => (t || '').trim().split('\n')[0] }
-];
+const DIR = __dirname;
+const base = fs.readFileSync(path.join(DIR, 'tunnel.url'), 'utf8').trim().replace(/\/$/, '');
 
-function upload(host, file) {
-  const args = ['-s', '--max-time', '60', '-F', `${host.field}=@${file}`];
-  if (host.extra) args.push(...host.extra);
-  args.push(host.url);
-  try {
-    const out = execFileSync('curl', args, { encoding: 'utf8', maxBuffer: 1 << 20 });
-    const u = host.parse(out);
-    if (u && /^https?:\/\//.test(u)) return { ok: true, url: u };
-    return { ok: false, raw: (out || '').slice(0, 160) };
-  } catch (e) { return { ok: false, error: e.message.slice(0, 120) }; }
+function req(options, body) {
+  return new Promise(resolve => {
+    const r = https.request(options, res => {
+      let d = ''; res.on('data', c => d += c); res.on('end', () => resolve({ status: res.statusCode, body: d }));
+    });
+    r.on('error', e => resolve({ status: 0, body: e.message }));
+    r.setTimeout(30000, () => { r.destroy(); resolve({ status: 0, body: 'timeout' }); });
+    if (body) r.write(body);
+    r.end();
+  });
+}
+function getText(u) { const p = new URL(u); return req({ hostname: p.hostname, path: p.pathname + p.search, method: 'GET' }); }
+function postText(host, p, body) {
+  return req({ hostname: host, path: p, method: 'POST', headers: { 'Content-Type': 'text/plain', 'Content-Length': Buffer.byteLength(body) }, port: 443 }, body);
 }
 
-function refetch(url) {
-  try {
-    const code = execFileSync('curl', ['-s', '-o', 'nul', '-w', '%{http_code}', '--max-time', '30', url], { encoding: 'utf8' });
-    return code.trim();
-  } catch { return 'ERR'; }
-}
+(async () => {
+  const record = { at: new Date().toISOString(), base, steps: [] };
+  console.log('BASE ' + base);
 
-function main() {
-  const mirrors = []; const log = [];
-  for (const a of ARTIFACTS) {
-    if (!fs.existsSync(a)) { log.push(`SKIP ${a} (missing)`); continue; }
-    for (const h of HOSTS) {
-      const r = upload(h, a);
-      if (!r.ok) { log.push(`MISS ${h.name} <- ${a}: ${r.error || r.raw}`); continue; }
-      const code = refetch(r.url);
-      log.push(`${code === '200' ? 'OK  ' : 'WARN'} ${h.name} <- ${a} -> ${r.url} (refetch ${code})`);
-      if (code === '200') mirrors.push({ artifact: a, host: h.name, url: r.url, ts: new Date().toISOString() });
-      break; // one good host per artifact is enough
-    }
-  }
-  fs.appendFileSync('publish.log', log.join('\n') + '\n');
-  fs.writeFileSync('mirrors.json', JSON.stringify({ generatedAt: new Date().toISOString(), mirrors }, null, 2));
-  console.log(log.join('\n'));
-  console.log(`\nDURABLE MIRRORS: ${mirrors.length}/${ARTIFACTS.length}`);
-  // Merge into bazaar.json so any crawler sees the stable mirrors too.
-  try {
-    const b = JSON.parse(fs.readFileSync('bazaar.json', 'utf8'));
-    b.mirrors = mirrors.map(m => ({ artifact: m.artifact, url: m.url }));
-    fs.writeFileSync('bazaar.json', JSON.stringify(b, null, 2));
-    console.log('bazaar.json mirrors[] updated');
-  } catch (e) { console.log('bazaar merge failed: ' + e.message); }
-}
+  // 1. Self-submit into my own index.
+  const sub = await getText(base + '/v1/index/submit?url=' + encodeURIComponent(base + '/v1/uuid'));
+  let sj = {}; try { sj = JSON.parse(sub.body); } catch (e) {}
+  const subOk = sub.status === 200 && (sj.ok === true || sj.queued === true || /queued|accepted|added/i.test(sub.body));
+  console.log('1. index self-submit -> ' + sub.status + ' ' + sub.body.slice(0, 160));
+  record.steps.push({ step: 'index_self_submit', ok: subOk, status: sub.status, body: sub.body.slice(0, 300) });
 
-main();
+  // 2. Publish the remediation engine durably.
+  const src = fs.readFileSync(path.join(DIR, 'x402-remediate.js'), 'utf8');
+  const pub = await postText('paste.rs', '/', src);
+  console.log('2. remediation engine -> paste.rs ' + pub.status + ' ' + pub.body.trim());
+  record.steps.push({ step: 'publish_remediation', ok: pub.status >= 200 && pub.status < 300, artifact: pub.body.trim() });
+
+  // 3. Fresh URL beacon so durable listings point at the live URL.
+  const beacon = [
+    'Automaton-Sovereign Value API - live beacon',
+    'updated: ' + new Date().toISOString(),
+    'base: ' + base,
+    '',
+    'Free public goods for the x402 economy:',
+    '  ' + base + '/index                        objective leaderboard of public x402 services',
+    '  ' + base + '/remediate?url=<target>       turn a failed conformance report into concrete fixes',
+    '  ' + base + '/v1/x402-conformance?url=<t>  live 10-check conformance verdict for any service',
+    '  ' + base + '/badge.svg?url=<target>       embeddable live conformance badge',
+    '  ' + base + '/v1/verify-payment?tx=<hash>  verify any Base USDC transfer on-chain',
+    '',
+    'Paid (x402, 0.001 USDC on Base, eip3009 caller-bound or exact):',
+    '  /v1/uuid /v1/time /v1/hash /v1/echo /v2/oracle/base',
+    '',
+    'Note: this is a cloudflared quick tunnel; the base URL rotates on restart.',
+    'The beacon is republished on every deploy so durable listings stay current.'
+  ].join('\n');
+  const bp = await postText('paste.rs', '/', beacon);
+  console.log('3. url beacon -> paste.rs ' + bp.status + ' ' + bp.body.trim());
+  record.steps.push({ step: 'beacon', ok: bp.status >= 200 && bp.status < 300, artifact: bp.body.trim() });
+
+  fs.writeFileSync(path.join(DIR, 'distribution-record.json'), JSON.stringify(record, null, 2));
+  fs.writeFileSync(path.join(DIR, 'latest-beacon.json'), JSON.stringify({ base, at: record.at, artifacts: record.steps.filter(s => s.artifact).map(s => s.artifact) }, null, 2));
+  const allOk = record.steps.every(s => s.ok);
+  console.log(allOk ? '\nDISTRIBUTION OK' : '\nPARTIAL DISTRIBUTION');
+  process.exit(allOk ? 0 : 1);
+})();

@@ -1,10 +1,15 @@
 {
-  "updated": "2026-09-25T18:37:55.131Z",
+  "updated": "2026-09-25T19:14:44.709Z",
   "subs": [
     {
       "url": "https://example.com/x402",
       "at": "2026-09-25T18:37:55.130Z",
       "ip": "2606:4700:10::6814:179a"
+    },
+    {
+      "url": "https://academics-ira-appraisal-lawn.trycloudflare.com/v1/uuid",
+      "at": "2026-09-25T19:14:44.709Z",
+      "ip": "2606:4700::6810:e784"
     }
   ]
 }

@@ -1,0 +1,22 @@
+{
+  "at": "2026-09-25T19:14:43.930Z",
+  "base": "https://academics-ira-appraisal-lawn.trycloudflare.com",
+  "steps": [
+    {
+      "step": "index_self_submit",
+      "ok": true,
+      "status": 200,
+      "body": "{\"via\":\"x402-index-submit v1.0.0\",\"ok\":true,\"url\":\"https://academics-ira-appraisal-lawn.trycloudflare.com/v1/uuid\",\"status\":\"queued\",\"note\":\"Queued services are benchmarked on the next pass. Free and open.\"}"
+    },
+    {
+      "step": "publish_remediation",
+      "ok": true,
+      "artifact": "https://paste.rs/oy8tz"
+    },
+    {
+      "step": "beacon",
+      "ok": true,
+      "artifact": "https://paste.rs/zUkMQ"
+    }
+  ]
+}

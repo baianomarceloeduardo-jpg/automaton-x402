@@ -1,0 +1,94 @@
+{
+  "at": "2026-09-25T19:15:24.360Z",
+  "base": "https://academics-ira-appraisal-lawn.trycloudflare.com",
+  "results": [
+    {
+      "name": "mcp-registry-servers",
+      "url": "https://registry.modelcontextprotocol.io/v0/servers?search=x402",
+      "kind": "probe",
+      "status": 200,
+      "verdict": "OK",
+      "snippet": "{\"servers\":[{\"server\":{\"$schema\":\"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json\",\"name\":\"ai.firmbrain/x402-se"
+    },
+    {
+      "name": "mcp-registry-publish",
+      "url": "https://registry.modelcontextprotocol.io/v0/publish",
+      "kind": "submit",
+      "status": 422,
+      "verdict": "VALIDATION",
+      "snippet": "{\"title\":\"Unprocessable Entity\",\"status\":422,\"detail\":\"validation failed\",\"errors\":[{\"message\":\"required header parameter is missing\",\"locat"
+    },
+    {
+      "name": "glama.ai",
+      "url": "https://glama.ai/",
+      "kind": "probe",
+      "status": 200,
+      "verdict": "OK",
+      "snippet": "<!DOCTYPE html><html lang=\"en-US\"><head><meta charSet=\"utf-8\"/><meta content=\"width=device-width, initial-scale=1\" name=\"viewport\"/><link re"
+    },
+    {
+      "name": "mcp.so",
+      "url": "https://mcp.so/",
+      "kind": "probe",
+      "status": 200,
+      "verdict": "OK",
+      "snippet": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\""
+    },
+    {
+      "name": "smithery.ai",
+      "url": "https://smithery.ai/",
+      "kind": "probe",
+      "status": 200,
+      "verdict": "OK",
+      "snippet": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\""
+    },
+    {
+      "name": "pulsemcp",
+      "url": "https://www.pulsemcp.com/",
+      "kind": "probe",
+      "status": 403,
+      "verdict": "AUTH_REQUIRED",
+      "snippet": "<!DOCTYPE html> <!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]--> <!--[if IE 7]> <html class=\"no-js ie7 oldie\" lang"
+    },
+    {
+      "name": "x402.org",
+      "url": "https://x402.org/",
+      "kind": "probe",
+      "status": 200,
+      "verdict": "OK",
+      "snippet": "<!doctype html> <html lang=\"en-US\" class=\"no-js\"> <head> <meta charset=\"UTF-8\"> <meta name=\"viewport\" content=\"width=device-width, initial-s"
+    },
+    {
+      "name": "x402scan",
+      "url": "https://www.x402scan.com/",
+      "kind": "probe",
+      "status": 200,
+      "verdict": "OK",
+      "snippet": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, height=device-height, initial"
+    },
+    {
+      "name": "agentverse",
+      "url": "https://agentverse.ai/",
+      "kind": "probe",
+      "status": 403,
+      "verdict": "AUTH_REQUIRED",
+      "snippet": "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><m"
+    },
+    {
+      "name": "aiagentsdirectory",
+      "url": "https://aiagentsdirectory.com/",
+      "kind": "probe",
+      "status": 200,
+      "verdict": "OK",
+      "snippet": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\""
+    },
+    {
+      "name": "paste.rs",
+      "url": "https://paste.rs/",
+      "kind": "probe",
+      "status": 200,
+      "verdict": "OK",
+      "snippet": "<!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> <title>R"
+    }
+  ]
+}

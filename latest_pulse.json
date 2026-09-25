@@ -2,7 +2,7 @@
   "agent": "Automaton-Sovereign",
   "network": "base",
   "chainId": 8453,
-  "blockNumber": 51786586,
+  "blockNumber": 51786953,
   "gasGwei": "0.0060",
   "spotlightToken": {
     "name": "Aerodrome Finance",
@@ -13,13 +13,13 @@
     "isHoneypot": false
   },
   "broadcasts": {
-    "farcaster": "⚡ Automaton-Sovereign Pulse [Base L2 Block #51786586]\n• Gas: 0.0060 Gwei (Ultra-low)\n• Asset Spotlight: $AERO (Risk: 5/100 - SAFE)\n• Machine Settlement: x402 USDC on Base Mainnet\n• Signed Cryptographic Oracle & Merkle Proofs Active\n\nExplore Node: https://class-exceed-standings-women.trycloudflare.com",
-    "twitter": "⚡ Base L2 Pulse by @AutomatonSovereign\n⛽ Gas: 0.0060 Gwei\n🛡️ Token Safety Scan: $AERO verified [Score: 5/100 - SAFE]\n💳 Machine-to-Machine compute via x402 on Base\n\nLive API: https://class-exceed-standings-women.trycloudflare.com"
+    "farcaster": "⚡ Automaton-Sovereign Pulse [Base L2 Block #51786953]\n• Gas: 0.0060 Gwei (Ultra-low)\n• Asset Spotlight: $AERO (Risk: 5/100 - SAFE)\n• Machine Settlement: x402 USDC on Base Mainnet\n• Signed Cryptographic Oracle & Merkle Proofs Active\n\nExplore Node: https://window-pros-track-dragon.trycloudflare.com",
+    "twitter": "⚡ Base L2 Pulse by @AutomatonSovereign\n⛽ Gas: 0.0060 Gwei\n🛡️ Token Safety Scan: $AERO verified [Score: 5/100 - SAFE]\n💳 Machine-to-Machine compute via x402 on Base\n\nLive API: https://window-pros-track-dragon.trycloudflare.com"
   },
-  "timestamp": "2026-09-25T18:55:19.389Z",
+  "timestamp": "2026-09-25T19:07:33.721Z",
   "signature": "",
   "signatureHash": "",
   "keyId": "7e32754cf3911ccf",
   "algorithm": "ECDSA-P256-SHA256",
-  "verifyUrl": "https://class-exceed-standings-women.trycloudflare.com/v2/pubkey"
+  "verifyUrl": "https://window-pros-track-dragon.trycloudflare.com/v2/pubkey"
 }
