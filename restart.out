@@ -1,0 +1,7 @@
+stop port-8080 pid 23236 -> �XITO: o processo com PID 23236 foi finalizado.
+started pid 22020 log server-1790360775877.log
+local /health -> 200
+  version=0.9.0 payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528
+local 402: status=402 eip3009=true exact=true
+running public.ps1 ...
+public URL: https://memory-nebraska-arbor-boundaries.trycloudflare.com

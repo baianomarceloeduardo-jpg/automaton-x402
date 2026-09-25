@@ -1,0 +1,5 @@
+BASE https://memory-nebraska-arbor-boundaries.trycloudflare.com
+PUBLIC /health -> 200
+PUBLIC /v1/uuid 402 -> 402  eip3009=true exact=true
+VERDICT DUAL-SCHEME LIVE PUBLICLY
+BEACON https://paste.rs/pMNSu

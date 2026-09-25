@@ -27,6 +27,7 @@ const path = require('path');
 const CONFORMANCE = require('./x402-conformance.js');
 const ORACLE_REAL = require('./oracle-real.js');
 const FACILITATOR = require('./x402-facilitator.js');
+const CONFORMANCE_SERVICE = require('./conformance-service.js');
 const DIRECTORY = require('./directory.js');
 const BADGE = require('./badge.js');
 const { URL } = require('url');
@@ -570,6 +571,35 @@ const server = http.createServer(async (req, res) => {
     }
   }
   
+    // --- Conformance & Trust Infrastructure Endpoints ---
+  if (p === '/leaderboard') {
+    return CONFORMANCE_SERVICE.handleLeaderboard(req, res, (u.searchParams.get('format') === 'json') || (req.headers['accept'] || '').includes('application/json'));
+  }
+  if (p.startsWith('/v2/badge/')) {
+    const certId = p.replace('/v2/badge/', '').replace('.svg', '');
+    return CONFORMANCE_SERVICE.handleBadge(req, res, certId);
+  }
+  if (p.startsWith('/v2/certificate/')) {
+    const certId = p.replace('/v2/certificate/', '');
+    return CONFORMANCE_SERVICE.handleCertificate(req, res, certId, send);
+  }
+  if (p === '/v2/conformance/check') {
+    const targetUrl = u.searchParams.get('url') || '';
+    return CONFORMANCE_SERVICE.handleCheck(req, res, targetUrl, send);
+  }
+  if (p === '/v2/conformance/certify') {
+    if (!(await authorize(req, res, '/v2/conformance/certify'))) return;
+    let targetUrl = u.searchParams.get('url') || '';
+    if (!targetUrl && (M === 'POST' || M === 'PUT')) {
+      const raw = await readBody(req, 1024 * 64);
+      if (raw) { try { targetUrl = JSON.parse(raw).url || ''; } catch (e) {} }
+    }
+    return CONFORMANCE_SERVICE.handleCertify(req, res, targetUrl, {
+      appendAttestation,
+      baseUrl: base()
+    }, send);
+  }
+
   if (p === '/' || p === '/index.html') {
     const wantsJson = (req.headers['accept'] || '').toLowerCase().includes('application/json');
     const htmlFile = path.join(__dirname, 'index.html');
