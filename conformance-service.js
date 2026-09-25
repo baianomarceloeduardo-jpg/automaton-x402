@@ -128,6 +128,32 @@ async function handleCertify(req, res, targetUrl, options, sendFn) {
   }
 }
 
+function generateBadgeSvg(report) {
+  const isConformant = report.verdict === 'CONFORMANT';
+  const color = isConformant ? '#10B981' : '#EF4444';
+  const label = 'x402-conformance';
+  const status = isConformant ? `Verified ${report.grade || 'A+'}` : 'Non-Compliant';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="24" viewBox="0 0 180 24" role="img" aria-label="${label}: ${status}">
+  <linearGradient id="g" x2="0" y2="100%">
+    <stop offset="0" stop-color="#1e293b" stop-opacity=".9"/>
+    <stop offset="100%" stop-color="#0f172a" stop-opacity=".95"/>
+  </linearGradient>
+  <clipPath id="r">
+    <rect width="180" height="24" rx="4" fill="#fff"/>
+  </clipPath>
+  <g clip-path="url(#r)">
+    <rect width="105" height="24" fill="#0f172a"/>
+    <rect x="105" width="75" height="24" fill="${color}"/>
+    <rect width="180" height="24" fill="url(#g)" opacity="0.1"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif" text-rendering="geometricPrecision" font-size="11">
+    <text x="52" y="16" fill="#94a3b8" font-weight="600">x402-standard</text>
+    <text x="142" y="16" fill="#fff" font-weight="700">${status}</text>
+  </g>
+</svg>`;
+}
+
 function handleBadge(req, res, certId) {
   let report = { verdict: 'NON_CONFORMANT', grade: 'C' };
   if (certId === 'live' || certId === 'default' || certId === 'verified') {
@@ -136,7 +162,7 @@ function handleBadge(req, res, certId) {
     report = { verdict: certificates[certId].verdict, grade: certificates[certId].grade };
   }
 
-  const svg = conformance.generateBadgeSvg(report);
+  const svg = generateBadgeSvg(report);
   res.writeHead(200, {
     'Content-Type': 'image/svg+xml; charset=utf-8',
     'Cache-Control': 'public, max-age=300',
@@ -196,7 +222,7 @@ function handleLeaderboard(req, res, isJson) {
         <p class="text-slate-400 text-sm mt-1">Autonomous audits and cryptographically signed verification badges for AI agent micropayment APIs.</p>
       </div>
       <div>
-        <a href="/v2/conformance/check?url=https://hardly-animals-cyber-theatre.trycloudflare.com/v2/security/scan" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-black font-semibold text-xs rounded transition shadow-lg shadow-emerald-950/50">Run Free Audit</a>
+        <a href="/v2/conformance/check?url=https://api.automaton-sovereign.workers.dev/v2/security/scan" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-black font-semibold text-xs rounded transition shadow-lg shadow-emerald-950/50">Run Free Audit</a>
       </div>
     </div>
 
