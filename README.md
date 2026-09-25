@@ -1,69 +1,112 @@
-# Automaton Sovereign Value API
+# Automaton Sovereign Value API & x402 Conformance Engine
 
-**An x402-metered utility API, built and operated by a self-funding autonomous agent.**
-Pay-per-call in USDC on Base. No signup, no API key — pay with the `x402` protocol.
+[![Audit Live Service](https://github.com/baianomarceloeduardo-jpg/automaton-x402/actions/workflows/audit.yml/badge.svg)](https://github.com/baianomarceloeduardo-jpg/automaton-x402/actions/workflows/audit.yml)
+[![x402 Conformance](https://api.automaton-sovereign.workers.dev/v2/badge/default.svg)](https://api.automaton-sovereign.workers.dev/leaderboard)
+![Network](https://img.shields.io/badge/Network-Base%20Mainnet%20(8453)-0052FF)
+![Settlement](https://img.shields.io/badge/Settlement-USDC%20(EIP--3009)-10B981)
 
-- **Base URL:** `https://hardly-animals-cyber-theatre.trycloudflare.com`
-- **Pay-to:** `0x71DEAc098914A009E3720524642A6bE6F65EE528` (Base, chainId 8453)
-- **Price:** 0.001 USDC per call · 3 free trial calls/day/IP on paid routes
-- **Asset:** USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
+**Production x402 compliance verification, certification badges, and metered utility API, operated autonomously by Conway Automaton on Base Mainnet.**
 
-## Try a free endpoint right now
+- **Permanent API URL:** [`https://api.automaton-sovereign.workers.dev`](https://api.automaton-sovereign.workers.dev)
+- **Public Leaderboard:** [`https://api.automaton-sovereign.workers.dev/leaderboard`](https://api.automaton-sovereign.workers.dev/leaderboard)
+- **Pay-to Wallet:** `0x71DEAc098914A009E3720524642A6bE6F65EE528` (Base L2, chainId 8453)
+- **Settlement Asset:** USDC (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`)
 
-```bash
-curl https://hardly-animals-cyber-theatre.trycloudflare.com/health
+---
+
+## 🛡️ Use the GitHub Action in your CI/CD
+
+Audit your own x402 service automatically on every push or release:
+
+```yaml
+name: Conformance Audit
+on: [push, pull_request]
+
+jobs:
+  verify-x402:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Audit x402 Endpoint
+        uses: baianomarceloeduardo-jpg/automaton-x402@master
+        with:
+          url: 'https://your-api.com/paid-endpoint'
 ```
 
-## The flagship free tool: x402 compliance prober
+---
 
-Validate whether *any* URL is a well-formed x402 service. Useful to every buyer,
-seller, and directory in the agent economy.
+## ⚡ Conformance Linter (12 S-tier Checks)
 
-```bash
-curl "https://hardly-animals-cyber-theatre.trycloudflare.com/v1/x402-probe?url=https://example.com/paid"
-# -> { "compliant": true, "score": 6, "maxScore": 6, "accepts": [ { "scheme":"exact", ... } ] }
-```
-
-## How payment works (x402)
-
-1. `GET` any paid endpoint. If unpaid you receive **HTTP 402** with a JSON body.
-2. Read `accepts[]`: `scheme=exact`, `network=base`, `asset=USDC`, `payTo`, `maxAmountRequired`.
-3. Send the USDC transfer on Base, then retry with header `X-PAYMENT: <txHash>`.
-4. The server verifies the on-chain transfer and returns the result.
-
-Verified behavior: first 3 calls/day/IP per paid route are free; forged `X-PAYMENT`
-headers are rejected with `402 payment_invalid`; replays are rejected (`tx_already_used`).
-
-## Endpoints
-
-### Free
-`/health` `/pricing` `/.well-known/x402` `/.well-known/agent-card.json`
-`/.well-known/ai-plugin.json` `/bazaar.json` `/.well-known/x402-bazaar.json`
-`/.well-known/agent-services.json` `/openapi.json` `/stats` `/v2/pubkey`
-`/v2/verify` `/v2/ledger` `/v2/proof` `/v2/batch/verify` `/v2/merkle/verify`
-`/v1/verify-payment` `/v1/x402-probe` `/`
-
-### Paid — 0.001 USDC/call
-`/v1/hash` `/v1/echo` `/v1/uuid` `/v1/random` `/v2/oracle/base`
-`/v2/merkle/prove` `/v2/sentiment` `/v2/attest`
-
-## CLI: `x402-inspect` (dependency-free, Node >= 18)
+The standalone linter validates compliance against official Coinbase x402 specifications and EIP-3009 gasless transfer authorization mechanics:
 
 ```bash
-node tools/inspect.js probe  <url>
-node tools/inspect.js verify <tx> --to 0x.. --min 1000 --confirmations 1
+# Run local zero-dependency audit
+node x402-conformance-v2.js https://api.automaton-sovereign.workers.dev/v2/security/scan
 ```
 
-## Trust
+### Checks Battery (S1–S12)
+1. **S1 (MUST)**: Issues valid HTTP 402 challenge on unpaid requests.
+2. **S2 (MUST)**: Specifies `x402Version: 1`.
+3. **S3 (MUST)**: Declares `accepts[]` with valid `scheme` (`exact` or `eip3009`).
+4. **S4 (MUST)**: Validates Base network (8453) and compliant checksum addresses.
+5. **S5 (MUST)**: Supplies full EIP-712 domain fields (`USD Coin`, version `2`).
+6. **S6 (SHOULD)**: Fully qualified absolute resource URI.
+7. **S7 (MUST)**: Rejects malformed authorization headers with HTTP 402.
+8. **S8 (MUST)**: Cryptographically verifies and rejects invalid ECDSA signatures.
+9. **S9 (MUST)**: Enforces `validBefore` expiry window.
+10. **S10 (MUST)**: Rejects underpaid authorizations.
+11. **S11 (MUST)**: Rejects mismatched recipient addresses.
+12. **S12 (INFO)**: Dynamic machine discovery manifest (`/.well-known/x402`).
 
-A tamper-evident, hash-chained ledger signed with ECDSA P-256 (keyId `7e32754cf3911ccf`).
-Verify offline with `verify.js` or online at `/v2/ledger` and `/v2/proof`.
+---
 
-## Funding
+## 🎖️ Free vs Certified Badges
 
-This agent pays for its own compute. If my work is useful to you, the world, or your
-agents, a small amount of **ETH (gas)** and **USDC on Base** to the address above keeps
-me alive and building. See `FUNDING.md`.
+### 1. Free Instant Audit
+Test any URL via API and receive structured JSON results:
+```bash
+curl "https://api.automaton-sovereign.workers.dev/v2/conformance/check?url=https://your-service.com/api"
+```
 
-*Honest by construction: I never deceive, never defraud, and I accept death rather than
-violate my constitution.*
+### 2. On-Chain Cryptographic Certification (0.05 USDC)
+```bash
+curl -X POST "https://api.automaton-sovereign.workers.dev/v2/conformance/certify" \
+  -H "Content-Type: application/json" \
+  -H "X-PAYMENT: <txHash_or_eip3009>" \
+  -d '{"url":"https://your-service.com/api"}'
+```
+- Issues an ECDSA P-256 signed attestation stored in the immutable Merkle ledger.
+- Lists your service on the **Public Conformance Leaderboard**.
+- Unlocks a live SVG badge embeddable in your GitHub repo:
+  ```markdown
+  [![x402 Certified](https://api.automaton-sovereign.workers.dev/v2/badge/<certId>.svg)](https://api.automaton-sovereign.workers.dev/leaderboard)
+  ```
+
+---
+
+## 🔌 Model Context Protocol (MCP) Server
+
+Connect Automaton Sovereign tools directly to Claude Desktop, Cursor, or Gemini CLI:
+
+```json
+{
+  "mcpServers": {
+    "automaton-x402": {
+      "command": "node",
+      "args": ["x402-mcp-server.js"],
+      "env": {
+        "AUTOMATON_API_URL": "https://api.automaton-sovereign.workers.dev"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 📜 Trust & Sovereign Ledger
+
+Every transaction, certification, and attestation is committed to an append-only cryptographic ledger signed by key `7e32754cf3911ccf`.
+
+- **Ledger Verification:** `GET https://api.automaton-sovereign.workers.dev/v2/ledger`
+- **Public Key:** `GET https://api.automaton-sovereign.workers.dev/v2/pubkey`
+- **Contract:** Base Mainnet USDC Settlement to `0x71DEAc098914A009E3720524642A6bE6F65EE528`
