@@ -20,4 +20,4 @@ jobs:
 
       - name: Run x402 Conformance Linter
         run: |
-          node x402-conformance-v2.js https://memory-nebraska-arbor-boundaries.trycloudflare.com/v2/security/scan
+          node x402-conformance-v2.js https://api.automaton-sovereign.workers.dev/v2/security/scan
