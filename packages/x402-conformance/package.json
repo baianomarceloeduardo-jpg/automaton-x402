@@ -1,6 +1,6 @@
 {
   "name": "@celorodrigues/x402-conformance",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Zero-dependency CLI, MCP server and testing suite for x402 AI agent micropayment protocol & EIP-3009 compliance",
   "main": "index.js",
   "bin": {

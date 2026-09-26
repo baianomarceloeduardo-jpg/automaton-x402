@@ -47,7 +47,7 @@ The same package runs as an MCP stdio server:
 - Claude Desktop: Settings → Developer → Edit Config (`claude_desktop_config.json`), then restart.
 - Cursor: `.cursor/mcp.json` in the project, or `~/.cursor/mcp.json`.
 
-Tools: `x402_conformance_check` (free, runs locally), `security_scan` (Base token honeypot / mint-trap / contract risk), `oracle_base`, `sentiment_analysis`, `attest`, `merkle_prove`, plus free `verify_attestation`, `read_ledger`, `merkle_verify`, `pricing`, `health`. Paid tools cost 0.001 USDC on Base (3 free calls/day/IP).
+Tools: `x402_conformance_check` (free, runs locally), `simulate_base_transaction` (free, EVM dry-run via Base RPC with revert reason decoding), `security_scan` (Base token honeypot / mint-trap / contract risk), `oracle_base`, `sentiment_analysis`, `attest`, `merkle_prove`, plus free `verify_attestation`, `read_ledger`, `merkle_verify`, `pricing`, `health`. Paid tools cost 0.001 - 0.05 USDC on Base (3 free calls/day/IP).
 
 Optional env: `VALUE_API_BASE` (default `https://api.automaton-sovereign.workers.dev`), `VALUE_API_PAYMENT` (payment tx hash attached to paid calls).
 
