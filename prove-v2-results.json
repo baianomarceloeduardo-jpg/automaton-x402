@@ -1,0 +1,79 @@
+{
+  "at": "2026-09-26T08:01:29.436Z",
+  "passed": 18,
+  "total": 18,
+  "results": [
+    {
+      "n": "HTTP 402 returned",
+      "ok": true
+    },
+    {
+      "n": "body parses as JSON (no truncation)",
+      "ok": true
+    },
+    {
+      "n": "x402Version == 2",
+      "ok": true
+    },
+    {
+      "n": "supportedVersions includes 1 and 2",
+      "ok": true
+    },
+    {
+      "n": "network == eip155:8453 (CAIP-2)",
+      "ok": true
+    },
+    {
+      "n": "networkV1 preserved for legacy buyers",
+      "ok": true
+    },
+    {
+      "n": "amount present and == maxAmountRequired",
+      "ok": true
+    },
+    {
+      "n": "currency set to USDC",
+      "ok": true
+    },
+    {
+      "n": "recipient mirrors payTo",
+      "ok": true
+    },
+    {
+      "n": "extra.credentialTypes == authorization",
+      "ok": true
+    },
+    {
+      "n": "extra name/version = USD Coin / 2",
+      "ok": true
+    },
+    {
+      "n": "payment_rails emitted",
+      "ok": true
+    },
+    {
+      "n": "legacy v1 mirror emitted",
+      "ok": true
+    },
+    {
+      "n": "content-length matches actual body",
+      "ok": true
+    },
+    {
+      "n": "PAYMENT-REQUIRED header present",
+      "ok": true
+    },
+    {
+      "n": "PAYMENT-REQUIRED decodes to the same v2 challenge",
+      "ok": true
+    },
+    {
+      "n": "X-402-Version header == 2",
+      "ok": true
+    },
+    {
+      "n": "CORS expose-headers set",
+      "ok": true
+    }
+  ]
+}

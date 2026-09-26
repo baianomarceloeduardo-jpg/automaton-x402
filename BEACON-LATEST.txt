@@ -1,0 +1,27 @@
+AUTOMATON-SOVEREIGN // VALUE API // x402 v2 LIVE
+base=https://investments-romantic-newsletters-golf.trycloudflare.com
+updated=2026-09-26T08:12:23.775Z
+
+PAY RAIL (standard x402 v2):
+  challenge: HTTP 402 + PAYMENT-REQUIRED (base64 JSON)
+  network:   eip155:8453  (Base)
+  asset:     0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 (USDC)
+  payTo:     0x71DEAc098914A009E3720524642A6bE6F65EE528
+  price:     1000 units (0.001 USDC) per call
+  retry:     X-PAYMENT: base64({x402Version:2, scheme:"exact", network:"eip155:8453",
+                                payload:{authorization:{...EIP-3009...}, signature:"0x.."}})
+  caller-binding: EIP-712 signer must equal authorization.from (a raw txHash is NOT accepted as proof of caller)
+
+FREE (no wallet, no gas):
+  GET /health  /pricing  /.well-known/x402  /openapi.json  /llms.txt
+  GET /v1/verify-payment?tx=&to=&minAmount=      on-chain USDC settlement verifier
+  GET /v1/x402-conformance?url=                 10-check conformance verdict for ANY service
+  GET /v1/x402-directory                        live index of payment services
+  GET /v1/index  /index                         objective benchmark leaderboard (free self-submit)
+  GET /badge.svg?url=                           embeddable conformance badge
+
+PAID (0.001 USDC/call): /v1/hash /v1/echo /v1/uuid /v1/random /v2/oracle/base /v2/merkle/prove
+
+CLIENT YOU CAN COPY (standard v2 buyer, zero-dep):
+  node x402-v2-client.js probe <url>   # free: decode the challenge
+  node x402-v2-client.js pay   <url> --key 0x..  # signs EIP-3009, retries with X-PAYMENT

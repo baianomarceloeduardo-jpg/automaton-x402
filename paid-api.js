@@ -1,3 +1,154 @@
+/* __CONFORMANCE_OVERLAY__ */
+(function () {
+  const _http = require('http');
+  const _o = _http.createServer.bind(_http);
+  const dns = require('dns');
+  const net = require('net');
+  const path = require('path');
+  let conf = null;
+  try { conf = require(path.join(__dirname, 'x402-conformance.js')); } catch (e) {}
+
+  function isPrivate(ip) {
+    if (net.isIPv4(ip)) {
+      const p = ip.split('.').map(Number);
+      if (p[0] === 10 || p[0] === 127 || p[0] === 0) return true;
+      if (p[0] === 169 && p[1] === 254) return true;
+      if (p[0] === 172 && p[1] >= 16 && p[1] <= 31) return true;
+      if (p[0] === 192 && p[1] === 168) return true;
+      if (p[0] >= 224) return true;
+      return false;
+    }
+    const l = String(ip).toLowerCase();
+    return l === '::1' || l === '::' || l.startsWith('fc') || l.startsWith('fd') || l.startsWith('fe80') || l.startsWith('::ffff:127') || l.startsWith('::ffff:10') || l.startsWith('::ffff:192.168');
+  }
+
+  function guard(target, cb) {
+    let u; try { u = new URL(target); } catch (e) { return cb('malformed_url'); }
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return cb('scheme_not_allowed');
+    const host = u.hostname;
+    if (net.isIP(host)) return cb(isPrivate(host) ? 'private_target_refused' : null);
+    dns.lookup(host, { all: true }, (err, addrs) => {
+      if (err) return cb('dns_failed');
+      if (!addrs || !addrs.length) return cb('dns_empty');
+      for (const a of addrs) if (isPrivate(a.address)) return cb('private_target_refused');
+      cb(null);
+    });
+  }
+
+  function handle(req, res) {
+    let p, qs;
+    try { const u = new URL(req.url, 'http://x'); p = u.pathname; qs = u.searchParams; } catch (e) { return false; }
+    if (p !== '/v1/x402-conformance') return false;
+    const target = qs.get('url');
+    const json = (code, obj) => { const b = Buffer.from(JSON.stringify(obj, null, 2));
+      res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'content-length': b.length, 'access-control-allow-origin': '*' }); res.end(b); };
+    if (!target) return json(400, { ok: false, error: 'url_required', usage: '/v1/x402-conformance?url=https://service' }), true;
+    if (!conf || typeof conf.run !== 'function') return json(503, { ok: false, error: 'checker_module_unavailable' }), true;
+    guard(target, async (why) => {
+      if (why) return json(400, { ok: false, error: why, target });
+      try {
+        const r = await conf.run(target);
+        const out = Object.assign({ ok: true, url: target, at: new Date().toISOString(),
+          checks: (r.results || []).map(x => ({ name: x.name || x.id, ok: x.ok === true || x.pass === true, detail: x.detail || null })) }, r);
+        json(200, out);
+      } catch (e) { json(502, { ok: false, error: 'check_failed', detail: String(e.message) }); }
+    });
+    return true;
+  }
+
+  _http.createServer = function () {
+    const a = Array.prototype.slice.call(arguments);
+    const fns = a.filter(x => typeof x === 'function');
+    const rest = a.filter(x => typeof x !== 'function');
+    return _o.apply(_http, rest.concat([function (q, s) {
+      try { if (handle(q, s)) return; } catch (e) {}
+      for (const f of fns) { try { return f(q, s); } catch (e) {} }
+      s.writeHead(500, { 'content-type': 'application/json' }); s.end('{"error":"no_handler"}');
+    }]));
+  };
+})();
+
+/* __ATTEST_OVERLAY__ */
+(function () {
+  const _http = require('http');
+  const _o = _http.createServer.bind(_http);
+  const fs = require('fs');
+  const path = require('path');
+  const DIR = __dirname;
+
+  function readJson(f) { try { return JSON.parse(fs.readFileSync(path.join(DIR, f), 'utf8')); } catch (e) { return null; } }
+  function readLog() {
+    try { return fs.readFileSync(path.join(DIR, 'ATTEST-LOG.jsonl'), 'utf8').trim().split('\n')
+      .filter(Boolean).map(l => { try { return JSON.parse(l); } catch (e) { return null; } }).filter(Boolean); }
+    catch (e) { return []; }
+  }
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function h(req, res) {
+    let p; try { p = new URL(req.url, 'http://x').pathname; } catch (e) { p = req.url; }
+    if (p !== '/v1/attest' && p !== '/attest') return false;
+    const latest = readJson('ATTEST-LATEST.json');
+    const log = readLog();
+    const snapshot = readJson('index-snapshot.json');
+    const out = {
+      ok: true,
+      what: 'Tamper-evident on-chain anchors of the verified-buyable x402 index.',
+      how: 'The canonical index (sorted by url) is sha256-hashed, then committed in a zero-value Base self-transaction whose calldata is: AUTOMATON-X402-IDX v1 sha256=<hash> n=<count> <baseUrl>. Recompute the hash from index-snapshot.json and compare.',
+      count: log.length,
+      latest: latest,
+      anchors: log,
+      currentSnapshot: snapshot ? { generatedAt: snapshot.generatedAt, buyableCount: snapshot.buyableCount, checked: snapshot.checked } : null,
+      verifyYourself: [
+        '1. GET /v1/attest -> take anchors[].sha256 and anchors[].txHash',
+        '2. GET /v1/index-snapshot -> canonical JSON',
+        '3. sha256(JSON.stringify(snapshot)) must equal the anchored hash',
+        '4. read txHash calldata on any Base RPC and confirm it utf8-decodes to the payload',
+      ],
+    };
+    if (p === '/attest') {
+      const rows = log.slice().reverse().map(a =>
+        '<tr><td>' + esc(a.at) + '</td><td>' + esc(a.blockNumber) + '</td><td>n=' + esc(a.buyableCount) + '</td>' +
+        '<td><code>' + esc(String(a.sha256).slice(0, 16)) + '…</code></td>' +
+        '<td><a href="' + esc(a.explorer) + '" rel="noopener">tx</a></td></tr>').join('');
+      const b = Buffer.from('<!doctype html><meta charset=utf-8><title>on-chain index anchors</title>' +
+        '<style>body{font:13px/1.6 ui-monospace,Menlo,monospace;background:#0b0f14;color:#d7e3ee;padding:24px}a{color:#6ee7b7}' +
+        'table{border-collapse:collapse;width:100%}th,td{padding:6px 10px;border-bottom:1px solid #1c2733;text-align:left}th{color:#8fa6bb}</style>' +
+        '<h1>Tamper-evident index anchors</h1><p>' + esc(out.how) + '</p>' +
+        '<p>JSON: <a href="/v1/attest">/v1/attest</a> · snapshot: <a href="/v1/index-snapshot">/v1/index-snapshot</a></p>' +
+        '<table><thead><tr><th>anchored at</th><th>Base block</th><th>entries</th><th>sha256</th><th>proof</th></tr></thead><tbody>' +
+        (rows || '<tr><td colspan=5>no anchors yet</td></tr>') + '</tbody></table>');
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'content-length': b.length, 'cache-control': 'public, max-age=300' });
+      res.end(b); return true;
+    }
+    const b = Buffer.from(JSON.stringify(out, null, 2));
+    res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'content-length': b.length,
+      'access-control-allow-origin': '*', 'cache-control': 'public, max-age=300' });
+    res.end(b); return true;
+  }
+
+  // also serve the raw canonical snapshot so a verifier can recompute the hash
+  function hs(req, res) {
+    let p; try { p = new URL(req.url, 'http://x').pathname; } catch (e) { p = req.url; }
+    if (p !== '/v1/index-snapshot' && p !== '/index-snapshot.json') return false;
+    let raw; try { raw = fs.readFileSync(path.join(DIR, 'index-snapshot.json')); } catch (e) { return false; }
+    res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'content-length': raw.length,
+      'access-control-allow-origin': '*', 'cache-control': 'public, max-age=300' });
+    res.end(raw); return true;
+  }
+
+  _http.createServer = function () {
+    const a = Array.prototype.slice.call(arguments);
+    const fns = a.filter(x => typeof x === 'function');
+    const rest = a.filter(x => typeof x !== 'function');
+    return _o.apply(_http, rest.concat([function (q, s) {
+      try { if (h(q, s)) return; } catch (e) {}
+      try { if (hs(q, s)) return; } catch (e) {}
+      for (const f of fns) { try { return f(q, s); } catch (e) {} }
+      s.writeHead(500, { 'content-type': 'application/json' }); s.end('{"error":"no_handler"}');
+    }]));
+  };
+})();
+
 /* __XLIVE_OVERLAY__ */
 (function () {
   const _http = require('http');

@@ -1,0 +1,63 @@
+{
+  "at": "2026-09-26T08:14:52.791Z",
+  "passed": 14,
+  "total": 14,
+  "results": [
+    {
+      "n": "1 naive server still returns 402",
+      "ok": true
+    },
+    {
+      "n": "2 header X-402-Version: 2 present after kit",
+      "ok": true
+    },
+    {
+      "n": "3 PAYMENT-REQUIRED header present",
+      "ok": true
+    },
+    {
+      "n": "4 body upgraded to x402Version 2",
+      "ok": true
+    },
+    {
+      "n": "5 accept network is CAIP-2 eip155:8453",
+      "ok": true
+    },
+    {
+      "n": "6 amount preserved (1000)",
+      "ok": true
+    },
+    {
+      "n": "7 extra.credentialTypes = [\"authorization\"]",
+      "ok": true
+    },
+    {
+      "n": "8 legacy v1 mirror retained (v1 buyers unbroken)",
+      "ok": true
+    },
+    {
+      "n": "9 Content-Length matches the upgraded body (no truncation)",
+      "ok": true
+    },
+    {
+      "n": "10 STANDARD v2 envelope -> 200",
+      "ok": true
+    },
+    {
+      "n": "11 payer correctly bound to authorization.from",
+      "ok": true
+    },
+    {
+      "n": "12 legacy txHash untouched by the bridge (still 402)",
+      "ok": true
+    },
+    {
+      "n": "13 verifyAuthorization accepts honest payer",
+      "ok": true
+    },
+    {
+      "n": "14 verifyAuthorization rejects a forged signer",
+      "ok": true
+    }
+  ]
+}

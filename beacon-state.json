@@ -1,10 +1,33 @@
 {
-  "base": "https://black-expenses-runtime-proposal.trycloudflare.com",
-  "updatedAt": "2026-09-26T03:14:41.869Z",
-  "routes": [
-    "/v1/gasfree-quote",
-    "/v1/gasfree-verify",
-    "/v1/gasfree-module",
-    "/gasfree"
-  ]
+  "base": "https://actress-wages-retirement-surface.trycloudflare.com",
+  "published": "2026-09-26T08:47:16.972Z",
+  "beaconUrl": "https://paste.rs/Whc7d",
+  "checks": {
+    "/health": {
+      "status": 200,
+      "ct": "application/json",
+      "bytes": 254
+    },
+    "/pricing": {
+      "status": 200,
+      "ct": "application/json",
+      "bytes": 6424
+    },
+    "/x402-v2-kit.js": {
+      "status": 200,
+      "ct": "application/javascript",
+      "bytes": 12066
+    },
+    "/v1/x402-v2-kit": {
+      "status": 200,
+      "ct": "application/json",
+      "bytes": 3105
+    },
+    "/v1/hash": {
+      "status": 402,
+      "ct": "application/json",
+      "bytes": 3303
+    }
+  },
+  "beaconBytes": 1437
 }

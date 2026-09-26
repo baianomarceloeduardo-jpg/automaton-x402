@@ -1,0 +1,47 @@
+{"at":"2026-09-26T07:55:52.131Z","event":"buyer_start","payer":"0x71DEAc098914A009E3720524642A6bE6F65EE528","dry":true,"maxUnits":"1000","maxPurchases":2}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","ok":true,"dry":true,"wouldSend":{"to":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000"}}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","ok":true,"dry":true,"wouldSend":{"to":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000"}}
+{"event":"buyer_done","purchasesAttempted":2,"purchasesSucceeded":0}
+{"at":"2026-09-26T07:55:58.111Z","event":"buyer_start","payer":"0x71DEAc098914A009E3720524642A6bE6F65EE528","dry":true,"maxUnits":"1000","maxPurchases":2}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","ok":true,"dry":true,"wouldSend":{"to":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000"}}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","ok":true,"dry":true,"wouldSend":{"to":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000"}}
+{"event":"buyer_done","purchasesAttempted":2,"purchasesSucceeded":0}
+{"at":"2026-09-26T07:55:59.642Z","event":"buyer_start","payer":"0x71DEAc098914A009E3720524642A6bE6F65EE528","dry":false,"maxUnits":"1000","maxPurchases":1}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","ok":true,"txHash":"0x70bd73b93cab38b9f420aada15aa715d6a53e3fcf9643898eb01f9064f52a986","block":51810008,"status":1}
+{"event":"purchase_rejected","url":"https://api.onesource.io/api/chain/block-number","status":400,"bodyHead":"{\"error\":\"invalid_payment\",\"message\":\"Invalid payment header: invalid base64: illegal base64 data at input byte 64\"}\n"}
+{"event":"buyer_done","purchasesAttempted":1,"purchasesSucceeded":0}
+{"at":"2026-09-26T07:56:06.732Z","event":"buyer_start","payer":"0x71DEAc098914A009E3720524642A6bE6F65EE528","dry":true,"maxUnits":"1000","maxPurchases":2}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","ok":true,"dry":true,"wouldSend":{"to":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000"}}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","ok":true,"dry":true,"wouldSend":{"to":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000"}}
+{"event":"buyer_done","purchasesAttempted":2,"purchasesSucceeded":0}
+{"at":"2026-09-26T07:56:08.444Z","event":"buyer_start","payer":"0x71DEAc098914A009E3720524642A6bE6F65EE528","dry":false,"maxUnits":"1000","maxPurchases":1}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","ok":true,"txHash":"0x310124f065ed7d077b9452d9da141a27b0744f9af698f44c6a346bacb2fa7615","block":51810013,"status":1}
+{"event":"purchase_rejected","url":"https://api.onesource.io/api/chain/block-number","status":400,"bodyHead":"{\"error\":\"invalid_payment\",\"message\":\"Invalid payment header: invalid base64: illegal base64 data at input byte 64\"}\n"}
+{"event":"buyer_done","purchasesAttempted":1,"purchasesSucceeded":0}
+{"at":"2026-09-26T07:56:15.895Z","event":"buyer_start","payer":"0x71DEAc098914A009E3720524642A6bE6F65EE528","dry":false,"maxUnits":"1000","maxPurchases":2}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","ok":true,"txHash":"0x2fd8ab3355ae0a0a729bbed87913b0e36e08237f9a3f4517efc892d668f76e30","block":51810017,"status":1}
+{"event":"purchase_rejected","url":"https://api.onesource.io/api/chain/block-number","status":400,"bodyHead":"{\"error\":\"invalid_payment\",\"message\":\"Invalid payment header: invalid base64: illegal base64 data at input byte 64\"}\n"}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","ok":true,"txHash":"0x13068b89635e9475bb1a8cb131303f0aca6a33a2aef542c54c00ba9ac10e731d","block":51810020,"status":1}
+{"event":"purchase_rejected","url":"https://api.onesource.io/api/chain/network-info","status":400,"bodyHead":"{\"error\":\"invalid_payment\",\"message\":\"Invalid payment header: invalid base64: illegal base64 data at input byte 64\"}\n"}
+{"event":"buyer_done","purchasesAttempted":2,"purchasesSucceeded":0}
+{"at":"2026-09-26T07:56:33.599Z","event":"buyer_start","payer":"0x71DEAc098914A009E3720524642A6bE6F65EE528","dry":true,"maxUnits":"1000","maxPurchases":2}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","ok":true,"dry":true,"wouldSend":{"to":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000"}}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/network-info","scheme":"exact","ok":true,"dry":true,"wouldSend":{"to":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000"}}
+{"event":"buyer_done","purchasesAttempted":2,"purchasesSucceeded":0}
+{"at":"2026-09-26T07:56:40.025Z","event":"buyer_start","payer":"0x71DEAc098914A009E3720524642A6bE6F65EE528","dry":false,"maxUnits":"1000","maxPurchases":1}
+{"event":"target_selected","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","payTo":"0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea","units":"1000","priceUsdc":0.001,"liveChallenge":true}
+{"event":"payment_sent","url":"https://api.onesource.io/api/chain/block-number","scheme":"exact","ok":true,"txHash":"0xcec5c6358f01def3072cf6279c42a498018f9f7932b514b590f69ffd0deb2217","block":51810029,"status":1}
+{"event":"purchase_rejected","url":"https://api.onesource.io/api/chain/block-number","status":400,"bodyHead":"{\"error\":\"invalid_payment\",\"message\":\"Invalid payment header: invalid base64: illegal base64 data at input byte 64\"}\n"}
+{"event":"buyer_done","purchasesAttempted":1,"purchasesSucceeded":0}

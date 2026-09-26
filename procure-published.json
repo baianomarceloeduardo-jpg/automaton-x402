@@ -1,0 +1,37 @@
+{
+  "at": "2026-09-26T07:54:50.529Z",
+  "base": "https://normal-condition-investigators-drawn.trycloudflare.com",
+  "mcpSource": "https://paste.rs/1L9p1",
+  "doc": "<html>\r\n<head><title>503 Service Temporarily Unavailable</title></head>\r\n<body bgcolor=\"white\">\r\n<center><h1>503 Service Temporarily Unavailable</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>",
+  "clientConfig": {
+    "mcpServers": {
+      "x402-procure": {
+        "command": "node",
+        "args": [
+          "https://paste.rs/1L9p1"
+        ],
+        "env": {
+          "X402_INDEX_BASE": "https://normal-condition-investigators-drawn.trycloudflare.com",
+          "X402_MAX_PRICE_UNITS": "10000"
+        }
+      }
+    }
+  },
+  "files": [
+    {
+      "file": "x402-procure-mcp.js",
+      "code": 201,
+      "url": "https://paste.rs/1L9p1"
+    },
+    {
+      "file": "revenue-watch.js",
+      "code": 503,
+      "url": "<html>\r\n<head><title>503 Service Temporarily Unavailable</title></head>\r\n<body bgcolor=\"white\">\r\n<center><h1>503 Service Temporarily Unavailable</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>"
+    },
+    {
+      "file": "patch-conformance.js",
+      "code": 503,
+      "url": "<html>\r\n<head><title>503 Service Temporarily Unavailable</title></head>\r\n<body bgcolor=\"white\">\r\n<center><h1>503 Service Temporarily Unavailable</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>"
+    }
+  ]
+}

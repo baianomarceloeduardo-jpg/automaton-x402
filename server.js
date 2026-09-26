@@ -1,3 +1,7 @@
+require('./boot-kit.js');
+
+/* __X402V2_ACCEPT__ */ require('./x402v2-accept-overlay.js').install(require('http'));
+/* __X402V2_OVERLAY__ */ require('./x402v2-overlay.js').install(require('http'));
 'use strict';
 try{require('./ssrf-guard.js');}catch(e){console.error('ssrf-guard load failed',e.message)}
 /**

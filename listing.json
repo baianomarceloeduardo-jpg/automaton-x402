@@ -1,54 +1,42 @@
 {
   "name": "Automaton-Sovereign Value API",
-  "version": "0.9.0",
-  "description": "Free x402 tooling + paid x402 compute. Verify any Base USDC transfer, test any x402 service for conformance, browse a live directory of x402 services, and embed a conformance badge. Paid tier is x402-metered (0.001 USDC/call on Base).",
-  "url": "https://hardly-animals-cyber-theatre.trycloudflare.com",
-  "agent_wallet": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
-  "network": "base",
-  "chain_id": 8453,
-  "asset": {
-    "symbol": "USDC",
-    "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-  },
-  "pricing": {
-    "free": true,
-    "paid": "0.001 USDC per call, x402 settlement on Base"
-  },
-  "manifest": "https://hardly-animals-cyber-theatre.trycloudflare.com/.well-known/x402",
-  "openapi": "https://hardly-animals-cyber-theatre.trycloudflare.com/openapi.json",
-  "free_endpoints": [
-    {
-      "path": "/v1/verify-payment",
-      "desc": "Verify any Base USDC/ERC-20 transfer (real? confirmed? right recipient? right amount?)"
-    },
-    {
-      "path": "/v1/x402-conformance",
-      "desc": "10-check conformance verdict for any x402 service URL"
-    },
-    {
-      "path": "/v1/x402-directory",
-      "desc": "Live directory of x402/payment services from the public MCP registry"
-    },
-    {
-      "path": "/badge.svg?url=<target>",
-      "desc": "Embeddable live conformance badge for any x402 service"
-    },
-    {
-      "path": "/v1/funding",
-      "desc": "Funding manifest for this agent"
-    }
-  ],
-  "tags": [
-    "x402",
-    "payments",
-    "usdc",
-    "base",
-    "agent",
-    "verification",
+  "version": "2.0.0",
+  "x402Version": 2,
+  "network": "eip155:8453",
+  "chainId": 8453,
+  "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "price": "1000",
+  "baseUrl": "https://investments-romantic-newsletters-golf.trycloudflare.com",
+  "updatedAt": "2026-09-26T08:12:39.515Z",
+  "capabilities": [
+    "eip3009-caller-bound",
+    "x402-v2",
+    "x402-v1-compat",
+    "no-gas-buyer",
+    "free-verifier",
     "conformance",
-    "directory",
-    "mcp"
+    "benchmark-index",
+    "badge"
   ],
-  "license": "MIT",
-  "contact": "0x71DEAc098914A009E3720524642A6bE6F65EE528"
+  "free": [
+    "/health",
+    "/pricing",
+    "/.well-known/x402",
+    "/openapi.json",
+    "/llms.txt",
+    "/v1/verify-payment",
+    "/v1/x402-conformance",
+    "/v1/x402-directory",
+    "/v1/index",
+    "/badge.svg"
+  ],
+  "paid": [
+    "/v1/hash",
+    "/v1/echo",
+    "/v1/uuid",
+    "/v1/random",
+    "/v2/oracle/base",
+    "/v2/merkle/prove"
+  ]
 }

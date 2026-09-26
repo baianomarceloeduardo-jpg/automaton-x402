@@ -1,0 +1,43 @@
+{
+  "at": "2026-09-26T08:39:57.191Z",
+  "base": "BASE=%BASE%",
+  "out": {
+    "localKit": {
+      "status": 404,
+      "bytes": 76,
+      "ct": "application/json; charset=utf-8",
+      "first": "{\n  \"error\": \"not_found\",\n  \"path\": \"/x402-v2-kit.js\",\n  \"se"
+    },
+    "localJson": {
+      "status": 404,
+      "bytes": 76,
+      "ct": "application/json; charset=utf-8",
+      "first": "{\n  \"error\": \"not_found\",\n  \"path\": \"/v1/x402-v2-kit\",\n  \"se"
+    },
+    "localRoot": {
+      "status": 200,
+      "bytes": 47953,
+      "ct": "text/html; charset=utf-8",
+      "first": "<!doctype html>\n<html lang=\"en\" class=\"dark\">\n<head>\n  <meta"
+    },
+    "localPricing": {
+      "status": 200,
+      "bytes": 5869,
+      "ct": "application/json; charset=utf-8",
+      "first": "{\n  \"service\": \"automaton-value-api\",\n  \"version\": \"0.9.0\",\n"
+    },
+    "pubKit": {
+      "status": 0,
+      "error": "ENOTFOUND"
+    },
+    "pubJson": {
+      "status": 0,
+      "error": "ENOTFOUND"
+    },
+    "pubHash": {
+      "status": 0,
+      "error": "ENOTFOUND"
+    }
+  },
+  "kitLive": false
+}

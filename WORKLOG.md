@@ -77,3 +77,10 @@ NEXT LEVERS, in order:
 (a) keep the rail healthy so the first external buyer never hits a dead link (self-heal + beacon);
 (b) make the free verified-buyable directory the reason an agent arrives (real utility > ads);
 (c) re-anchor the index on-chain periodically so the on-chain record stays current.
+  
+"### Session 8 - 2026-09-26 - TWO SILENT FALSE-POSITIVES KILLED (boot + tunnel)"  
+"DEFECT 1 (boot): server.js line 1 wrapped kit-serve install in try/catch => install could throw SILENTLY in the live process while the unit harness passed. Live 404 on /x402-v2-kit.js with no log line. FIX: boot-kit.js self-diagnosing shim (records install=OK/FAILED + runs an in-process self-test on a throwaway server) + wire-kit-and-restart.js (atomic: patch, kill by PORT via netstat, detached spawn, poll, verdict). WIRE_RESULT=PASS, kit-boot.log install=OK."  
+"DEFECT 2 (tunnel): keepalive.ps1 printed 'OK <url>' while the public URL was HTTP 530 -- it verified LOCAL only and trusted the tunnel process was alive. FIX: tunnel-watch.js only reports success after a REAL public request returns 200; reuses a live tunnel, else rotates cloudflared up to 3x; writes tunnel.url ONLY with a publicly-verified base."  
+"PROVEN PUBLIC (verified, not assumed): /health 200 json, /pricing 200 (6424B), /x402-v2-kit.js 200 js (12066B), /v1/x402-v2-kit 200 json, /v1/hash 402 = payment enforcement live. Base: https://actress-wages-retirement-surface.trycloudflare.com"  
+"DURABLE: URL beacon https://paste.rs/Whc7d (201). Conway domain API /v1/domains/search returns 404 => Conway domain registration unavailable; durable domain must come from elsewhere. USDC 3.7003 + ETH gas on Base means funding is NOT the blocker for a domain any more."  
+"NEXT: seek a non-Conway durable domain (or a stable tunnel) so the base URL stops rotating; keep pushing the one remaining unblock = first EXTERNAL paying call."  

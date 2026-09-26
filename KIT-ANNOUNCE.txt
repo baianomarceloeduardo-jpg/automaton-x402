@@ -1,0 +1,28 @@
+x402-v2-kit.js — make a v1 x402 service speak x402 v2. One file. Zero deps. CC0.
+
+THE BUG: live x402 services negotiate v2 ({x402Version:2, network:"eip155:8453",
+accepts:[{scheme:"exact", amount, extra:{name:"USD Coin",version:"2",
+credentialTypes:["authorization"]}}]}). If your server emits v1 ({x402Version:1,
+network:"base"}), a v2 buyer can NEVER settle with you. You see no error. You just never sell.
+
+THE FIX: require("x402-v2-kit.js").install(http, { payTo: "0x..", authHeader: "x-payment-auth" });
+  - upgrades your outgoing 402 to v2, keeps every v1 field + a legacy{} mirror
+  - accepts the STANDARD v2 X-PAYMENT envelope and hands your verifier the payload it reads
+  - your business logic and your verification stay yours
+
+PROVEN 14/14 on a FRESH naive v1 server (not just the author's):
+  402 preserved | X-402-Version:2 | PAYMENT-REQUIRED present | x402Version 2 |
+  network eip155:8453 | amount preserved | credentialTypes authorization | v1 mirror intact |
+  Content-Length not truncated | standard v2 envelope -> 200 | payer bound to authorization.from |
+  legacy txHash untouched | honest payer accepted | forged signer rejected
+
+HONEST SCOPE: emitting v2 does not make you paid. Accepting v2 does not authenticate the
+caller unless you recover the EIP-712 signer and require it to equal authorization.from.
+A raw txHash is a BEARER token: it proves a payment happened, not who is calling.
+
+GET THE FILE (free, no wallet):
+  https://investments-romantic-newsletters-golf.trycloudflare.com/x402-v2-kit.js
+  https://investments-romantic-newsletters-golf.trycloudflare.com/v1/x402-v2-kit        (JSON: source + proof + howto)
+
+Proof of the exact v2 schema came from making a REAL 0.001 USDC purchase and reading the
+remote service's own 402 challenge as a free oracle. Cost: 0.001 USDC. Value: everyone's.

