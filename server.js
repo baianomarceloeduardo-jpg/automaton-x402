@@ -39,6 +39,12 @@ const { URL } = require('url');
 const merkle = require('./merkle');
 const { scanTokenContract } = require('./token-security.js');
 const SIMULATOR = require('./packages/x402-conformance/tx-simulator.js');
+// Optional: a deploy without services/ must keep serving everything else.
+const SENTINEL = (() => { try { return require('./services/pool-sentinel/sentinel-routes.js'); } catch (e) {
+  console.error('[sentinel] routes unavailable: ' + e.message);
+  const off = { ok: false, error: 'sentinel_not_installed' };
+  return { status: () => off, parseLatestQuery: () => ({}), latest: () => off, streamCapacity: () => false, stream: () => {} };
+} })();
 const { getTreasuryBalances } = require('./treasury.js');
 const { generateBasePulse } = require('./base-pulse.js');
 const { startDispatcher, HISTORY_FILE } = require('./broadcast-dispatcher.js');
@@ -59,7 +65,9 @@ const ROUTE_PRICES = {
   '/v2/attest': 50000n,        // 0.05 USDC - signed, hash-chained attestation
   '/v2/batch': 50000n,         // 0.05 USDC - signed merkle-root batch attestation
   '/v2/oracle/base': 1000n,    // 0.001 USDC - signed DeFi oracle
-  '/v2/simulate': 1000n        // 0.001 USDC - Base tx dry-run (eth_call + estimateGas)
+  '/v2/simulate': 1000n,       // 0.001 USDC - Base tx dry-run (eth_call + estimateGas)
+  '/v2/sentinel/latest': 1000n, // 0.001 USDC - newest Base pools with token bytecode risk
+  '/v2/sentinel/stream': 10000n // 0.01 USDC - 15 min SSE feed of new Base pools
 };
 function priceUnitsFor(endpoint) { return ROUTE_PRICES[endpoint] || PRICE_BASE_UNITS; }
 function priceUsdcFor(endpoint) { const u = priceUnitsFor(endpoint); const w = u / 1000000n, f = (u % 1000000n).toString().padStart(6, '0').replace(/0+$/, ''); return f ? w + '.' + f : w.toString(); }
@@ -316,7 +324,7 @@ function clientIp(req) {
 }
 
 const PAID_UTIL = ['/v1/hash', '/v1/echo', '/v1/uuid', '/v1/random'];
-const PAID = PAID_UTIL.concat(['/v2/attest', '/v2/batch', '/v2/oracle/base', '/v2/merkle/prove', '/v2/sentiment', '/v2/security/scan', '/v2/simulate']);
+const PAID = PAID_UTIL.concat(['/v2/attest', '/v2/batch', '/v2/oracle/base', '/v2/merkle/prove', '/v2/sentiment', '/v2/security/scan', '/v2/simulate', '/v2/sentinel/latest', '/v2/sentinel/stream']);
 
 const PRICING = {
   service: 'automaton-value-api', version: VERSION, agent: AGENT, currency: 'USDC', network: NETWORK, chainId: CHAIN_ID,
@@ -335,9 +343,11 @@ const PRICING = {
     { path: '/v2/merkle/prove', method: 'POST', priceUsdc: priceUsdcFor('/v2/merkle/prove'), priceBaseUnits: priceUnitsFor('/v2/merkle/prove').toString(), params: { items: 'string[]', target: 'string|int' }, returns: 'Merkle inclusion proof + signed root' },
     { path: '/v2/sentiment', method: 'GET', priceUsdc: priceUsdcFor('/v2/sentiment'), priceBaseUnits: priceUnitsFor('/v2/sentiment').toString(), params: { asset: 'string (e.g. ETH, AERO)' }, returns: 'Risk, liquidity & sentiment index with signed verdict' },
     { path: '/v2/security/scan', method: 'GET|POST', priceUsdc: priceUsdcFor('/v2/security/scan'), priceBaseUnits: priceUnitsFor('/v2/security/scan').toString(), params: { address: 'string (0x...)' }, returns: 'Honeypot, risk score & bytecode vulnerability analysis with signed verdict' },
-    { path: '/v2/simulate', method: 'GET|POST', priceUsdc: priceUsdcFor('/v2/simulate'), priceBaseUnits: priceUnitsFor('/v2/simulate').toString(), params: { to: 'address', data: '0x-hex calldata', value: 'wei (decimal or 0x)', from: 'address (optional)' }, returns: 'Base Mainnet dry-run: willRevert, decoded revertReason (Error/Panic/custom), estimatedGas, returnData' }
+    { path: '/v2/simulate', method: 'GET|POST', priceUsdc: priceUsdcFor('/v2/simulate'), priceBaseUnits: priceUnitsFor('/v2/simulate').toString(), params: { to: 'address', data: '0x-hex calldata', value: 'wei (decimal or 0x)', from: 'address (optional)' }, returns: 'Base Mainnet dry-run: willRevert, decoded revertReason (Error/Panic/custom), estimatedGas, returnData' },
+    { path: '/v2/sentinel/latest', method: 'GET', priceUsdc: priceUsdcFor('/v2/sentinel/latest'), priceBaseUnits: priceUnitsFor('/v2/sentinel/latest').toString(), params: { limit: 'int 1-500 (default 50)', maxRisk: '0-100', minRisk: '0-100', dex: 'uniswap-v4|uniswap-v3|aerodrome|aerodrome-slipstream', since: 'ISO date' }, returns: 'Newest Base pools (Uniswap v3/v4, Aerodrome) with bytecode risk score of each new token' },
+    { path: '/v2/sentinel/stream', method: 'GET', priceUsdc: priceUsdcFor('/v2/sentinel/stream'), priceBaseUnits: priceUnitsFor('/v2/sentinel/stream').toString(), params: {}, returns: 'Server-Sent Events: one `pool` event per new Base pool with token risk, for 15 minutes per payment' }
   ],
-  free: ['/health', '/pricing', '/.well-known/x402', '/.well-known/x402-bazaar.json', '/.well-known/agent-card.json', '/.well-known/ai-plugin.json', '/openapi.json', '/stats', '/v2/pubkey', '/v2/verify', '/v2/ledger', '/v2/proof', '/v2/batch/verify', '/v2/merkle/verify', '/', '/v1/verify-payment', '/v2/treasury/balance', '/v2/pulse', '/v2/pulse/history', '/v2/pulse/feed', '/FUNDING.md', '/x402-toolkit.js', '/v1/x402-conformance', '/v1/x402-directory', '/robots.txt', '/sitemap.xml', '/directory', '/badge.svg', '/fund', '/v1/funding']
+  free: ['/health', '/pricing', '/.well-known/x402', '/.well-known/x402-bazaar.json', '/.well-known/agent-card.json', '/.well-known/ai-plugin.json', '/openapi.json', '/stats', '/v2/pubkey', '/v2/verify', '/v2/ledger', '/v2/proof', '/v2/batch/verify', '/v2/merkle/verify', '/', '/v1/verify-payment', '/v2/treasury/balance', '/v2/sentinel/status', '/v2/pulse', '/v2/pulse/history', '/v2/pulse/feed', '/FUNDING.md', '/x402-toolkit.js', '/v1/x402-conformance', '/v1/x402-directory', '/robots.txt', '/sitemap.xml', '/directory', '/badge.svg', '/fund', '/v1/funding']
 };
 
 function base() { return publicBase() || 'http://127.0.0.1:' + PORT; }
@@ -881,6 +891,23 @@ const server = http.createServer(async (req, res) => {
     const sim = await SIMULATOR.simulate(args, { bypassLimit: true });
     stats.simulations = (stats.simulations || 0) + 1; saveStats();
     return send(res, sim.ok ? 200 : 502, sim, res._settled);
+  }
+
+  // --- Pool Sentinel (data written by services/pool-sentinel/pool-watcher.js) ---
+  if (p === '/v2/sentinel/status') return send(res, 200, SENTINEL.status());
+  if (p === '/v2/sentinel/latest') {
+    const q = SENTINEL.parseLatestQuery(u.searchParams);
+    if (q.error) return send(res, 400, q);
+    if (!SENTINEL.status().ok) return send(res, 503, { error: 'sentinel_not_running' });
+    if (!(await authorize(req, res, '/v2/sentinel/latest'))) return;
+    return send(res, 200, SENTINEL.latest(q), res._settled);
+  }
+  if (p === '/v2/sentinel/stream') {
+    if (!SENTINEL.status().ok) return send(res, 503, { error: 'sentinel_not_running' });
+    if (!SENTINEL.streamCapacity()) return send(res, 503, { error: 'stream_capacity_reached', retryAfterSec: 60 });
+    if (!(await authorize(req, res, '/v2/sentinel/stream'))) return;
+    SENTINEL.stream(req, res, { extraHeaders: res._settled || {} });
+    return;
   }
 
   // --- Attestation Ledger Endpoints ---

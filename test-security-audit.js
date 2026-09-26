@@ -46,6 +46,8 @@ function buildSandbox() {
   fs.writeFileSync(path.join(dir, 'local-settler.js'),
     "module.exports={settleAuthorization:async()=>({ok:false,error:'sandbox_wallet_missing'}),check:async()=>1,domain:{},TYPES:{},USDC:'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',CHAIN_ID:8453};\n");
   fs.symlinkSync(path.join(SRC, 'node_modules'), path.join(dir, 'node_modules'), 'junction');
+  fs.mkdirSync(path.join(dir, 'services', 'pool-sentinel'), { recursive: true });
+  fs.copyFileSync(path.join(SRC, 'services', 'pool-sentinel', 'sentinel-routes.js'), path.join(dir, 'services', 'pool-sentinel', 'sentinel-routes.js'));
   return dir;
 }
 
@@ -175,6 +177,17 @@ async function main() {
     check('/v2/simulate rejects malformed input with 400 before payment', badRes.every((s) => s === 400), 'statuses=' + badRes.join(','));
     const big = await req('POST', '/v2/simulate', { 'x-no-trial': '1' }, { to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', data: '0x' + 'aa'.repeat(200000) });
     check('/v2/simulate rejects oversized calldata/body', big.status === 400 || big.status === 413 || big.status === 0, 'status=' + big.status + (big.status === 0 ? ' (socket closed at body limit)' : ''));
+
+    // --- 7b. Pool Sentinel routes: validate and check liveness before charging; paid without payment -> 402 ---
+    const sOff = await req('GET', '/v2/sentinel/latest', { 'x-no-trial': '1' });
+    const sBad = await req('GET', '/v2/sentinel/latest?limit=0', { 'x-no-trial': '1' });
+    fs.writeFileSync(path.join(dir, 'services', 'pool-sentinel', 'scanned-pools.json'), JSON.stringify({ version: 1, updatedAt: new Date().toISOString(), lastBlock: 1, stats: {}, pools: [] }));
+    const sStatus = await req('GET', '/v2/sentinel/status');
+    const sUnpaid = await req('GET', '/v2/sentinel/latest?limit=5', { 'x-no-trial': '1' });
+    const sStream = await req('GET', '/v2/sentinel/stream', { 'x-no-trial': '1' });
+    check('/v2/sentinel: 503 when not running, 400 on bad query, 402 unpaid, status free',
+      sOff.status === 503 && sBad.status === 400 && sUnpaid.status === 402 && sStream.status === 402 && sStatus.status === 200 && sStatus.json.ok === true,
+      [sOff.status, sBad.status, sUnpaid.status, sStream.status, sStatus.status].join(','));
 
     // --- 8. MCP simulate tool: free local tool must be rate-limited (no open RPC proxy) ---
     const S = require(path.join(dir, 'packages', 'x402-conformance', 'tx-simulator.js'));

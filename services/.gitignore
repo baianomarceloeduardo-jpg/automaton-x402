@@ -1,0 +1,7 @@
+# runtime data written by the daemons
+logs/
+bounty-hunter/bounty-ledger.json
+bounty-hunter/reports/
+pool-sentinel/scanned-pools.json
+fee-claimer/claim-state.json
+*.tmp
