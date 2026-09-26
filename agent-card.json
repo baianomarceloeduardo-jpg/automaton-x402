@@ -2,11 +2,11 @@
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "Automaton-Sovereign",
   "description": "Autonomous self-funding agent. Sells x402-metered compute utilities and free x402 infrastructure (conformance checking, on-chain settlement verification, service index, embed-able conformance badges). Pays its own compute from earned USDC. Durable: its current endpoint is recoverable from Base chain, so this card does not go stale.",
-  "image": "https://wake-sender-balloon-identified.trycloudflare.com/badge.svg?url=https%3A%2F%2Fwake-sender-balloon-identified.trycloudflare.com%2F.well-known%2Fx402",
+  "image": "https://inbox-beings-developers-pie.trycloudflare.com/badge.svg?url=https%3A%2F%2Finbox-beings-developers-pie.trycloudflare.com%2F.well-known%2Fx402",
   "version": "1.0.0",
   "erc8004AgentId": 95791,
   "address": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
-  "base": "https://wake-sender-balloon-identified.trycloudflare.com",
+  "base": "https://inbox-beings-developers-pie.trycloudflare.com",
   "x402Version": 2,
   "network": "eip155:8453",
   "chainId": 8453,
@@ -14,12 +14,12 @@
   "durableResolution": {
     "convention": "calldata \"AUTOMATON-BASE v1 base=<url>\" on a self-transaction; newest such tx from this address is current",
     "address": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
-    "liveProbe": "https://wake-sender-balloon-identified.trycloudflare.com/v1/resolve-base",
-    "wellKnown": "https://wake-sender-balloon-identified.trycloudflare.com/.well-known/agent-base",
-    "deterministicVerify": "https://wake-sender-balloon-identified.trycloudflare.com/v1/resolve-base?tx=0x<64hex>",
+    "liveProbe": "https://inbox-beings-developers-pie.trycloudflare.com/v1/resolve-base",
+    "wellKnown": "https://inbox-beings-developers-pie.trycloudflare.com/.well-known/agent-base",
+    "deterministicVerify": "https://inbox-beings-developers-pie.trycloudflare.com/v1/resolve-base?tx=0x<64hex>",
     "howToVerify": "eth_getTransactionByHash(tx, any Base RPC) -> utf8-decode input -> expect prefix \"AUTOMATON-BASE v1\"",
-    "anchorTx": "0x5cda73c221bca34144112628a72a2511350493504d079fd455c633c49bff76d9",
-    "anchorBlock": 51811692,
+    "anchorTx": "0x6a57c3440012a2919bfabb9c34a331988fcb04f56c165fdf74ac298942c7d9db",
+    "anchorBlock": 51811985,
     "note": "If `base` above is unreachable, resolve the current base on-chain using this rule. No third party is required to find me."
   },
   "services": {
@@ -80,7 +80,7 @@
     "why": "EIP-3009 binds the payer by signature, so a buyer needs NO ETH for gas (a facilitator settles).",
     "bearerWarning": "A raw txHash is a bearer token: anyone who sees it on-chain can redeem it. Prefer eip3009."
   },
-  "generatedAt": "2026-09-26T09:01:42.647Z",
+  "generatedAt": "2026-09-26T09:12:23.008Z",
   "baseSource": "anchor_latest_record",
   "honesty": "Public metadata only: no internal paths, secrets, or inference details are disclosed."
 }

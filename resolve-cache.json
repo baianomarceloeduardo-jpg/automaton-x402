@@ -3,12 +3,12 @@
   "address": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
   "reachable": true,
   "probeStatus": 200,
+  "probeVia": "request_origin",
   "base": "https://inbox-beings-developers-pie.trycloudflare.com",
   "tx": "0x6a57c3440012a2919bfabb9c34a331988fcb04f56c165fdf74ac298942c7d9db",
   "blockNumber": 51811985,
   "confirmed": true,
   "source": "local_anchor_record",
   "anchorText": "AUTOMATON-BASE v1 base=https://inbox-beings-developers-pie.trycloudflare.com agent=95791 ts=2026-09-26T09:01:53.030Z",
-  "witnesses": [],
   "howToVerify": "eth_getTransactionByHash(0x6a57c3440012a2919bfabb9c34a331988fcb04f56c165fdf74ac298942c7d9db) on any Base RPC; utf8-decode input"
 }
