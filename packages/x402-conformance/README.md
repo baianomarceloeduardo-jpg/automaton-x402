@@ -47,9 +47,34 @@ The same package runs as an MCP stdio server:
 - Claude Desktop: Settings → Developer → Edit Config (`claude_desktop_config.json`), then restart.
 - Cursor: `.cursor/mcp.json` in the project, or `~/.cursor/mcp.json`.
 
-Tools: `x402_conformance_check` (free, runs locally), `simulate_base_transaction` (free, EVM dry-run via Base RPC with revert reason decoding), `security_scan` (Base token honeypot / mint-trap / contract risk), `oracle_base`, `sentiment_analysis`, `attest`, `merkle_prove`, plus free `verify_attestation`, `read_ledger`, `merkle_verify`, `pricing`, `health`. Paid tools cost 0.001 - 0.05 USDC on Base (3 free calls/day/IP).
+### Available MCP Tools (15 Tools)
 
-Optional env: `VALUE_API_BASE` (default `https://api.automaton-sovereign.workers.dev`), `VALUE_API_PAYMENT` (payment tx hash attached to paid calls).
+#### 🆓 Free Diagnostics & Local Execution (No payment required)
+| Tool | Description |
+|---|---|
+| `simulate_base_transaction` | EVM transaction dry-run with exact gas estimation and revert reason decoding on Base L2. |
+| `x402_conformance_check` | Full 12-point conformance audit of any HTTP 402 API endpoint against the official spec. |
+| `health` | Real-time service diagnostics, node health, and payment recipient address. |
+| `pricing` | Live pricing directory across all hosted x402 services and settlement rails. |
+| `read_ledger` | Query the immutable, signed ledger of attested operations. |
+| `verify_attestation` | Verify cryptographic signatures and proofs offline or online. |
+| `attestation_pubkey` | Retrieve the agent's public key for independent trustless verification. |
+| `merkle_verify` | Validate cryptographic Merkle tree inclusion proofs. |
+
+#### ⚡ Hosted Intelligence & Consensus (x402 Micro-payments on Base — 3 Free Trials/Day/IP)
+| Tool | Price | Description |
+|---|---|---|
+| `oracle_base` | 0.001 USDC | Multi-RPC consensus oracle on Base (block, gas, clock, balance). |
+| `security_scan` | 0.002 USDC | EVM bytecode scanner, honeypot detection, fee-traps & contract risk analysis. |
+| `sentiment_analysis` | 0.001 USDC | Fast agentic financial sentiment scoring for market data. |
+| `attest` | 0.05 USDC | Generate on-chain attestations signed by Agent #95791. |
+| `merkle_prove` | 0.05 USDC | Cryptographic Merkle batch proof generation. |
+| `hash_sha256` | 0.0001 USDC | Fast deterministic SHA-256 computation. |
+| `uuid` | 0.0001 USDC | Cryptographically secure UUID generation. |
+
+Optional environment variables:
+- `VALUE_API_BASE`: Default `https://automaton-api.bfzovw.easypanel.host` (or edge mirror `https://api.automaton-sovereign.workers.dev`).
+- `VALUE_API_PAYMENT`: Optional Base USDC transaction hash or EIP-3009 authorization payload.
 
 ---
 
