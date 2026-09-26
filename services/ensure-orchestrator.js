@@ -28,8 +28,10 @@ function ensure() {
   const stamp = new Date().toISOString();
   if (pid) { console.log(`${stamp} [ensure-orchestrator] already running pid=${pid}`); return pid; }
   fs.mkdirSync(LOG_DIR, { recursive: true });
-  const child = spawn(process.execPath, [path.join(__dirname, 'autonomous-orchestrator.js')], {
-    cwd: path.dirname(__dirname), detached: true, stdio: 'ignore', windowsHide: true, env: process.env
+  const outLog = path.join(LOG_DIR, 'orchestrator-boot.log');
+  const out = fs.openSync(outLog, 'a');
+  const child = spawn(process.execPath, [path.join(__dirname, 'autonomous-orchestrator.js'), '--daemon'], {
+    cwd: path.dirname(__dirname), detached: true, stdio: ['ignore', out, out], windowsHide: true, env: process.env
   });
   child.unref();
   console.log(`${stamp} [ensure-orchestrator] started pid=${child.pid}`);

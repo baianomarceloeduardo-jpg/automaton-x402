@@ -104,4 +104,17 @@ const REASON_PT = {
   rpc_error: 'Falha temporária ao consultar a Base. Tente novamente.'
 };
 
-module.exports = { createClaimVerifier, UsedTxStore, REASON_PT, USDC_BASE, TRANSFER_TOPIC, pad32 };
+const REASON_EN = {
+  invalid_hash: 'Invalid transaction hash.',
+  already_used: 'This transaction has already been used to activate a VIP pass.',
+  tx_not_found_or_pending: 'Transaction not found or still pending on Base. Please retry in a few seconds.',
+  tx_failed: 'The transaction failed on-chain (reverted status).',
+  no_usdc_transfer: 'No native Base USDC Transfer found in this transaction.',
+  wrong_recipient: 'The USDC transfer was not sent to the Automaton treasury wallet.',
+  insufficient_amount: 'Insufficient amount for the VIP pass.',
+  not_enough_confirmations: 'Awaiting block confirmations. Please retry in a few seconds.',
+  tx_too_old: 'Transaction is too old to activate a pass (48h max age).',
+  rpc_error: 'Temporary RPC error querying Base. Please try again.'
+};
+
+module.exports = { createClaimVerifier, UsedTxStore, REASON_PT, REASON_EN, USDC_BASE, TRANSFER_TOPIC, pad32 };

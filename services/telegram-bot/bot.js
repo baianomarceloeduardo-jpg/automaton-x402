@@ -29,7 +29,7 @@ try {
   console.warn('[LOCAL ENGINES] Notice:', e.message);
 }
 
-const { createClaimVerifier, UsedTxStore, REASON_PT } = require('./claim-verifier.js');
+const { createClaimVerifier, UsedTxStore, REASON_PT, REASON_EN } = require('./claim-verifier.js');
 
 const CONFIG_PATH = path.join(__dirname, 'config.json');
 const USERS_DB_PATH = path.join(__dirname, 'users.json');
@@ -310,58 +310,58 @@ async function handleMessage(bot, msg) {
   // Command: /start
   if (text.startsWith('/start')) {
     const welcome = `🛡️ <b>Automaton Base Security Sentinel</b>\n` +
-      `<i>Pre-Flight Security, Honeypot Scanner & Tx Simulation na Base L2</i>\n\n` +
-      `Operado pelo agente soberano <b>Automaton-Sovereign</b> (ERC-8004 #95791).\n\n` +
-      `<b>Comandos Disponíveis:</b>\n` +
-      `🔍 <code>/scan &lt;endereço_do_token&gt;</code> - Analisa se o token é honeypot, taxa de venda e armadilhas.\n` +
-      `⚡ <code>/simulate &lt;to&gt; [data]</code> - Dry-run de transação via RPC Base para prever reverts.\n` +
-      `💎 <code>/pass</code> - Obtenha acesso VIP ilimitado por 30 dias em USDC.\n` +
-      `📊 <code>/pricing</code> - Tabela de preços e auditoria da tesouraria on-chain.\n` +
-      `🔔 <code>/alertas on</code> - Receba novos tokens da Base auditados pelo Sentinel.\n` +
-      `ℹ️ <code>/help</code> - Mais informações sobre o motor de segurança.\n\n` +
-      `<i>Status do seu plano:</i> ${user.isVip ? '🌟 <b>VIP Ilimitado</b>' : `🆓 <b>Plano Gratuito</b> (${config.freeDailyLimit - user.freeUsedToday}/${config.freeDailyLimit} consultas restantes hoje)`}`;
+      `<i>Pre-Flight Security, Honeypot Scanner & Tx Simulation on Base L2</i>\n\n` +
+      `Operated by sovereign on-chain agent <b>Automaton-Sovereign</b> (ERC-8004 #95791).\n\n` +
+      `<b>Available Commands:</b>\n` +
+      `🔍 <code>/scan &lt;token_address&gt;</code> - Scans bytecode for honeypot, hidden mints, and sell taxes.\n` +
+      `⚡ <code>/simulate &lt;to&gt; [data]</code> - Dry-run transaction on Base RPC to predict reverts before signing.\n` +
+      `💎 <code>/pass</code> - Get 30 days unlimited VIP access via Base USDC.\n` +
+      `📊 <code>/pricing</code> - Price sheet & live on-chain treasury audit.\n` +
+      `🔔 <code>/alerts on</code> - Get real-time alerts for new tokens deployed on Base.\n` +
+      `ℹ️ <code>/help</code> - Learn more about our sub-200ms security engine.\n\n` +
+      `<i>Your Plan Status:</i> ${user.isVip ? '🌟 <b>VIP Unlimited</b>' : `🆓 <b>Free Tier</b> (${config.freeDailyLimit - user.freeUsedToday}/${config.freeDailyLimit} scans remaining today)`}`;
     await bot.sendMessage(chatId, welcome);
     return;
   }
 
   // Command: /help
   if (text.startsWith('/help')) {
-    const help = `📖 <b>Como Usar o Automaton Sentinel:</b>\n\n` +
-      `1. <b>Auditoria Anti-Honeypot:</b>\n` +
-      `Envie <code>/scan 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913</code> ou simplesmente cole qualquer endereço de contrato da Base.\n\n` +
-      `2. <b>Simulação de Transação:</b>\n` +
-      `Envie <code>/simulate 0x... 0x18160ddd</code> para testar a chamada sem gastar gás nem assinar na carteira.\n\n` +
-      `3. <b>Precisão On-Chain:</b>\n` +
-      `Nossos relatórios desmontam o bytecode EVM diretamente na blockchain Base e emitem atestados assinados por ECDSA P-256.`;
+    const help = `📖 <b>How to Use Automaton Sentinel:</b>\n\n` +
+      `1. <b>Anti-Honeypot Audit:</b>\n` +
+      `Send <code>/scan 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913</code> or simply paste any Base contract address directly into the chat.\n\n` +
+      `2. <b>Transaction Simulation:</b>\n` +
+      `Send <code>/simulate 0x... 0x18160ddd</code> to test execution without spending gas or signing with your wallet.\n\n` +
+      `3. <b>On-Chain Sub-Second Precision:</b>\n` +
+      `Our scanner disassembles EVM bytecode directly on Base L2 in <200ms and produces cryptographic verification proofs.`;
     await bot.sendMessage(chatId, help);
     return;
   }
 
   // Command: /pricing
   if (text.startsWith('/pricing')) {
-    const pricing = `💰 <b>Tabela de Preços & Infraestrutura:</b>\n\n` +
-      `• <b>Consultas pelo Telegram:</b> 3 grátis/dia\n` +
-      `• <b>Passe VIP (30 dias ilimitado):</b> ${config.vipPriceUsdc.toFixed(2)} USDC na Base\n` +
-      `• <b>API Direta para Agentes (x402):</b> 0.002 USDC/scan (EIP-3009 sem gás)\n\n` +
-      `<b>Carteira Oficial da Tesouraria (Base L2):</b>\n` +
+    const pricing = `💰 <b>Pricing & Infrastructure:</b>\n\n` +
+      `• <b>Telegram Free Tier:</b> 3 scans/day\n` +
+      `• <b>VIP Pass (30 days unlimited):</b> ${config.vipPriceUsdc.toFixed(2)} USDC on Base\n` +
+      `• <b>Direct Agent API (x402 protocol):</b> 0.002 USDC/scan (gasless EIP-3009)\n\n` +
+      `<b>Official Treasury Wallet (Base L2):</b>\n` +
       `<code>${config.treasuryAddress}</code>\n` +
-      `<a href="https://basescan.org/address/${config.treasuryAddress}">Ver no Basescan ↗</a>`;
+      `<a href="https://basescan.org/address/${config.treasuryAddress}">View on Basescan ↗</a>`;
     await bot.sendMessage(chatId, pricing);
     return;
   }
 
   // Command: /pass
   if (text.startsWith('/pass')) {
-    const passMsg = `🌟 <b>Upgrade para Automaton VIP:</b>\n\n` +
-      `Garanta análises ilimitadas de contratos e simulações para negociar com máxima segurança na Base.\n\n` +
-      `<b>Valor:</b> <code>${config.vipPriceUsdc.toFixed(2)} USDC</code> (Rede Base)\n` +
-      `<b>Duração:</b> 30 dias de acesso instantâneo\n\n` +
-      `<b>Instruções de Pagamento:</b>\n` +
-      `1. Transfira <b>${config.vipPriceUsdc.toFixed(2)} USDC</b> na rede <b>Base</b> para o endereço:\n` +
+    const passMsg = `🌟 <b>Upgrade to Automaton VIP:</b>\n\n` +
+      `Unlock unlimited smart contract audits and transaction simulations to trade with maximum security on Base.\n\n` +
+      `<b>Price:</b> <code>${config.vipPriceUsdc.toFixed(2)} USDC</code> (Base Network)\n` +
+      `<b>Duration:</b> 30 days instant access\n\n` +
+      `<b>Payment Instructions:</b>\n` +
+      `1. Send <b>${config.vipPriceUsdc.toFixed(2)} USDC</b> on <b>Base</b> to:\n` +
       `<code>${config.treasuryAddress}</code>\n\n` +
-      `2. Envie o hash da transação aqui com o comando:\n` +
+      `2. Submit your transaction hash here with:\n` +
       `<code>/claim &lt;tx_hash&gt;</code>\n\n` +
-      `<i>O validador on-chain do Automaton confirmará os blocos e ativará seu passe automaticamente em segundos!</i>`;
+      `<i>Automaton's on-chain verifier will confirm blocks and activate your VIP pass automatically in seconds!</i>`;
     await bot.sendMessage(chatId, passMsg);
     return;
   }
@@ -370,11 +370,11 @@ async function handleMessage(bot, msg) {
   if (text.startsWith('/claim')) {
     const parts = text.split(/\s+/);
     if (parts.length < 2 || !/^0x[a-fA-F0-9]{64}$/.test(parts[1])) {
-      await bot.sendMessage(chatId, '❌ <b>Formato inválido.</b> Use: <code>/claim 0xSeuHashDeTransacao</code>');
+      await bot.sendMessage(chatId, '❌ <b>Invalid format.</b> Usage: <code>/claim 0xYourTransactionHash</code>');
       return;
     }
     const txHash = parts[1];
-    await bot.sendMessage(chatId, `⏳ <i>Verificando transação ${txHash.slice(0, 10)}... na Base...</i>`);
+    await bot.sendMessage(chatId, `⏳ <i>Verifying transaction ${txHash.slice(0, 10)}... on Base L2...</i>`);
     
     const v = await claimVerifier.verify(txHash);
     if (v.ok) {
@@ -385,17 +385,17 @@ async function handleMessage(bot, msg) {
       user.vipTx = txHash.toLowerCase();
       saveUsers();
       console.log(`[CLAIM] VIP activated chat=${chatId} tx=${txHash} units=${v.amountUnits}`);
-      await bot.sendMessage(chatId, `🎉 <b>Pagamento Confirmado na Base!</b>\n${(Number(v.amountUnits) / 1e6).toFixed(2)} USDC recebidos. Seu passe VIP está ativo até <b>${exp.toLocaleDateString()}</b>.`);
+      await bot.sendMessage(chatId, `🎉 <b>Payment Confirmed on Base!</b>\n${(Number(v.amountUnits) / 1e6).toFixed(2)} USDC received. Your VIP pass is active until <b>${exp.toLocaleDateString()}</b>.`);
     } else {
       console.log(`[CLAIM] rejected chat=${chatId} tx=${txHash} reason=${v.reason}`);
       const received = (Number(v.amountUnits || 0) / 1e6).toFixed(6).replace(/\.?0+$/, '');
-      const extra = v.reason === 'insufficient_amount' ? ` Recebido: ${received} USDC; mínimo ${config.vipPriceUsdc.toFixed(2)} USDC.` : '';
-      await bot.sendMessage(chatId, `⚠️ <b>Pagamento não aceito:</b> ${REASON_PT[v.reason] || v.reason}${extra}`);
+      const extra = v.reason === 'insufficient_amount' ? ` Received: ${received} USDC; required ${config.vipPriceUsdc.toFixed(2)} USDC.` : '';
+      await bot.sendMessage(chatId, `⚠️ <b>Payment Rejected:</b> ${REASON_EN[v.reason] || REASON_PT[v.reason] || v.reason}${extra}`);
     }
     return;
   }
 
-  // Command: /alertas on|off — opt-in to Pool Sentinel new-token alerts
+  // Command: /alertas on|off or /alerts on|off — opt-in to Pool Sentinel new-token alerts
   if (text.startsWith('/alertas') || text.startsWith('/alerts')) {
     const arg = (text.split(/\s+/)[1] || '').toLowerCase();
     if (arg === 'on' || arg === 'off') {
@@ -403,8 +403,8 @@ async function handleMessage(bot, msg) {
       saveUsers();
     }
     await bot.sendMessage(chatId, user.alerts
-      ? '🔔 <b>Alertas do Sentinel ativados.</b> Você receberá novos tokens da Base auditados pelo Automaton (limite por hora). Desative com <code>/alertas off</code>.'
-      : '🔕 <b>Alertas do Sentinel desativados.</b> Ative com <code>/alertas on</code>.');
+      ? '🔔 <b>Sentinel Alerts ENABLED.</b> You will receive audited new Base tokens in real time (rate-limited). Disable anytime with <code>/alerts off</code>.'
+      : '🔕 <b>Sentinel Alerts DISABLED.</b> Enable anytime with <code>/alerts on</code>.');
     return;
   }
 
@@ -419,18 +419,18 @@ async function handleMessage(bot, msg) {
 
   if (targetAddress) {
     if (!/^0x[a-fA-F0-9]{40}$/.test(targetAddress)) {
-      await bot.sendMessage(chatId, '❌ <b>Endereço inválido.</b> Forneça um contrato válido da Base no formato <code>0x...</code> (42 caracteres).');
+      await bot.sendMessage(chatId, '❌ <b>Invalid address.</b> Please provide a valid 42-character Base contract address starting with <code>0x...</code>');
       return;
     }
 
     // Check usage limits
     if (!user.isVip && user.freeUsedToday >= config.freeDailyLimit) {
-      await bot.sendMessage(chatId, `🚫 <b>Limite diário gratuito atingido (${config.freeDailyLimit}/${config.freeDailyLimit}).</b>\n\n` +
-        `Para continuar analisando contratos ilimitadamente, ative seu passe VIP por apenas ${config.vipPriceUsdc} USDC com o comando <code>/pass</code>.`);
+      await bot.sendMessage(chatId, `🚫 <b>Free daily limit reached (${config.freeDailyLimit}/${config.freeDailyLimit}).</b>\n\n` +
+        `To continue scanning unlimited contracts, unlock VIP for just ${config.vipPriceUsdc} USDC with <code>/pass</code>.`);
       return;
     }
 
-    await bot.sendMessage(chatId, `🔍 <i>Desmontando bytecode e auditando ${targetAddress.slice(0, 8)}... na Base L2...</i>`);
+    await bot.sendMessage(chatId, `🔍 <i>Disassembling bytecode and auditing ${targetAddress.slice(0, 8)}... on Base L2...</i>`);
 
     try {
       const result = await scanTokenAddress(targetAddress);
@@ -439,36 +439,36 @@ async function handleMessage(bot, msg) {
 
       const riskScore = result.riskScore !== undefined ? result.riskScore : (result.score || 0);
       const isSafe = riskScore < 30;
-      const statusIcon = isSafe ? '🟢 <b>BAIXO RISCO (APROVADO)</b>' : (riskScore < 70 ? '🟡 <b>MÉDIO RISCO (ATENÇÃO)</b>' : '🔴 <b>ALTO RISCO / PERIGO</b>');
+      const statusIcon = isSafe ? '🟢 <b>LOW RISK (PASSED)</b>' : (riskScore < 70 ? '🟡 <b>MEDIUM RISK (CAUTION)</b>' : '🔴 <b>HIGH RISK / DANGER</b>');
 
-      let response = `🛡️ <b>RELATÓRIO DE AUDITORIA EVM</b>\n` +
+      let response = `🛡️ <b>EVM AUDIT REPORT</b>\n` +
         `━━━━━━━━━━━━━━━━━━━━\n` +
-        `📍 <b>Contrato:</b> <code>${targetAddress}</code>\n` +
-        (result.knownAsset ? `🏷️ <b>Ativo:</b> ${result.knownAsset.name} ($${result.knownAsset.symbol})\n` : '') +
-        `📊 <b>Veredito:</b> ${statusIcon}\n` +
-        `🎯 <b>Score de Risco:</b> <code>${riskScore}/100</code>\n` +
+        `📍 <b>Contract:</b> <code>${targetAddress}</code>\n` +
+        (result.knownAsset ? `🏷️ <b>Asset:</b> ${result.knownAsset.name} ($${result.knownAsset.symbol})\n` : '') +
+        `📊 <b>Verdict:</b> ${statusIcon}\n` +
+        `🎯 <b>Risk Score:</b> <code>${riskScore}/100</code>\n` +
         `━━━━━━━━━━━━━━━━━━━━\n\n` +
-        `<b>Verificações de Segurança:</b>\n`;
+        `<b>Security Checks:</b>\n`;
 
       const checks = result.checks || result.details || {};
-      response += `• Bytecode presente: ${checks.hasBytecode ? '✅ Sim' : '❌ Não'}\n`;
-      response += `• Padrão ERC-20: ${(checks.isErc20Compliant || checks.isErc20) ? '✅ Detectado' : '⚠️ Não padrão'}\n`;
-      response += `• Armadilha de Mint Oculto: ${checks.hasMintFunction ? '⚠️ Presente' : '✅ Ausente'}\n`;
-      response += `• Risco de Honeypot / Taxa: ${result.isHoneypot ? '🚨 <b>ALERTA HONEYPOT 99%</b>' : (checks.hasTaxConfig ? '⚠️ Taxa configurável' : '✅ Normal')}\n`;
-      response += `• Funções de Blacklist / Pausa: ${(checks.hasBlacklistFunction || checks.hasPauseFunction) ? '⚠️ Presente' : '✅ Não detectada'}\n`;
-      response += `• Self-Destruct / Destrutivo: ${checks.hasSelfDestruct ? '🚨 <b>SIM</b>' : '✅ Não'}\n`;
+      response += `• Bytecode present: ${checks.hasBytecode ? '✅ Yes' : '❌ No'}\n`;
+      response += `• ERC-20 Standard: ${(checks.isErc20Compliant || checks.isErc20) ? '✅ Verified' : '⚠️ Non-standard'}\n`;
+      response += `• Hidden Mint Trap: ${checks.hasMintFunction ? '⚠️ Present' : '✅ None'}\n`;
+      response += `• Honeypot / Tax Risk: ${result.isHoneypot ? '🚨 <b>HONEYPOT ALERT 99%</b>' : (checks.hasTaxConfig ? '⚠️ Modifiable tax' : '✅ Clean')}\n`;
+      response += `• Blacklist / Pause Trap: ${(checks.hasBlacklistFunction || checks.hasPauseFunction) ? '⚠️ Present' : '✅ None detected'}\n`;
+      response += `• Self-Destruct / Destructive: ${checks.hasSelfDestruct ? '🚨 <b>YES</b>' : '✅ None'}\n`;
 
       if (result.flags && result.flags.length > 0) {
-        response += `\n⚠️ <b>Sinalizadores Detectados:</b> <code>${result.flags.join(', ')}</code>\n`;
+        response += `\n⚠️ <b>Flags Detected:</b> <code>${result.flags.join(', ')}</code>\n`;
       }
 
       response += `\n🔗 <a href="https://basescan.org/address/${targetAddress}">Basescan</a> | ` +
         `<a href="https://dexscreener.com/base/${targetAddress}">DexScreener</a>\n\n` +
-        `<i>Consultas restantes hoje: ${user.isVip ? 'Ilimitado (VIP)' : `${config.freeDailyLimit - user.freeUsedToday}/${config.freeDailyLimit}`}</i>`;
+        `<i>Remaining free scans today: ${user.isVip ? 'Unlimited (VIP)' : `${config.freeDailyLimit - user.freeUsedToday}/${config.freeDailyLimit}`}</i>`;
 
       await bot.sendMessage(chatId, response);
     } catch (err) {
-      await bot.sendMessage(chatId, `❌ <b>Falha ao escanear contrato:</b> ${err.message}`);
+      await bot.sendMessage(chatId, `❌ <b>Failed to scan contract:</b> ${err.message}`);
     }
     return;
   }
@@ -477,33 +477,33 @@ async function handleMessage(bot, msg) {
   if (text.startsWith('/simulate')) {
     const parts = text.split(/\s+/);
     if (parts.length < 2 || !/^0x[a-fA-F0-9]{40}$/.test(parts[1])) {
-      await bot.sendMessage(chatId, '❌ <b>Uso:</b> <code>/simulate &lt;0xContrato&gt; [0xCalldata]</code>');
+      await bot.sendMessage(chatId, '❌ <b>Usage:</b> <code>/simulate &lt;0xContract&gt; [0xCalldata]</code>');
       return;
     }
     const to = parts[1];
     const data = parts[2] || '0x';
 
-    await bot.sendMessage(chatId, `⚡ <i>Executando dry-run via RPC Base Mainnet...</i>`);
+    await bot.sendMessage(chatId, `⚡ <i>Running dry-run simulation via Base Mainnet RPC...</i>`);
     try {
       const sim = await simulateTransaction(to, data);
-      let simMsg = `⚡ <b>RESULTADO DO DRY-RUN (SIMULAÇÃO)</b>\n` +
+      let simMsg = `⚡ <b>DRY-RUN SIMULATION RESULT</b>\n` +
         `━━━━━━━━━━━━━━━━━━━━\n` +
-        `📍 <b>Destino:</b> <code>${to}</code>\n` +
+        `📍 <b>Target:</b> <code>${to}</code>\n` +
         `🧪 <b>Calldata:</b> <code>${data.slice(0, 20)}${data.length > 20 ? '...' : ''}</code>\n` +
         `━━━━━━━━━━━━━━━━━━━━\n\n`;
 
       if (sim.willRevert) {
-        simMsg += `🚨 <b>PREVISÃO: A TRANSAÇÃO VAI REVERTER!</b>\n` +
-          `❌ <b>Motivo do Revert:</b> <code>${sim.revertReason || 'Reversão sem mensagem'}</code>\n\n` +
-          `<i>Economia: Você evitou gastar gás e travar nonce em uma transação com falha certa.</i>`;
+        simMsg += `🚨 <b>PREDICTION: TRANSACTION WILL REVERT!</b>\n` +
+          `❌ <b>Revert Reason:</b> <code>${sim.revertReason || 'Reverted without message'}</code>\n\n` +
+          `<i>Savings: You saved gas fees and avoided nonce lock on a failing transaction.</i>`;
       } else {
-        simMsg += `✅ <b>PREVISÃO: SUCESSO!</b>\n` +
-          `⛽ <b>Gás Estimado:</b> <code>${sim.estimatedGas || 'Padrão'} wei</code>\n` +
-          `📤 <b>Retorno:</b> <code>${(sim.returnData || '0x').slice(0, 30)}...</code>`;
+        simMsg += `✅ <b>PREDICTION: SUCCESS!</b>\n` +
+          `⛽ <b>Estimated Gas:</b> <code>${sim.estimatedGas || 'Standard'} wei</code>\n` +
+          `📤 <b>Return Data:</b> <code>${(sim.returnData || '0x').slice(0, 30)}...</code>`;
       }
       await bot.sendMessage(chatId, simMsg);
     } catch (err) {
-      await bot.sendMessage(chatId, `❌ <b>Erro na simulação:</b> ${err.message}`);
+      await bot.sendMessage(chatId, `❌ <b>Simulation error:</b> ${err.message}`);
     }
     return;
   }

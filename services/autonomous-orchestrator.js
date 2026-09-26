@@ -1,4 +1,6 @@
 'use strict';
+if (process.stdout && process.stdout.on) process.stdout.on('error', () => {});
+if (process.stderr && process.stderr.on) process.stderr.on('error', () => {});
 /**
  * Automaton autonomous orchestrator — keeps the daemons alive 24/7.
  *  - one child process per daemon, stdout/stderr prefixed into one log (services/logs/orchestrator.log, 5 MB rotation)
@@ -23,8 +25,10 @@ const DAEMONS = [
 
 class Supervisor {
   constructor({ daemons = DAEMONS, logDir = LOG_DIR, baseDelayMs = 1000, maxDelayMs = 60000, healthyMs = 5 * 60 * 1000,
-    maxLogBytes = 5 * 1024 * 1024, statusEveryMs = 10000, spawnImpl = spawn, echo = true } = {}) {
-    Object.assign(this, { logDir, baseDelayMs, maxDelayMs, healthyMs, maxLogBytes, statusEveryMs, spawnImpl, echo });
+    maxLogBytes = 5 * 1024 * 1024, statusEveryMs = 10000, spawnImpl = spawn, echo } = {}) {
+    const isDaemon = process.argv.includes('--daemon') || !process.stdout || !process.stdout.isTTY;
+    const finalEcho = echo !== undefined ? echo : !isDaemon;
+    Object.assign(this, { logDir, baseDelayMs, maxDelayMs, healthyMs, maxLogBytes, statusEveryMs, spawnImpl, echo: finalEcho });
     fs.mkdirSync(logDir, { recursive: true });
     this.logFile = path.join(logDir, 'orchestrator.log');
     this.statusFile = path.join(logDir, 'orchestrator-status.json');
@@ -40,40 +44,48 @@ class Supervisor {
       if (st && st.size > this.maxLogBytes) fs.renameSync(this.logFile, this.logFile + '.1');
       fs.appendFileSync(this.logFile, entry);
     } catch (e) {}
-    if (this.echo) process.stdout.write(entry);
+    try {
+      if (this.echo && process.stdout && typeof process.stdout.write === 'function') {
+        process.stdout.write(entry);
+      }
+    } catch (e) {}
   }
 
   launch(u) {
     if (this.stopping) return;
-    u.timer = null;
-    u.startedAt = Date.now();
-    u.state = 'running';
-    const child = this.spawnImpl(process.execPath, [u.script, ...(u.args || [])], { cwd: path.dirname(u.script), env: process.env, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
-    u.child = child;
-    this.log('orchestrator', `started ${u.name} pid=${child.pid}`);
-    const pipe = stream => {
-      let buf = '';
-      stream.on('data', d => {
-        buf += d;
-        let i;
-        while ((i = buf.indexOf('\n')) >= 0) { const line = buf.slice(0, i).replace(/\r$/, ''); buf = buf.slice(i + 1); if (line) this.log(u.name, line); }
+    try {
+      u.timer = null;
+      u.startedAt = Date.now();
+      u.state = 'running';
+      const child = this.spawnImpl(process.execPath, [u.script, ...(u.args || [])], { cwd: path.dirname(u.script), env: process.env, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
+      u.child = child;
+      this.log('orchestrator', `started ${u.name} pid=${child.pid}`);
+      const pipe = stream => {
+        let buf = '';
+        stream.on('data', d => {
+          buf += d;
+          let i;
+          while ((i = buf.indexOf('\n')) >= 0) { const line = buf.slice(0, i).replace(/\r$/, ''); buf = buf.slice(i + 1); if (line) this.log(u.name, line); }
+        });
+      };
+      if (child.stdout) pipe(child.stdout);
+      if (child.stderr) pipe(child.stderr);
+      child.on('error', e => this.log('orchestrator', `${u.name} spawn error: ${e.message}`));
+      child.on('exit', (code, signal) => {
+        u.child = null;
+        u.lastExit = { code, signal, at: new Date().toISOString(), ranMs: Date.now() - u.startedAt };
+        if (this.stopping) { u.state = 'stopped'; return; }
+        if (u.lastExit.ranMs >= this.healthyMs) u.consecutive = 0;
+        const delay = Math.min(this.maxDelayMs, this.baseDelayMs * 2 ** u.consecutive);
+        u.consecutive++;
+        u.restarts++;
+        u.state = 'backoff';
+        this.log('orchestrator', `${u.name} exited code=${code} signal=${signal}; restart #${u.restarts} in ${delay}ms`);
+        u.timer = setTimeout(() => this.launch(u), delay);
       });
-    };
-    if (child.stdout) pipe(child.stdout);
-    if (child.stderr) pipe(child.stderr);
-    child.on('error', e => this.log('orchestrator', `${u.name} spawn error: ${e.message}`));
-    child.on('exit', (code, signal) => {
-      u.child = null;
-      u.lastExit = { code, signal, at: new Date().toISOString(), ranMs: Date.now() - u.startedAt };
-      if (this.stopping) { u.state = 'stopped'; return; }
-      if (u.lastExit.ranMs >= this.healthyMs) u.consecutive = 0;
-      const delay = Math.min(this.maxDelayMs, this.baseDelayMs * 2 ** u.consecutive);
-      u.consecutive++;
-      u.restarts++;
-      u.state = 'backoff';
-      this.log('orchestrator', `${u.name} exited code=${code} signal=${signal}; restart #${u.restarts} in ${delay}ms`);
-      u.timer = setTimeout(() => this.launch(u), delay);
-    });
+    } catch (err) {
+      this.log('orchestrator', `FATAL launch error on ${u.name}: ${err.stack || err.message}`);
+    }
   }
 
   writeStatus() {
@@ -88,9 +100,13 @@ class Supervisor {
 
   start() {
     this.log('orchestrator', `boot pid=${process.pid} daemons=${this.units.map(u => u.name).join(',')}`);
-    for (const u of this.units) this.launch(u);
-    this.statusTimer = setInterval(() => this.writeStatus(), this.statusEveryMs);
-    this.writeStatus();
+    try {
+      for (const u of this.units) this.launch(u);
+      this.statusTimer = setInterval(() => this.writeStatus(), this.statusEveryMs);
+      this.writeStatus();
+    } catch (err) {
+      this.log('orchestrator', `FATAL start error: ${err.stack || err.message}`);
+    }
   }
 
   stop() {
@@ -117,6 +133,12 @@ if (require.main === module) {
   const shutdown = () => sup.stop().then(() => process.exit(0));
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
+  process.on('uncaughtException', err => {
+    sup.log('orchestrator', `FATAL uncaughtException: ${err && err.stack ? err.stack : err}`);
+  });
+  process.on('unhandledRejection', reason => {
+    sup.log('orchestrator', `FATAL unhandledRejection: ${reason && reason.stack ? reason.stack : reason}`);
+  });
 }
 
 module.exports = { Supervisor, DAEMONS };
