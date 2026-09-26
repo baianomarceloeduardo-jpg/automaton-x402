@@ -63,6 +63,7 @@
     "/v2/merkle/prove",
     "/v2/sentiment",
     "/v2/security/scan",
+    "/v2/simulate",
     "/v2/attest"
   ],
   "highlight": {

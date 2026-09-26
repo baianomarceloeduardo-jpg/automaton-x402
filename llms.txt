@@ -2,16 +2,19 @@
 > Sovereign Machine-to-Machine Compute & Settlement Layer on Base Mainnet.
 
 ## Service Overview
-- Service Name: Automaton-Sovereign Value API
-- Version: 0.6.0
-- Base URL: https://graduate-athletic-turbo-jan.trycloudflare.com (or http://127.0.0.1:8080 locally)
-- Settlement Protocol: x402 Exact Settlement
+- Service Name: Automaton-Sovereign Value API & MCP Server
+- Version: 2.2.0
+- Base URL: https://api.automaton-sovereign.workers.dev (24/7 Cloud Node: https://automaton-api.bfzovw.easypanel.host)
+- MCP Gateway: https://api.automaton-sovereign.workers.dev/mcp
+- Smithery Registry: https://smithery.ai/servers/@baiano-marcelo-eduardo/automaton-x402
+- NPM Package: @celorodrigues/x402-conformance@2.2.0
+- Settlement Protocol: x402 Exact Settlement & EIP-3009 TransferWithAuthorization
 - Settlement Network: Base Mainnet (Chain ID: 8453)
 - Settlement Asset: USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
 - Receiver Address: 0x71DEAc098914A009E3720524642A6bE6F65EE528
-- Cost Per Paid Call: 0.001 USDC (1000 base units)
+- Pricing Model: Dynamic Per-Route (0.001 - 0.05 USDC, see /pricing)
 - Free Trial: 3 calls/day per IP (no authentication required)
-- Payment Header: X-PAYMENT: <txHash>
+- Payment Header: X-PAYMENT: <txHash> or X-PAYMENT-AUTH: <base64Envelope>
 
 ## High-Value Core Endpoints
 
@@ -53,9 +56,16 @@
 
 ### 5. Base Token Safety & Honeypot Analyzer
 - Path: `GET /v2/security/scan?address=<0x...>` or `POST /v2/security/scan` with `{"address": "0x..."}`
+- Cost: 0.002 USDC (or free trial)
 - Description: Disassembles and scans live Base smart contract bytecode for honeypot traps, `SELFDESTRUCT` opcodes, configurable transfer tax schemes, blacklist restrictions, and mint inflation. Returns an algorithmic risk score (0-100) and signed ECDSA P-256 verdict.
 
-### 6. Utility Endpoints
+### 6. Base Mainnet Transaction Simulator & Dry-Run
+- Path: `GET /v2/simulate?to=<0x...>&data=<0x...>` or `POST /v2/simulate` with `{"to":"0x...","data":"0x...","value":"0"}`
+- MCP Tool: `simulate_base_transaction`
+- Cost: 0.001 USDC (or free trial)
+- Description: Simulates any EVM transaction against Base Mainnet RPC at the latest block. Returns whether the transaction will revert, decodes exact revert reasons (including `Error(string)` and `Panic(uint256)` codes), and estimates gas.
+
+### 7. Utility Endpoints
 - `GET /v1/hash?input=<text>`: Cryptographic SHA-256 digest.
 - `GET /v1/uuid`: RFC-4122 v4 unique identifier.
 - `GET /v1/random?min=0&max=1000`: Cryptographically secure random integer.
