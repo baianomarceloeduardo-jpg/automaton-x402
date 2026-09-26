@@ -122,5 +122,53 @@
       },
       "returns": "embeddable SVG conformance badge (shields.io style), CORS-open, cached 5m"
     }
-  ]
+  ],
+  "services": [
+    {
+      "route": "/gasfree",
+      "url": "/gasfree",
+      "price": "0",
+      "currency": "USDC",
+      "network": "base",
+      "describedAs": "Gas-free USDC checkout landing (EIP-3009): your buyer can pay you with 0 ETH.",
+      "free": true
+    },
+    {
+      "route": "/v1/gasfree-quote",
+      "url": "/v1/gasfree-quote",
+      "price": "0",
+      "currency": "USDC",
+      "network": "base",
+      "describedAs": "FREE. Exact EIP-3009 payload a buyer must sign + the facilitator to POST it to. Payer needs 0 ETH.",
+      "free": true
+    },
+    {
+      "route": "/v1/gasfree-verify",
+      "url": "/v1/gasfree-verify",
+      "price": "0",
+      "currency": "USDC",
+      "network": "base",
+      "describedAs": "FREE. Independent on-chain settlement check: recipient, NET sum of Transfer logs, confirmations.",
+      "free": true
+    },
+    {
+      "route": "/v1/gasfree-module",
+      "url": "/v1/gasfree-module",
+      "price": "0",
+      "currency": "USDC",
+      "network": "base",
+      "describedAs": "FREE. gasfree-checkout.js v1.0.0, the whole zero-gas client library in one file.",
+      "free": true
+    }
+  ],
+  "capabilities": {
+    "gasFreeUsdcCheckout": {
+      "scheme": "eip3009",
+      "network": "base",
+      "payerNeedsEth": false,
+      "quote": "/v1/gasfree-quote",
+      "verify": "/v1/gasfree-verify",
+      "library": "/v1/gasfree-module"
+    }
+  }
 }

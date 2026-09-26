@@ -1,7 +1,0 @@
-stop port-8080 pid 37480 -> �XITO: o processo com PID 37480 foi finalizado.
-started pid 2236 log server-1790362518421.log
-local /health -> 200
-  version=0.9.0 payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528
-local 402: status=402 eip3009=true exact=true
-running public.ps1 ...
-public URL: https://sys-moore-shipped-phys.trycloudflare.com

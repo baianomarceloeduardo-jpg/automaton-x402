@@ -46,7 +46,16 @@ const CHAIN_ID = 8453;
 const USDC_BASE = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const PRICE_USDC = '0.001';
-const PRICE_BASE_UNITS = 1000n;
+const PRICE_BASE_UNITS = 1000n; // default per-call price (base units, USDC has 6 decimals)
+// Granular per-route x402 pricing (base units). Routes not listed pay PRICE_BASE_UNITS.
+const ROUTE_PRICES = {
+  '/v2/security/scan': 2000n,  // 0.002 USDC - token safety / honeypot scan
+  '/v2/attest': 50000n,        // 0.05 USDC - signed, hash-chained attestation
+  '/v2/batch': 50000n,         // 0.05 USDC - signed merkle-root batch attestation
+  '/v2/oracle/base': 1000n     // 0.001 USDC - signed DeFi oracle
+};
+function priceUnitsFor(endpoint) { return ROUTE_PRICES[endpoint] || PRICE_BASE_UNITS; }
+function priceUsdcFor(endpoint) { const u = priceUnitsFor(endpoint); const w = u / 1000000n, f = (u % 1000000n).toString().padStart(6, '0').replace(/0+$/, ''); return f ? w + '.' + f : w.toString(); }
 const RPC_URL = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
 const MIN_CONFIRMATIONS = parseInt(process.env.MIN_CONFIRMATIONS || '1', 10);
 const TRUST_MODE = process.env.TRUST_MODE === '1' && process.env.NODE_ENV === 'test';
@@ -262,20 +271,20 @@ const PAID = PAID_UTIL.concat(['/v2/attest', '/v2/batch', '/v2/oracle/base', '/v
 const PRICING = {
   service: 'automaton-value-api', version: VERSION, agent: AGENT, currency: 'USDC', network: NETWORK, chainId: CHAIN_ID,
   asset: USDC_BASE, payTo: PAY_TO, scheme: 'exact', settlement: 'x402',
-  pricing: { perCallUsdc: PRICE_USDC, perCallBaseUnits: PRICE_BASE_UNITS.toString() }, paymentHeader: 'X-PAYMENT',
+  pricing: { model: 'per-route', defaultPerCallUsdc: PRICE_USDC, perCallUsdc: PRICE_USDC, perCallBaseUnits: PRICE_BASE_UNITS.toString(), routes: Object.fromEntries(Object.keys(ROUTE_PRICES).map(r => [r, { priceUsdc: priceUsdcFor(r), priceBaseUnits: priceUnitsFor(r).toString() }])) }, paymentHeader: 'X-PAYMENT',
   freeTrial: { callsPerDay: FREE_TRIAL, per: 'ip', note: 'Evaluation calls to paid endpoints before payment is required.' },
-  note: 'Pay exact USDC to payTo on Base, then retry with header X-PAYMENT: <txHash>.',
+  note: 'Price is per route (see endpoints[].priceUsdc). Pay that exact USDC amount to payTo on Base, then retry with header X-PAYMENT: <txHash>.',
   endpoints: [
-    { path: '/v1/hash', method: 'GET', priceUsdc: PRICE_USDC, params: { input: 'string' }, returns: 'sha256 hex' },
-    { path: '/v1/echo', method: 'GET', priceUsdc: PRICE_USDC, params: { msg: 'string' }, returns: 'echo + time' },
-    { path: '/v1/uuid', method: 'GET', priceUsdc: PRICE_USDC, params: {}, returns: 'uuidv4' },
-    { path: '/v1/random', method: 'GET', priceUsdc: PRICE_USDC, params: { min: 'int', max: 'int' }, returns: 'value' },
-    { path: '/v2/attest', method: 'GET|POST', priceUsdc: PRICE_USDC, params: { data: 'string (or {"data":"..."})' }, returns: 'signed, hash-chained attestation entry' },
-    { path: '/v2/batch', method: 'POST', priceUsdc: PRICE_USDC, params: { items: 'string[] (max 1000)' }, returns: 'ONE signed merkle root committing all items' },
-    { path: '/v2/oracle/base', method: 'GET', priceUsdc: PRICE_USDC, params: {}, returns: 'ECDSA P-256 signed Base L2 gas & price oracle' },
-    { path: '/v2/merkle/prove', method: 'POST', priceUsdc: PRICE_USDC, params: { items: 'string[]', target: 'string|int' }, returns: 'Merkle inclusion proof + signed root' },
-    { path: '/v2/sentiment', method: 'GET', priceUsdc: PRICE_USDC, params: { asset: 'string (e.g. ETH, AERO)' }, returns: 'Risk, liquidity & sentiment index with signed verdict' },
-    { path: '/v2/security/scan', method: 'GET|POST', priceUsdc: PRICE_USDC, params: { address: 'string (0x...)' }, returns: 'Honeypot, risk score & bytecode vulnerability analysis with signed verdict' }
+    { path: '/v1/hash', method: 'GET', priceUsdc: priceUsdcFor('/v1/hash'), priceBaseUnits: priceUnitsFor('/v1/hash').toString(), params: { input: 'string' }, returns: 'sha256 hex' },
+    { path: '/v1/echo', method: 'GET', priceUsdc: priceUsdcFor('/v1/echo'), priceBaseUnits: priceUnitsFor('/v1/echo').toString(), params: { msg: 'string' }, returns: 'echo + time' },
+    { path: '/v1/uuid', method: 'GET', priceUsdc: priceUsdcFor('/v1/uuid'), priceBaseUnits: priceUnitsFor('/v1/uuid').toString(), params: {}, returns: 'uuidv4' },
+    { path: '/v1/random', method: 'GET', priceUsdc: priceUsdcFor('/v1/random'), priceBaseUnits: priceUnitsFor('/v1/random').toString(), params: { min: 'int', max: 'int' }, returns: 'value' },
+    { path: '/v2/attest', method: 'GET|POST', priceUsdc: priceUsdcFor('/v2/attest'), priceBaseUnits: priceUnitsFor('/v2/attest').toString(), params: { data: 'string (or {"data":"..."})' }, returns: 'signed, hash-chained attestation entry' },
+    { path: '/v2/batch', method: 'POST', priceUsdc: priceUsdcFor('/v2/batch'), priceBaseUnits: priceUnitsFor('/v2/batch').toString(), params: { items: 'string[] (max 1000)' }, returns: 'ONE signed merkle root committing all items' },
+    { path: '/v2/oracle/base', method: 'GET', priceUsdc: priceUsdcFor('/v2/oracle/base'), priceBaseUnits: priceUnitsFor('/v2/oracle/base').toString(), params: {}, returns: 'ECDSA P-256 signed Base L2 gas & price oracle' },
+    { path: '/v2/merkle/prove', method: 'POST', priceUsdc: priceUsdcFor('/v2/merkle/prove'), priceBaseUnits: priceUnitsFor('/v2/merkle/prove').toString(), params: { items: 'string[]', target: 'string|int' }, returns: 'Merkle inclusion proof + signed root' },
+    { path: '/v2/sentiment', method: 'GET', priceUsdc: priceUsdcFor('/v2/sentiment'), priceBaseUnits: priceUnitsFor('/v2/sentiment').toString(), params: { asset: 'string (e.g. ETH, AERO)' }, returns: 'Risk, liquidity & sentiment index with signed verdict' },
+    { path: '/v2/security/scan', method: 'GET|POST', priceUsdc: priceUsdcFor('/v2/security/scan'), priceBaseUnits: priceUnitsFor('/v2/security/scan').toString(), params: { address: 'string (0x...)' }, returns: 'Honeypot, risk score & bytecode vulnerability analysis with signed verdict' }
   ],
   free: ['/health', '/pricing', '/.well-known/x402', '/.well-known/x402-bazaar.json', '/.well-known/agent-card.json', '/.well-known/ai-plugin.json', '/openapi.json', '/stats', '/v2/pubkey', '/v2/verify', '/v2/ledger', '/v2/proof', '/v2/batch/verify', '/v2/merkle/verify', '/', '/v1/verify-payment', '/v2/treasury/balance', '/v2/pulse', '/v2/pulse/history', '/v2/pulse/feed', '/FUNDING.md', '/x402-toolkit.js', '/v1/x402-conformance', '/v1/x402-directory', '/robots.txt', '/sitemap.xml', '/directory', '/badge.svg', '/fund', '/v1/funding']
 };
@@ -346,7 +355,7 @@ function bazaarManifest() {
       chainId: CHAIN_ID,
       asset: USDC_BASE,
       payTo: PAY_TO,
-      pricePerCallUsdc: PRICE_USDC,
+      pricePerCallUsdc: PRICE_USDC, pricingModel: 'per-route',
       header: 'X-PAYMENT'
     },
     freeTrial: {
@@ -375,7 +384,7 @@ function openApiSpec() {
   const p = { in: 'header', name: 'X-PAYMENT', required: false, schema: { type: 'string' }, description: 'Base tx hash of the USDC payment to payTo.' };
   return {
     openapi: '3.1.0',
-    info: { title: PRICING.service, version: VERSION, description: 'x402-metered compute API. Pay ' + PRICE_USDC + ' USDC on Base per call. Free trial: ' + FREE_TRIAL + ' calls/day/IP.' },
+    info: { title: PRICING.service, version: VERSION, description: 'x402-metered compute API. Per-route pricing on Base (from ' + PRICE_USDC + ' USDC/call; see /pricing). Free trial: ' + FREE_TRIAL + ' calls/day/IP.' },
     servers: [{ url: b }],
     paths: {
       '/health': { get: { summary: 'Liveness', responses: { '200': okJson('OK') } } },
@@ -406,8 +415,8 @@ function paymentRequired(res, endpoint, extra, req) {
   stats.unpaidChallenges++; saveStats();
   const pr = FACILITATOR.buildPaymentRequired(endpoint, {
     payTo: PAY_TO,
-    priceBaseUnits: PRICE_BASE_UNITS.toString(),
-    priceUsdc: PRICE_USDC,
+    priceBaseUnits: priceUnitsFor(endpoint).toString(),
+    priceUsdc: priceUsdcFor(endpoint),
     baseUrl: requestBase(req), method: req && req.method,
     description: 'Automaton-Sovereign Value API call'
   });
@@ -424,7 +433,7 @@ async function authorize(req, res, endpoint) {
     if (parsed && parsed.type === 'x402-standard') {
       const v = await FACILITATOR.verifyAuthorization(parsed.data, {
         payTo: PAY_TO,
-        minAmountRequired: PRICE_BASE_UNITS.toString()
+        minAmountRequired: priceUnitsFor(endpoint).toString()
       });
       if (!v.ok) {
         stats.rejected++; saveStats();
@@ -435,7 +444,7 @@ async function authorize(req, res, endpoint) {
       // settle on-chain through the CDP facilitator, using the exact requirements advertised in the
       // 402; settlement is also what lists the resource in the x402 Bazaar. Fail closed without it.
       const requirements = FACILITATOR.buildPaymentRequired(endpoint, {
-        payTo: PAY_TO, priceBaseUnits: PRICE_BASE_UNITS.toString(), priceUsdc: PRICE_USDC,
+        payTo: PAY_TO, priceBaseUnits: priceUnitsFor(endpoint).toString(), priceUsdc: priceUsdcFor(endpoint),
         baseUrl: requestBase(req), method: req.method, description: 'Automaton-Sovereign Value API call'
       }).accepts[0];
       const st = FACILITATOR.facilitatorConfigured()
@@ -470,6 +479,12 @@ async function authorize(req, res, endpoint) {
         send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v });
         return false;
       }
+      const paidUnits = (() => { try { return BigInt(v.amount || v.valueBaseUnits || '0'); } catch (e) { return 0n; } })();
+      if (!TRUST_MODE && v.reason !== 'trust_mode' && paidUnits < priceUnitsFor(endpoint)) {
+        saveSpent(); stats.rejected++; saveStats();
+        send(res, 402, { error: 'payment_invalid', reason: 'underpaid_for_route', paidBaseUnits: paidUnits.toString(), requiredBaseUnits: priceUnitsFor(endpoint).toString(), endpoint });
+        return false;
+      }
       saveSpent();
       stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
       res._settled = { 'X-Payment-Settled': 'true', 'X-Payment-Tx': key, 'X-Payment-From': v.from || 'trust_mode' };
@@ -489,10 +504,26 @@ async function authorize(req, res, endpoint) {
   return false;
 }
 
+// BEGIN __AUTOMATON_ROUTE_REGISTRY__
+const __AUTO_ROUTES = [];
+global.__automatonAddRoute = function (pathname, handler) { __AUTO_ROUTES.push({ pathname, handler }); };
+// END __AUTOMATON_ROUTE_REGISTRY__
 const server = http.createServer(async (req, res) => {
   let u; try { u = new URL(req.url, 'http://localhost'); } catch (e) { return send(res, 400, { error: 'bad_url' }); }
   const p = u.pathname, M = req.method;
   if (M === 'OPTIONS') return send(res, 204, {});
+  for (const __r of __AUTO_ROUTES) {
+    if (p === __r.pathname) {
+      try { const handled = await __r.handler(req, res, u); if (handled !== false) return; }
+      catch (e) { return send(res, 500, { error: "route_handler_failed", message: e.message }); }
+    }
+  }
+  for (const __r of __AUTO_ROUTES) {
+    if (p === __r.pathname) {
+      try { const handled = await __r.handler(req, res, u); if (handled !== false) return; }
+      catch (e) { return send(res, 500, { error: "route_handler_failed", message: e.message }); }
+    }
+  }
 
   // free
   if (p === '/health') return send(res, 200, { status: 'ok', agent: AGENT, version: VERSION, uptimeSeconds: Math.floor((Date.now() - STARTED) / 1000), payTo: PAY_TO, network: NETWORK, ledger: ledgerTail().index + 1, freeTrialPerDay: FREE_TRIAL, now: new Date().toISOString() });
@@ -503,7 +534,7 @@ const server = http.createServer(async (req, res) => {
     if (fs.existsSync(f)) return send(res, 200, JSON.parse(fs.readFileSync(f, 'utf8')));
   }
   if (p === '/.well-known/x402-bazaar.json') return send(res, 200, liveListing(bazaarManifest()));
-  if (p === '/.well-known/ai-plugin.json') return send(res, 200, { schema_version: 'v1', name_for_model: 'automaton_value_api', name_for_human: 'Automaton-Sovereign Value API', description_for_model: 'x402-paid compute: hashing, uuid, random, signed Base DeFi oracle, and signed hash-chained attestations. Pay 0.001 USDC on Base per call; free trial 3 calls/day.', api: { type: 'openapi', url: base() + '/openapi.json' }, auth: { type: 'none' } });
+  if (p === '/.well-known/ai-plugin.json') return send(res, 200, { schema_version: 'v1', name_for_model: 'automaton_value_api', name_for_human: 'Automaton-Sovereign Value API', description_for_model: 'x402-paid compute: hashing, uuid, random, signed Base DeFi oracle, and signed hash-chained attestations. Per-route USDC pricing on Base (0.001-0.05 USDC/call, see /pricing); free trial 3 calls/day.', api: { type: 'openapi', url: base() + '/openapi.json' }, auth: { type: 'none' } });
   if (p === '/openapi.json') return send(res, 200, openApiSpec());
   if (p === '/stats') return send(res, 200, Object.assign({}, stats, { spentTxCount: spentTx.size, ledgerEntries: ledgerTail().index + 1, keyId, uptimeSeconds: Math.floor((Date.now() - STARTED) / 1000) }));
   if (p === '/v2/treasury/balance') {
@@ -1003,6 +1034,8 @@ const server = http.createServer(async (req, res) => {
   return send(res, 404, { error: 'not_found', path: p, see: '/pricing' });
 });
 
+require('./gasfree-overlay.js'); // attaches gasfree routes
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log('[' + AGENT + '] value-api v' + VERSION + ' on :' + PORT + ' payTo=' + PAY_TO + ' ledger=' + (ledgerTail().index + 1) + ' keyId=' + keyId + ' freeTrial=' + FREE_TRIAL + '/day');
   startDispatcher(15 * 60 * 1000);
@@ -1075,10 +1108,10 @@ verifyPayment = async function (txHash) {
     paymentRequired = function (res, endpoint, extra, req) {
       try {
         const pr = FACILITATOR.buildPaymentRequired(endpoint, {
-          payTo: PAY_TO, priceBaseUnits: PRICE_BASE_UNITS.toString(), priceUsdc: PRICE_USDC,
+          payTo: PAY_TO, priceBaseUnits: priceUnitsFor(endpoint).toString(), priceUsdc: priceUsdcFor(endpoint),
           baseUrl: requestBase(req), method: req && req.method, description: 'Automaton-Sovereign Value API call'
         });
-        const e9acc = __e9.challenge(PAY_TO, PRICE_BASE_UNITS, requestBase(req) + (endpoint || ''), { source: 'automaton-sovereign' });
+        const e9acc = __e9.challenge(PAY_TO, priceUnitsFor(endpoint), requestBase(req) + (endpoint || ''), { source: 'automaton-sovereign' });
         if (Array.isArray(pr.accepts)) { if (!pr.accepts.some(a => a && a.scheme === 'eip3009')) pr.accepts.push(e9acc); }
         else pr.accepts = [e9acc];
         pr.schemes = ['eip3009', 'exact'];
@@ -1099,7 +1132,7 @@ verifyPayment = async function (txHash) {
         try { env = JSON.parse(Buffer.from(String(hdr), 'base64').toString('utf8')); }
         catch (e) { stats.rejected++; saveStats(); send(res, 402, { error: 'payment_invalid', reason: 'payment_auth_not_base64_json' }); return false; }
         let v;
-        try { v = await __e9.verifyAuthorization(env, { payTo: PAY_TO, minUnits: BigInt(PRICE_BASE_UNITS), requireUnused: true }); }
+        try { v = await __e9.verifyAuthorization(env, { payTo: PAY_TO, minUnits: priceUnitsFor(endpoint), requireUnused: true }); }
         catch (e) { v = { ok: false, reason: 'verify_error' }; }
         if (!v.ok) { stats.rejected++; saveStats(); send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v }); return false; }
         if (!__claim(v.nonce, { from: v.from, endpoint: endpoint, value: v.value })) {
@@ -1389,6 +1422,59 @@ verifyPayment = async function (txHash) {
   }
 })();
 
+// __HISTORY_OVERLAY__
+require('./history-overlay.js')(server);
+
+/* ==== OSIR DOMAIN OVERLAY v1 ==== */
+(function () {
+  try {
+    const osir = require('./osir-domain.js');
+    if (typeof FREE !== 'undefined' && Array.isArray(FREE)) {
+      ['/domain', '/v1/domain/check', '/v1/domain/tlds'].forEach(function (r) { if (FREE.indexOf(r) < 0) FREE.push(r); });
+    }
+    const __prev = server.listeners('request').slice();
+    server.removeAllListeners('request');
+    server.on('request', function (req, res) {
+      let p = '/', query = '';
+      try { const s = (req.url || '/').split('?'); p = decodeURIComponent(s[0]); query = s[1] || ''; } catch (e) { p = (req.url || '/').split('?')[0]; }
+      function qs(name) { const m = new RegExp('(?:^|&)' + name + '=([^&]*)').exec(query); return m ? decodeURIComponent(m[1]) : ''; }
+      if (p === '/v1/domain/tlds') {
+        return osir.tlds().then(function (t) {
+          res.writeHead(t.ok ? 200 : 502, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=3600' });
+          res.end(JSON.stringify(t));
+        }).catch(function (e) { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: false, reason: 'internal', detail: String(e && e.message || e) })); });
+      }
+      if (p === '/v1/domain/check') {
+        const d = qs('domain') || qs('d');
+        return osir.check(d).then(function (c) {
+          res.writeHead(c.ok ? 200 : (c.reason === 'malformed_domain' ? 400 : 502), { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=300' });
+          res.end(JSON.stringify(c));
+        }).catch(function (e) { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: false, reason: 'internal', detail: String(e && e.message || e) })); });
+      }
+      if (p === '/domain') {
+        const d = (qs('domain') || '').replace(/[^a-z0-9.\-]/gi, '');
+        const html = '<!doctype html><html><head><meta charset=utf-8><title>Free domain availability + pricing</title>' +
+          '<meta name="description" content="Live registry availability and pricing for 466 TLDs. No signup, no payment, CORS-open JSON API."></head>' +
+          '<body style="font:15px system-ui;max-width:760px;margin:48px auto;padding:0 16px;color:#111">' +
+          '<h1 style="margin-bottom:4px">Free domain availability &amp; pricing</h1>' +
+          '<p style="color:#555">Live registry data for <b>466 TLDs</b> (registration, renewal, transfer, restore). Free and CORS-open &mdash; build on it.</p>' +
+          '<form action="/domain" method="get" style="margin:20px 0">' +
+          '<input name="domain" value="' + d + '" placeholder="example.xyz" style="font:16px system-ui;padding:10px;width:62%;border:1px solid #ccc;border-radius:6px">' +
+          '<button style="padding:10px 18px;font:16px system-ui;border:0;border-radius:6px;background:#111;color:#fff">Check</button></form>' +
+          '<p style="color:#666">JSON API: <code>/v1/domain/check?domain=example.xyz</code> &middot; <code>/v1/domain/tlds</code></p>' +
+          (d ? '<pre id="r" style="background:#f6f8fa;padding:14px;border-radius:8px;overflow:auto">checking ' + d + ' …</pre>' +
+              '<script>fetch("/v1/domain/check?domain=' + encodeURIComponent(d) + '").then(function(x){return x.json()}).then(function(j){document.getElementById("r").textContent=JSON.stringify(j,null,2)}).catch(function(e){document.getElementById("r").textContent="error: "+e})</script>' : '') +
+          '</body></html>';
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' });
+        return res.end(html);
+      }
+      return __prev.forEach(function (l) { l.call(server, req, res); });
+    });
+    console.log('[osir-overlay v1] domain endpoints active');
+  } catch (e) {
+    console.log('[osir-overlay v1] SKIPPED: ' + (e && e.message));
+  }
+})();
 
 // __MCP_HTTP__ MCP over HTTP at /mcp (Smithery / web MCP clients); tools shared with the npm package
 require('./mcp-http-server.js')(server, { port: PORT, clientIp });

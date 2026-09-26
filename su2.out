@@ -1,8 +1,0 @@
-[19:23:40] local /health 200 = true
-[19:23:40] serveo: ssh started pid=40916
-[19:24:06] serveo: no requested-subdomain URL
-[19:24:06] localhost.run: ssh started pid=40768
-[19:24:08] localhost.run: Warning: Permanently added 'localhost.run' (ED25519) to the list of known hosts. =============================================================================== Welcome to localhost.run! To set up and
-[19:24:08] localhost.run: no requested-subdomain URL
-[19:24:08] falling back to cloudflared quick tunnel (rotating)
-[19:25:37] cloudflared URL parsed but not routable

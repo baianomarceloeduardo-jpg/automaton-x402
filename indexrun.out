@@ -1,7 +1,0 @@
-INDEX services=42 runs=1 err=dependencies_missing
-  18  NON_CONFORMANT  http://127.0.0.1:8080/
-  0  NON_CONFORMANT  https://api.baselight.app/mcp
-  0  NON_CONFORMANT  https://api.lattiq.ai/mcp
-  0  NON_CONFORMANT  https://api.x402.dev/
-  0  NON_CONFORMANT  https://api402x.com/mcp
-  0  NON_CONFORMANT  https://app.brainattic.ai/api/mcp

@@ -1,7 +1,0 @@
-BASE https://academics-ira-appraisal-lawn.trycloudflare.com
-llms.txt -> 200 bytes=5097 version_ok=true index=true remediate=true no_stale_url=true
-sitemap.xml -> 200 urls=28
-robots.txt -> 200 hasSitemap=true
-agent-card.json -> 200 capabilities=6
-/v1/index -> 200 count=42
-/remediate -> 200 fixDivs=10

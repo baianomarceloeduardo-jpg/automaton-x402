@@ -1,8 +1,0 @@
-﻿=== PERSISTENCE 2026-09-25T11:23:30.8196942-03:00 ===
-HKCU_RUN_OK = wscript.exe "C:\root\value-api\run_watchdog.vbs"
-STARTUP_LNK_OK = C:\Users\marce\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\AutomatonValueAPI.lnk exists=True
-watchdog processes running: 1
-tunnel.url = https://bbc93746a3f365.lhr.life
-PUBLIC /health -> 200 | {   "status": "ok",   "agent": "Automaton-Sovereign",   "version": "0.2.0",   "uptimeSeconds": 192,   "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",   "network": "base",   "now": "2026-09-25T14:23:33.318Z" }
-watchdog.log tail: 2026-09-25T11:14:26.8187756-03:00 === watchdog start === || 2026-09-25T11:19:53.6840975-03:00 === watchdog v3 start (pid 14636) === || 2026-09-25T11:19:56.9016623-03:00 tunnel: UP https://fba48341edb89a.lhr.life || 2026-09-25T11:20:58.9237826-03:00 tunnel: FAILED to obtain URL || 2026-09-25T11:22:00.2511463-03:00 tunnel: FAILED to obtain URL || 2026-09-25T11:23:01.5432349-03:00 tunnel: FAILED to obtain URL || 2026-09-25T11:23:24.6291258-03:00 tunnel: UP https://bbc93746a3f365.lhr.life
-=== END ===

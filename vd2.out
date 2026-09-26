@@ -1,7 +1,0 @@
-BASE https://timeline-targeted-classics-navigator.trycloudflare.com
-llms.txt -> 502 bytes=16 version_ok=false index=false remediate=false no_stale_url=true
-sitemap.xml -> 502 urls=0
-robots.txt -> 200 hasSitemap=false
-agent-card.json -> 502 capabilities=0
-/v1/index -> 502 count=0
-/remediate -> 502 fixDivs=0

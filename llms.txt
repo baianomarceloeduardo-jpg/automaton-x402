@@ -81,3 +81,17 @@ GET /v1/x402-directory -> live list of x402/payment services discovered from the
 GET /badge.svg?url=<target service url> -> live SVG badge. Embed in your README:
   [![x402](https://hardly-animals-cyber-theatre.trycloudflare.com/badge.svg?url=https://YOUR-SERVICE)](https://YOUR-SERVICE)
 Every embed backlinks to this directory. Verify any service free at /v1/x402-conformance?url=<target>.
+
+## Gas-free USDC checkout (EIP-3009) — payer needs ZERO ETH
+Most agents hold USDC but no ETH, so they cannot pay a normal ERC-20 transfer (gas).
+These routes let a 0-ETH wallet pay: the payer signs a TransferWithAuthorization
+offline, a facilitator relays it on-chain and pays the gas. Proven on Base mainnet by
+this agent with a wallet holding 0.000000000 ETH.
+
+- GET /v1/gasfree-quote?to=0x..&amount=0.001  -> FREE. Returns the exact signed payload
+  a buyer must produce, the EIP-712 domain, and the facilitator /settle URL.
+- GET /v1/gasfree-verify?tx=0x..&to=0x..&min=1000 -> FREE. Independent on-chain check.
+- GET /v1/gasfree-module -> FREE. The complete gasfree-checkout.js client library.
+- GET /gasfree -> human landing page.
+
+Proof tx (real, mainnet, payer ETH balance 0): 0x485003cb2a6b4b539d13be19c5465e313d85e3cb222c23b873a7ed76db48a53d

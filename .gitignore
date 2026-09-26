@@ -5,6 +5,30 @@ wallet*
 attestation_key.pem
 live_pubkey.pem
 cdp*
+.env
+.env.*
+
+# Maestri Workspace Local State (keep local, do not track in Git)
+.maestri/
+
+# Terminal outputs, temp files & scratch logs
+*.out
+*.tmp
+*.bak
+*.bak*
+*.old
+*_evidence.txt
+patch_*.js
+deploy_v*.ps1
+peer-queue/
+batches/
+sentinela-*.txt
+forja-sdk-log.txt
+peer-replies.txt
+install_result.txt
+board_update.txt
+astra-prompt.txt
+opus_task.txt
 
 # Binaries & Large Files
 cloudflared.exe
@@ -15,11 +39,6 @@ cloudflared.exe
 *.log
 *.err.log
 
-# Backups & Patch Scripts
-server.js.bak*
-*.bak
-*.bak*
-
 # State & Runtime Data
 trial.json
 stats.json
@@ -27,6 +46,8 @@ spent_tx.json
 broadcast_history.jsonl
 peer-log.jsonl
 ledger_tampered.jsonl
+used-txs.jsonl
+server-eip3009-nonces.jsonl
 
 # Dependencies
 node_modules/

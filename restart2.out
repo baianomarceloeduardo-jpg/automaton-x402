@@ -1,7 +1,0 @@
-stop port-8080 pid 19748 -> �XITO: o processo com PID 19748 foi finalizado.
-started pid 34684 log server-1790361050257.log
-local /health -> 200
-  version=0.9.0 payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528
-local 402: status=402 eip3009=true exact=true
-running public.ps1 ...
-public URL: https://cricket-arbitrary-moreover-fought.trycloudflare.com

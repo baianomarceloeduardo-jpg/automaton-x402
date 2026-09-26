@@ -1,7 +1,0 @@
-[19:07:30] killed prior server + tunnel processes
-[19:07:32] server started pid=38472
-[19:07:34] local /health 200 = true
-[19:07:34] tunnel started pid=8116
-[19:07:43] url https://academics-ira-appraisal-lawn.trycloudflare.com
-[19:08:44] public /health 200 = true
-[19:08:44] SUCCESS https://academics-ira-appraisal-lawn.trycloudflare.com
