@@ -28,14 +28,32 @@ function ensure() {
   const stamp = new Date().toISOString();
   if (pid) { console.log(`${stamp} [ensure-orchestrator] already running pid=${pid}`); return pid; }
   fs.mkdirSync(LOG_DIR, { recursive: true });
-  const outLog = path.join(LOG_DIR, 'orchestrator-boot.log');
-  const out = fs.openSync(outLog, 'a');
-  const child = spawn(process.execPath, [path.join(__dirname, 'autonomous-orchestrator.js'), '--daemon'], {
-    cwd: path.dirname(__dirname), detached: true, stdio: ['ignore', out, out], windowsHide: true, env: process.env
-  });
-  child.unref();
-  console.log(`${stamp} [ensure-orchestrator] started pid=${child.pid}`);
-  return child.pid;
+  const outLog = path.join(LOG_DIR, 'orch-stdout.log').replace(/\\/g, '/');
+  const errLog = path.join(LOG_DIR, 'orch-stderr.log').replace(/\\/g, '/');
+  const scriptPath = path.join(__dirname, 'autonomous-orchestrator.js').replace(/\\/g, '/');
+  const cwd = path.dirname(__dirname).replace(/\\/g, '/');
+  const exe = process.execPath.replace(/\\/g, '/');
+
+  let childPid;
+  try {
+    const outFd = fs.openSync(outLog, 'a');
+    const errFd = fs.openSync(errLog, 'a');
+    const child = spawn(exe, [scriptPath, '--daemon'], {
+      cwd,
+      detached: true,
+      stdio: ['ignore', outFd, errFd],
+      windowsHide: true
+    });
+    child.unref();
+    fs.closeSync(outFd);
+    fs.closeSync(errFd);
+    childPid = child.pid;
+  } catch (e) {
+    console.error(`${stamp} [ensure-orchestrator] failed to spawn: ${e.message}`);
+    return false;
+  }
+  console.log(`${stamp} [ensure-orchestrator] started pid=${childPid}`);
+  return childPid;
 }
 
 function restart() {

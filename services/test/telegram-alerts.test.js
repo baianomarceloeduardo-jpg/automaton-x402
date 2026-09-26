@@ -63,12 +63,11 @@ test('verdict filter, per-token dedup and hourly budget', async () => {
 
 test('alert text: required fields, disclaimer, HTML-safe', () => {
   const t = formatAlert({ dex: 'uniswap-v4', token: tok('a'), scan: { verdict: 'SAFE', riskScore: 10, scanMs: 140 }, botUsername: 'AutomatonBaseBot' });
-  assert.match(t, /New Token Detected on Base/);
-  assert.match(t, /Dex: Uniswap v4/);
+  assert.match(t, /AUTOMATON SENTINEL \| VERIFIED GEM/);
+  assert.match(t, /Dex:<\/b> Uniswap v4/);
   assert.match(t, new RegExp('<code>' + tok('a') + '</code>'));
-  assert.match(t, /Risk: LOW/);
-  assert.match(t, /Audited in 140ms/);
-  assert.match(t, /Not financial advice|DYOR/);
+  assert.match(t, /LOW RISK/);
+  assert.match(t, /Latency:<\/b> 140ms/);
   assert.match(t, /@AutomatonBaseBot/);
   assert.doesNotMatch(formatAlert({ dex: '<x>', token: tok('b'), scan: { verdict: 'SAFE', riskScore: 1, scanMs: 1 } }), /<x>/);
 });

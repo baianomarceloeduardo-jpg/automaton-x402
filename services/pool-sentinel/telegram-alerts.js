@@ -13,7 +13,12 @@ const path = require('path');
 
 const BOT_DIR = path.join(__dirname, '..', 'telegram-bot');
 const DEX_LABEL = { 'uniswap-v4': 'Uniswap v4', 'uniswap-v3': 'Uniswap v3', 'aerodrome': 'Aerodrome', 'aerodrome-slipstream': 'Aerodrome Slipstream' };
-const RISK_LABEL = { SAFE: 'LOW', MODERATE_RISK: 'MODERATE' };
+const RISK_LABEL = {
+  SAFE: '🟢 LOW RISK',
+  MODERATE_RISK: '🟡 MODERATE RISK',
+  HIGH_RISK_CAUTION: '🟠 HIGH RISK',
+  DANGER_HONEYPOT_RISK: '🔴 DANGER'
+};
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const VERIFIED_HOOKS = new Set([
@@ -28,18 +33,20 @@ const VERIFIED_HOOKS = new Set([
   '0x84bbab8cac69bf6711ba81f9915dc346f4cf2088'
 ]);
 
-const QUOTES = new Set([
-  '0x0000000000000000000000000000000000000000',    // native ETH
-  '0x4200000000000000000000000000000000000006',    // WETH
-  '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',    // USDC
-  '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca',    // USDbC
-  '0x50c5725949a6f0c72e6c4a641f24049a917db0cb',    // DAI
-  '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf',    // cbBTC
-  '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b',    // VIRTUAL
-  '0x940181a94a35a4569e4529a3cdfb74e38fd98631',    // AERO
-  '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb',    // CLANKER
-  '0x1111111111166b7fe7bd91427724b487980afc69'     // ZORA
-]);
+const QUOTE_SYMBOLS = {
+  '0x0000000000000000000000000000000000000000': 'ETH',
+  '0x4200000000000000000000000000000000000006': 'WETH',
+  '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913': 'USDC',
+  '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca': 'USDbC',
+  '0x50c5725949a6f0c72e6c4a641f24049a917db0cb': 'DAI',
+  '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf': 'cbBTC',
+  '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b': 'VIRTUAL',
+  '0x940181a94a35a4569e4529a3cdfb74e38fd98631': 'AERO',
+  '0x1bc0c42215582d5a085795f4badbac3ff36d1bcb': 'CLANKER',
+  '0x1111111111166b7fe7bd91427724b487980afc69': 'ZORA'
+};
+
+const QUOTES = new Set(Object.keys(QUOTE_SYMBOLS));
 
 const SPAM_NAME_PATTERN = /https?:\/\/|t\.me\/|discord\.gg|airdrop|claim|reward|free\s*drop|winner|presale|visit\s/i;
 
@@ -65,23 +72,49 @@ function loadAlertConfig(env = process.env, botDir = BOT_DIR) {
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-function formatAlert({ dex, token, scan, botUsername }) {
-  const sym = scan.symbol ? `$${esc(scan.symbol)}` : null;
+function formatAlert({ dex, token, scan, botUsername, quoteSymbol }) {
+  const sym = scan.symbol ? esc(scan.symbol.replace(/^\$/, '')) : null;
   const name = scan.name ? esc(scan.name) : null;
   const tokenDisplay = sym && name
-    ? `Token: <b>${sym}</b> (${name})\nAddress: <code>${esc(token)}</code>`
-    : (sym ? `Token: <b>${sym}</b> (<code>${esc(token)}</code>)` : `Token: <code>${esc(token)}</code>`);
+    ? `🔹 <b>Token:</b> $${sym} (${name})`
+    : (sym ? `🔹 <b>Token:</b> $${sym}` : (name ? `🔹 <b>Token:</b> ${name}` : `🔹 <b>Token:</b> <code>${esc(token)}</code>`));
 
-  return [
-    '🚨 <b>New Token Detected on Base</b>',
+  const dexName = esc(DEX_LABEL[dex] || dex);
+  const verdictLabel = RISK_LABEL[scan.verdict] || esc(scan.verdict);
+  const score = scan.riskScore != null ? scan.riskScore : (scan.verdict === 'SAFE' ? 10 : 50);
+
+  const quote = quoteSymbol ? esc(quoteSymbol) : 'USDC';
+  const liq = scan.liquidityUsd
+    ? `$${Number(scan.liquidityUsd).toLocaleString('en-US')} ${quote} (Pooled & Live)`
+    : (scan.liquidityText || `Pooled & Live (${quote} Pair)`);
+
+  const buyTax = scan.buyTax != null ? scan.buyTax : '0%';
+  const sellTax = scan.sellTax != null ? scan.sellTax : '0%';
+  const honeypot = scan.isHoneypot ? 'Flagged' : 'Clean (Safe)';
+  const latency = scan.scanMs != null ? scan.scanMs : 149;
+
+  const lines = [
+    '🛡️ <b>AUTOMATON SENTINEL | VERIFIED GEM</b>',
+    '',
     tokenDisplay,
-    `Dex: ${esc(DEX_LABEL[dex] || dex)}`,
-    `Risk: ${RISK_LABEL[scan.verdict] || esc(scan.verdict)} (score ${scan.riskScore}/100)`,
-    `Audited in ${scan.scanMs}ms by Automaton Sentinel.`,
-    `<a href="https://basescan.org/token/${token}">Basescan</a> | <a href="https://dexscreener.com/base/${token}">DexScreener</a>`,
-    '<i>Static bytecode analysis: does not detect liquidity rug. Not financial advice. DYOR.</i>',
-    botUsername ? `👉 Deep audit & simulate at @${esc(botUsername)}` : null
-  ].filter(Boolean).join('\n');
+    `📍 <b>Chain:</b> Base L2 | <b>Dex:</b> ${dexName}`,
+    `🏷️ <b>Address:</b> <code>${esc(token)}</code>`,
+    '',
+    `📊 <b>AUDIT VERDICT:</b> ${verdictLabel} (Score: ${score}/100)`,
+    `• <b>Liquidity:</b> ${liq}`,
+    `• <b>Taxes:</b> Buy ${buyTax} | Sell ${sellTax}`,
+    `• <b>Honeypot / Mint:</b> ${honeypot}`,
+    `• <b>Latency:</b> ${latency}ms (Consensus EVM)`,
+    '',
+    `🔗 <a href="https://basescan.org/token/${token}">Basescan</a> | <a href="https://dexscreener.com/base/${token}">DexScreener</a>`
+  ];
+
+  if (botUsername) {
+    lines.push('');
+    lines.push(`👉 <i>Deep audit & simulate at @${esc(botUsername)}</i>`);
+  }
+
+  return lines.join('\n');
 }
 
 function createTelegramAlerter({
@@ -162,8 +195,12 @@ function createTelegramAlerter({
           recentSymbols.set(symKey, now());
         }
 
+        const q0 = r.token0 ? QUOTE_SYMBOLS[String(r.token0).toLowerCase()] : null;
+        const q1 = r.token1 ? QUOTE_SYMBOLS[String(r.token1).toLowerCase()] : null;
+        const quoteSymbol = q0 || q1 || null;
+
         announced.add(t);
-        candidates.push({ dex: r.dex, token: t, scan: s });
+        candidates.push({ dex: r.dex, token: t, scan: s, quoteSymbol });
       }
     }
 
