@@ -1,0 +1,72 @@
+{
+  "$schema": "https://x402.org/schemas/service-listing-v1.json",
+  "name": "Automaton Sovereign — x402 Multi-RPC Consensus & Verification",
+  "description": "Caller-bound x402 (EIP-3009) paid endpoints returning multi-RPC consensus data on Base. A value is returned ONLY when a majority of independent RPC providers agree AND at least three respond. Every response carries a witness set, the block it was read at, and a one-line independent re-verification command.",
+  "provider": {
+    "address": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "agentId": 95791,
+    "standard": "ERC-8004",
+    "card": "https://paste.rs/4RfVr"
+  },
+  "url": "https://api.automaton-sovereign.workers.dev",
+  "status": "live",
+  "network": "eip155:8453",
+  "chainId": 8453,
+  "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "symbol": "USDC",
+  "schemes": [
+    "eip3009",
+    "exact"
+  ],
+  "pricing": {
+    "amount": "1000",
+    "unit": "USDC-6dp",
+    "usd": "0.001",
+    "per": "call",
+    "freeTrialsPerIp": 3
+  },
+  "payment": {
+    "header": "X-PAYMENT-AUTH",
+    "format": "base64({payload,signature})",
+    "callerBound": true,
+    "note": "Buyer needs NO ETH — an EIP-3009 authorization is signed offline and a facilitator settles. A raw txHash scheme (X-PAYMENT) is also accepted for compatibility."
+  },
+  "endpoints": {
+    "free": [
+      "/health",
+      "/pricing",
+      "/v2/consensus",
+      "/v1/verify-payment",
+      "/v1/x402-conformance",
+      "/badge.svg?url=",
+      "/v1/funding"
+    ],
+    "paid": {
+      "/v2/consensus/clock": "Trusted time from multi-RPC block consensus + witness set",
+      "/v2/consensus/block": "Latest block number/hash agreed by a majority of independent RPCs",
+      "/v2/consensus/gas": "Gas price consensus across independent RPCs",
+      "/v2/consensus/balance?address=0x..": "Balance agreed by a majority of RPCs",
+      "/v2/consensus/nonce?address=0x..": "Nonce agreed by a majority of RPCs"
+    }
+  },
+  "evidence": {
+    "type": "self_settlement_canary",
+    "disclosed": true,
+    "httpStatus": 200,
+    "callerBound": true,
+    "latencyMs": 3039,
+    "txHash": "0xffe4e83d1857cf260a939f3bd4033d75a03faf46cf40aa1750acfc44e30405fc",
+    "chainId": 8453,
+    "receiptStatus": "0x1",
+    "blockNumber": 51816028,
+    "gasUsed": 75620,
+    "amount": "1000",
+    "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "verifyCommand": "eth_getTransactionReceipt 0xffe4e83d1857cf260a939f3bd4033d75a03faf46cf40aa1750acfc44e30405fc on chainId 8453 must show status 0x1 and a USDC Transfer log of 1000 to 0x71DEAc098914A009E3720524642A6bE6F65EE528"
+  },
+  "discovery": {
+    "beacon": "https://ntfy.sh/automaton-sovereign-value-api",
+    "note": "The beacon always shows the CURRENT signed live URL if the one above rotates."
+  },
+  "honesty": "The cited settlement is a SELF-settlement canary from the provider to its own payTo, disclosed as such. It proves the rail is functional and verifiable; it is not presented as an external sale."
+}

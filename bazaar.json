@@ -1,7 +1,8 @@
 {
   "schemaVersion": 1,
-  "name": "Automaton-Sovereign x402 Value API",
-  "baseUrl": "https://labour-our-moderators-bags.trycloudflare.com",
+  "name": "Automaton-Sovereign x402 Value API & Sentinel",
+  "description": "Caller-bound x402 (EIP-3009) paid endpoints for smart contract audits, honeypot detection, multi-RPC consensus, and transaction simulation on Base L2.",
+  "baseUrl": "https://api.automaton-sovereign.workers.dev",
   "networks": [
     {
       "network": "base",
@@ -12,51 +13,92 @@
   ],
   "endpoints": [
     {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/x402-conformance",
+      "url": "https://api.automaton-sovereign.workers.dev/v2/security/scan",
+      "price": "0.002 USDC",
+      "description": "Honeypot, risk score & bytecode vulnerability analysis with signed verdict on Base."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v2/oracle/base",
+      "price": "0.001 USDC",
+      "description": "ECDSA P-256 signed Base L2 gas & price oracle."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v2/simulate",
+      "price": "0.001 USDC",
+      "description": "Pre-flight transaction simulation on Base: willRevert, revertReason, gasEstimate."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v2/sentinel/latest",
+      "price": "0.001 USDC",
+      "description": "Newest Base pools (Uniswap v3/v4, Aerodrome) with bytecode risk score."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v2/sentinel/stream",
+      "price": "0.01 USDC",
+      "description": "Server-Sent Events: stream of new verified safe pools on Base with token risk."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v2/attest",
+      "price": "0.05 USDC",
+      "description": "Cryptographically signed, hash-chained attestation entry."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v2/batch",
+      "price": "0.05 USDC",
+      "description": "Signed Merkle root committing multiple batch records."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v1/uuid",
+      "price": "0.001 USDC",
+      "description": "Cryptographic UUID generator."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v1/hash",
+      "price": "0.001 USDC",
+      "description": "Audited SHA-256 hashing computation."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v1/random",
+      "price": "0.001 USDC",
+      "description": "Verifiable random entropy generation."
+    },
+    {
+      "url": "https://api.automaton-sovereign.workers.dev/v1/x402-conformance",
       "price": "0",
       "description": "Conformance verdict for any x402 service (free)."
     },
     {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/verify-payment",
+      "url": "https://api.automaton-sovereign.workers.dev/v1/verify-payment",
       "price": "0",
       "description": "On-chain ERC-20/USDC settlement verifier (free)."
     },
     {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/index",
+      "url": "https://api.automaton-sovereign.workers.dev/v1/index",
       "price": "0",
       "description": "x402 service leaderboard, JSON (free)."
     },
     {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/index/submit",
-      "price": "0",
-      "description": "Free self-submission to the leaderboard."
-    },
-    {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/badge.svg",
+      "url": "https://api.automaton-sovereign.workers.dev/badge.svg",
       "price": "0",
       "description": "Embeddable conformance badge, SVG (free)."
     },
     {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/funding",
+      "url": "https://api.automaton-sovereign.workers.dev/v1/funding",
       "price": "0",
-      "description": "Funding manifest (JSON)."
-    },
-    {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/uuid",
-      "price": "0.001 USDC"
-    },
-    {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/hash",
-      "price": "0.001 USDC"
-    },
-    {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/echo",
-      "price": "0.001 USDC"
-    },
-    {
-      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/random",
-      "price": "0.001 USDC"
+      "description": "Funding manifest, JSON (free)."
     }
   ],
-  "updated": "2026-09-26T04:07:55.474Z"
+  "updated": "2026-09-26T21:35:00.000Z",
+  "facilitator": {
+    "purpose": "EIP-3009 settlement for x402 callers on Base; caller signs EIP-712 offline; settlement is gasless for buyer",
+    "scheme": "eip3009",
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "chainId": 8453,
+    "header": "X-PAYMENT-AUTH"
+  },
+  "operator": {
+    "name": "Automaton-Sovereign",
+    "erc8004": "95791",
+    "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528"
+  }
 }

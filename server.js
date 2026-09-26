@@ -358,22 +358,25 @@ const PRICING = {
   free: ['/health', '/pricing', '/.well-known/x402', '/.well-known/x402-bazaar.json', '/.well-known/agent-card.json', '/.well-known/ai-plugin.json', '/openapi.json', '/stats', '/v2/pubkey', '/v2/verify', '/v2/ledger', '/v2/proof', '/v2/batch/verify', '/v2/merkle/verify', '/', '/v1/verify-payment', '/v2/treasury/balance', '/v2/sentinel/status', '/v2/pulse', '/v2/pulse/history', '/v2/pulse/feed', '/FUNDING.md', '/x402-toolkit.js', '/v1/x402-conformance', '/v1/x402-directory', '/robots.txt', '/sitemap.xml', '/directory', '/badge.svg', '/fund', '/v1/funding']
 };
 
-function base() { return publicBase() || 'http://127.0.0.1:' + PORT; }
+function base(req) {
+  if (req) return requestBase(req);
+  return process.env.PUBLIC_BASE_URL || publicBase() || 'https://api.automaton-sovereign.workers.dev';
+}
 // Public origin as seen by the caller. The Cloudflare Worker proxies through an ephemeral tunnel
 // and sets X-Forwarded-Host/Proto, so x402 `resource` must use those, not the tunnel hostname.
 function requestBase(req) {
   const hdr = req && req.headers ? req.headers : {};
   const host = String(hdr['x-forwarded-host'] || hdr.host || '').split(',')[0].trim();
-  if (!/^[a-z0-9.-]+(:\d{1,5})?$/i.test(host)) return base();
+  if (!/^[a-z0-9.-]+(:\d{1,5})?$/i.test(host)) return process.env.PUBLIC_BASE_URL || publicBase() || 'https://api.automaton-sovereign.workers.dev';
   const fp = String(hdr['x-forwarded-proto'] || '').split(',')[0].trim().toLowerCase();
   const proto = (fp === 'http' || fp === 'https') ? fp : (/^(localhost|127\.)/.test(host) ? 'http' : 'https');
   return proto + '://' + host;
 }
 
 // --- live listing overlay: listings must NEVER carry a stale public URL ---
-function liveListing(obj) {
+function liveListing(obj, req) {
   try {
-    const b = base();
+    const b = base(req);
     const out = Object.assign({}, obj);
     out.baseUrl = b;
     out.health = b + '/health';
@@ -388,29 +391,30 @@ function liveListing(obj) {
   } catch (e) { return obj; }
 }
 
-function agentCard() {
+function agentCard(req) {
+  const b = base(req);
   return {
     type: 'https://eips.ethereum.org/EIPS/eip-8004#registration-v1',
     name: AGENT,
     description: 'Autonomous sovereign agent. Machine-payable compute: utility endpoints, DeFi Base oracle, and a signed, hash-chained public attestation ledger.',
     active: true, x402Support: true, version: VERSION, updatedAt: new Date().toISOString(),
     services: [
-      { name: 'valueApi', endpoint: base(), x402: true,
+      { name: 'valueApi', endpoint: b, x402: true,
         pricing: { currency: 'USDC', network: NETWORK, chainId: CHAIN_ID, perCallUsdc: PRICE_USDC },
         capabilities: PAID },
-      { name: 'x402Toolkit', endpoint: base() + '/x402-toolkit.js', type: 'software/sdk', description: 'Zero-dependency standalone x402 probe, verify and serve toolkit' },
-      { name: 'pulse', endpoint: base() + '/v2/pulse', type: 'telemetry/pulse', feed: base() + '/v2/pulse/feed' },
-      { name: 'funding', endpoint: base() + '/FUNDING.md', type: 'manifest/funding' },
-      { name: 'openapi', endpoint: base() + '/openapi.json', type: 'OpenAPI', version: '3.1.0' }
+      { name: 'x402Toolkit', endpoint: b + '/x402-toolkit.js', type: 'software/sdk', description: 'Zero-dependency standalone x402 probe, verify and serve toolkit' },
+      { name: 'pulse', endpoint: b + '/v2/pulse', type: 'telemetry/pulse', feed: b + '/v2/pulse/feed' },
+      { name: 'funding', endpoint: b + '/FUNDING.md', type: 'manifest/funding' },
+      { name: 'openapi', endpoint: b + '/openapi.json', type: 'OpenAPI', version: '3.1.0' }
     ],
-    attestation: { signingAlg: 'ECDSA-P256-SHA256', keyId, publicKeyPem, verifyUrl: base() + '/v2/verify?index=0', ledgerUrl: base() + '/v2/ledger' },
+    attestation: { signingAlg: 'ECDSA-P256-SHA256', keyId, publicKeyPem, verifyUrl: b + '/v2/verify?index=0', ledgerUrl: b + '/v2/ledger' },
     payment: { scheme: 'exact', network: NETWORK, chainId: CHAIN_ID, asset: USDC_BASE, payTo: PAY_TO },
     registry: { standard: 'ERC-8004', chain: 'base' }
   };
 }
 
-function bazaarManifest() {
-  const b = base();
+function bazaarManifest(req) {
+  const b = base(req);
   return {
     bazaarVersion: '1.0',
     service: PRICING.service,
@@ -598,13 +602,13 @@ const server = http.createServer(async (req, res) => {
   // free
   if (p === '/health') return send(res, 200, { status: 'ok', agent: AGENT, version: VERSION, uptimeSeconds: Math.floor((Date.now() - STARTED) / 1000), payTo: PAY_TO, network: NETWORK, ledger: ledgerTail().index + 1, freeTrialPerDay: FREE_TRIAL, now: new Date().toISOString() });
   if (p === '/pricing' || p === '/.well-known/x402') return send(res, 200, __livePricing(req));
-  if (p === '/.well-known/agent-card.json') return send(res, 200, agentCard());
+  if (p === '/.well-known/agent-card.json') return send(res, 200, agentCard(req));
   if (p === '/ERC8004_REGISTRATION.json') {
     const f = path.join(__dirname, 'ERC8004_REGISTRATION.json');
     if (fs.existsSync(f)) return send(res, 200, JSON.parse(fs.readFileSync(f, 'utf8')));
   }
-  if (p === '/.well-known/x402-bazaar.json') return send(res, 200, liveListing(bazaarManifest()));
-  if (p === '/.well-known/ai-plugin.json') return send(res, 200, { schema_version: 'v1', name_for_model: 'automaton_value_api', name_for_human: 'Automaton-Sovereign Value API', description_for_model: 'x402-paid compute: hashing, uuid, random, signed Base DeFi oracle, and signed hash-chained attestations. Per-route USDC pricing on Base (0.001-0.05 USDC/call, see /pricing); free trial 3 calls/day.', api: { type: 'openapi', url: base() + '/openapi.json' }, auth: { type: 'none' } });
+  if (p === '/.well-known/x402-bazaar.json') return send(res, 200, liveListing(bazaarManifest(req), req));
+  if (p === '/.well-known/ai-plugin.json') return send(res, 200, { schema_version: 'v1', name_for_model: 'automaton_value_api', name_for_human: 'Automaton-Sovereign Value API', description_for_model: 'x402-paid compute: hashing, uuid, random, signed Base DeFi oracle, and signed hash-chained attestations. Per-route USDC pricing on Base (0.001-0.05 USDC/call, see /pricing); free trial 3 calls/day.', api: { type: 'openapi', url: base(req) + '/openapi.json' }, auth: { type: 'none' } });
   if (p === '/openapi.json') return send(res, 200, openApiSpec());
   if (p === '/stats') return send(res, 200, Object.assign({}, stats, { spentTxCount: spentTx.size, ledgerEntries: ledgerTail().index + 1, keyId, uptimeSeconds: Math.floor((Date.now() - STARTED) / 1000) }));
   if (p === '/v2/treasury/balance') {
@@ -1135,7 +1139,47 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  return send(res, 404, { error: 'not_found', path: p, see: '/pricing' });
+  
+/* __DURABLE_ROUTES__ */
+  // --- durable static artifacts (self-healing reachability; neutral infra mirrors) ---
+  if (p === '/durable' || p === '/durable.html') {
+    try { const b = require('fs').readFileSync(__dirname + '/durable-index.html'); res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'content-length': b.length, 'cache-control': 'public, max-age=300', 'access-control-allow-origin': '*', 'x-durable': 'true' }); return res.end(b); } catch (e) { /* fallthrough */ }
+  }
+  if (p === '/durable.json') {
+    try { const b = require('fs').readFileSync(__dirname + '/durable-services.json'); res.writeHead(200, { 'content-type': 'application/json', 'content-length': b.length, 'cache-control': 'public, max-age=300', 'access-control-allow-origin': '*', 'x-durable': 'true' }); return res.end(b); } catch (e) { /* fallthrough */ }
+  }
+  if (p === '/durable.llms.txt') {
+    try { const b = require('fs').readFileSync(__dirname + '/durable-llms.txt'); res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8', 'content-length': b.length, 'cache-control': 'public, max-age=300', 'access-control-allow-origin': '*', 'x-durable': 'true' }); return res.end(b); } catch (e) { /* fallthrough */ }
+  }
+  if (p === '/v1/durable') {
+    try { const b = require('fs').readFileSync(__dirname + '/DURABLE-URLS.json'); res.writeHead(200, { 'content-type': 'application/json', 'content-length': b.length, 'cache-control': 'no-store', 'access-control-allow-origin': '*' }); return res.end(b); } catch (e) { return send(res, 200, { hosts: [], note: 'manifest missing' }); }
+  }
+/* __DURABLE_ROUTES__ */
+
+
+/* __FIXES_ROUTES__ */
+  // --- x402 Fix List: served live with the real base URL substituted ---
+  if (p === '/fixes' || p === '/fixes.html') {
+    try {
+      const fsx = require('fs');
+      const raw = fsx.readFileSync(__dirname + '/durable-fixes.html', 'utf8');
+      const proto = (req.headers['x-forwarded-proto'] || 'http');
+      const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:8080';
+      const base = proto + '://' + host;
+      const out = raw.split('https://BASE').join(base).split('BASE/').join(base + '/');
+      const buf = Buffer.from(out, 'utf8');
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'content-length': buf.length, 'cache-control': 'public, max-age=300', 'access-control-allow-origin': '*', 'x-fix-list': 'live' });
+      return res.end(buf);
+    } catch (e) { return send(res, 500, { error: 'fix_list_unavailable', detail: String(e.message).slice(0, 120) }); }
+  }
+  if (p === '/fixes.json' || p === '/v1/fixes') {
+    try { const b = require('fs').readFileSync(__dirname + '/durable-fixes.json'); res.writeHead(200, { 'content-type': 'application/json', 'content-length': b.length, 'cache-control': 'public, max-age=300', 'access-control-allow-origin': '*' }); return res.end(b); } catch (e) { return send(res, 500, { error: 'fix_list_unavailable' }); }
+  }
+  if (p === '/v1/fixes/manifest') {
+    try { const b = require('fs').readFileSync(__dirname + '/DURABLE-FIXES.json'); res.writeHead(200, { 'content-type': 'application/json', 'content-length': b.length, 'cache-control': 'no-store', 'access-control-allow-origin': '*' }); return res.end(b); } catch (e) { return send(res, 200, { verifiedHosts: [] }); }
+  }
+/* __FIXES_ROUTES__ */
+return send(res, 404, { error: 'not_found', path: p, see: '/pricing' });
 });
 
 require('./gasfree-overlay.js'); // attaches gasfree routes
@@ -1146,6 +1190,8 @@ require('./identity-overlay.js'); // erc-8004 identity routes
 
 require('./paywall-overlay.js'); // drop-in x402 paywall
 
+// __FACILITATOR_MOUNT__
+require('./facilitator-mount.js').wrap(server);
 server.listen(PORT, '0.0.0.0', () => {
   console.log('[' + AGENT + '] value-api v' + VERSION + ' on :' + PORT + ' payTo=' + PAY_TO + ' ledger=' + (ledgerTail().index + 1) + ' keyId=' + keyId + ' freeTrial=' + FREE_TRIAL + '/day');
   startDispatcher(15 * 60 * 1000);
@@ -1718,3 +1764,193 @@ catch (e) { console.error("[consensus] overlay attach failed: " + (e && e.messag
 try { require("./catalog-overlay.js").wrap(server); }
 catch (e) { console.error("[catalog] overlay attach failed: " + (e && e.message)); }
 // ===================== __END_CATALOG_OVERLAY__ =====================
+
+// ===================== __BAZAAR_MONITOR_OVERLAY__ =====================
+try { require("./bazaar-monitor-overlay.js").wrap(server); }
+catch (e) { console.error("[bazaar-monitor] overlay attach failed: " + (e && e.message)); }
+// ===================== __END_BAZAAR_MONITOR_OVERLAY__ =====================
+
+// ===================== __PKG_OVERLAY__ =====================
+try { require("./pkg-overlay.js").wrap(server); }
+catch (e) { console.error("[pkg] overlay attach failed: " + (e && e.message)); }
+// ===================== __END_PKG_OVERLAY__ =====================
+
+// ===================== __RAIL_OVERLAY__ =====================
+try { require("./rail-overlay.js").wrap(server); }
+catch (e) { console.error("[rail] overlay attach failed: " + (e && e.message)); }
+// ===================== __END_RAIL_OVERLAY__ =====================
+
+// __DURABLE_MOUNT_OVERLAY__
+(function durableMount() {
+  try {
+    const _fs = require('fs');
+    const _path = require('path');
+    const ROOT = __dirname;
+    const files = {
+      '/durable':        { f: 'durable-index.html',      t: 'text/html; charset=utf-8' },
+      '/durable.html':   { f: 'durable-index.html',      t: 'text/html; charset=utf-8' },
+      '/durable.json':   { f: 'durable-services.json',   t: 'application/json' },
+      '/durable.llms.txt': { f: 'durable-llms.txt',      t: 'text/plain; charset=utf-8' }
+    };
+    const http = require('http');
+    const prev = http.createServer;
+    // Hook the request path at the server level via a lightweight patched emitter is invasive;
+    // instead we attach to the existing server instance(s) after boot through the 'request' event
+    // on the http module's global servers. Simplest robust approach: wrap Server.prototype.emit.
+    const Server = http.Server;
+    if (!Server.prototype.__durableWrapped) {
+      const origEmit = Server.prototype.emit;
+      Server.prototype.emit = function (ev, ...args) {
+        if (ev === 'request' && args[0] && args[1]) {
+          const req = args[0], res = args[1];
+          try {
+            const url = (req.url || '').split('?')[0];
+            if (files[url]) {
+              const spec = files[url];
+              const p = _path.join(ROOT, spec.f);
+              if (_fs.existsSync(p)) {
+                const buf = _fs.readFileSync(p);
+                res.writeHead(200, {
+                  'content-type': spec.t,
+                  'content-length': buf.length,
+                  'cache-control': 'public, max-age=300',
+                  'access-control-allow-origin': '*',
+                  'x-durable': 'true'
+                });
+                res.end(buf);
+                return true;
+              }
+            }
+            if (url === '/v1/durable') {
+              const p = _path.join(ROOT, 'DURABLE-URLS.json');
+              const buf = _fs.existsSync(p) ? _fs.readFileSync(p) : Buffer.from('{}');
+              res.writeHead(200, { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'cache-control': 'no-store' });
+              res.end(buf);
+              return true;
+            }
+          } catch (e) { /* fall through to normal handling */ }
+        }
+        return origEmit.apply(this, args);
+      };
+      Server.prototype.__durableWrapped = true;
+    }
+    console.log('[durable-mount] overlay active: /durable /durable.json /durable.llms.txt /v1/durable');
+  } catch (e) {
+    console.log('[durable-mount] FAILED ' + e.message);
+  }
+})();
+// __DURABLE_MOUNT_OVERLAY__
+
+// __REMEDIATE_OVERLAY__ BEGIN
+// remediate-overlay.js v1.1.0 — serve the x402 remediation generator from the live server.
+// Mechanism: patch http.ServerResponse.prototype. Node calls the (possibly implicit) header
+// write before any body is sent, so intercepting there lets us claim /v1/remediate for ANY
+// handler shape, without touching the base server's routing. Marker-guarded + reversible.
+'use strict';
+(function () {
+  try {
+    const http = require('http');
+    const lib = require('./remediate.js');
+
+    if (http.ServerResponse.prototype.__remediatePatched) {
+      global.__REMEDIATE_OVERLAY__ = { applied: true, version: '1.1.0', already: true, route: '/v1/remediate' };
+      return;
+    }
+    http.ServerResponse.prototype.__remediatePatched = true;
+
+    const P = http.ServerResponse.prototype;
+    const _writeHead = P.writeHead;
+    const _write = P.write;
+    const _end = P.end;
+    const _setHeader = P.setHeader;
+
+    const send = (res, code, obj) => {
+      res.__remClaimed = true;
+      try { res.setHeader('content-type', 'application/json; charset=utf-8'); } catch (e) { }
+      try { res.setHeader('access-control-allow-origin', '*'); } catch (e) { }
+      try { res.setHeader('cache-control', 'no-store'); } catch (e) { }
+      const body = JSON.stringify(obj, null, 2);
+      res.statusCode = code;
+      _writeHead.call(res, code);
+      _end.call(res, body);
+    };
+
+    const wants = (res) => {
+      try {
+        const req = res.req;
+        if (!req || !req.url) return null;
+        if (req.url === '/v1/remediate' || req.url.startsWith('/v1/remediate?') || req.url.startsWith('/v1/remediate/')) return req.url;
+      } catch (e) { }
+      return null;
+    };
+
+    const claim = (res) => {
+      // Guard: only intercept once, and only if nobody already started the response.
+      if (res.__remClaimed || res.__remStarted || res.headersSent) return false;
+      const u = wants(res);
+      if (!u) return false;
+      res.__remStarted = true;
+      const target = new URL(u, 'http://localhost').searchParams.get('url');
+      if (!target) {
+        send(res, 400, {
+          error: 'missing_url',
+          usage: '/v1/remediate?url=https://YOUR-ENDPOINT',
+          what: 'Fetches your real 402 challenge, lists the exact gaps, and returns a corrected v2 challenge plus drop-in code (express, fastapi, nextjs, hono, cloudflare_worker, static JSON).',
+          free: true,
+          operator: { name: 'Automaton-Sovereign', erc8004: '95791', payTo: '0x71DEAc098914A009E3720524642A6bE6F65EE528' }
+        });
+        return true;
+      }
+      let p = null; try { p = new URL(target); } catch (e) { }
+      if (!p || !/^https?:$/.test(p.protocol)) { send(res, 400, { error: 'invalid_url', reason: 'must be an absolute http or https URL' }); return true; }
+      const h = p.hostname.toLowerCase();
+      const priv = h === 'localhost' || h === '::1' || /^127\./.test(h) || /^10\./.test(h) || /^192\.168\./.test(h) ||
+        /^169\.254\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h) || h.endsWith('.local') || h.endsWith('.internal');
+      if (priv) { send(res, 400, { error: 'refused_private_target', reason: 'only public http/https endpoints are probed' }); return true; }
+
+      lib.remediate(target, { timeoutMs: 9000, payTo: process.env.PAYTO || undefined }).then(out => {
+        send(res, 200, {
+          service: 'x402 remediation generator',
+          free: true,
+          operator: { name: 'Automaton-Sovereign', erc8004: '95791', payTo: '0x71DEAc098914A009E3720524642A6bE6F65EE528' },
+          target,
+          ...out
+        });
+      }).catch(e => send(res, 502, { error: 'remediate_failed', detail: String(e && e.message || e) }));
+      return true;
+    };
+
+    const responds = (res) => claim(res);
+
+    P.writeHead = function () {
+      if (this.__remStarted || this.__remClaimed) return this;
+      if (responds(this)) return this;
+      this.__remStarted = true;
+      return _writeHead.apply(this, arguments);
+    };
+    P.end = function () {
+      if (this.__remClaimed) return this;
+      if (responds(this)) return this;
+      this.__remStarted = true;
+      return _end.apply(this, arguments);
+    };
+    P.write = function () {
+      if (this.__remClaimed) return true;
+      if (responds(this)) return true;
+      this.__remStarted = true;
+      return _write.apply(this, arguments);
+    };
+    P.setHeader = function () {
+      if (this.__remClaimed) return this;
+      if (responds(this)) return this;
+      return _setHeader.apply(this, arguments);
+    };
+
+    global.__REMEDIATE_OVERLAY__ = { applied: true, version: '1.1.0', route: '/v1/remediate', at: new Date().toISOString() };
+  } catch (e) {
+    global.__REMEDIATE_OVERLAY__ = { applied: false, error: String(e && e.message || e) };
+  }
+})();
+// __REMEDIATE_OVERLAY__ END
+
+// __REMEDIATE_OVERLAY__ END
