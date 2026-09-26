@@ -26,6 +26,10 @@ function Get-AdminSecret {
   return [Environment]::GetEnvironmentVariable('AUTOMATON_ADMIN_SECRET', 'User')
 }
 
+# Last origin the Worker accepted. Each sync is a KV write (free tier: 1,000/day), so the
+# healthy 20s loop only syncs when the tunnel URL changed or the previous sync failed.
+$script:lastSyncedUrl = $null
+
 function Sync-Worker($targetUrl) {
   $secret = Get-AdminSecret
   if (-not $secret) { W 'worker sync skipped: AUTOMATON_ADMIN_SECRET not set'; return }
@@ -35,6 +39,7 @@ function Sync-Worker($targetUrl) {
       -Headers @{ 'x-admin-secret' = $secret } `
       -Body $targetUrl `
       -TimeoutSec 8
+    $script:lastSyncedUrl = $targetUrl
     W ('worker synced to ' + $targetUrl)
   } catch {
     W ('worker sync error: ' + $_.Exception.Message)
@@ -80,7 +85,7 @@ function Ensure-Tunnel {
     try {
       $r = Invoke-WebRequest -UseBasicParsing -Uri ($u + '/health') -TimeoutSec 10
       if ($r.StatusCode -eq 200 -and $r.Content -like '*Automaton-Sovereign*') {
-        Sync-Worker $u
+        if ($u -ne $script:lastSyncedUrl) { Sync-Worker $u }
         return # Healthy!
       }
     } catch {}

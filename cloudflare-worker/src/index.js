@@ -29,10 +29,16 @@ export default {
           headers: { 'Content-Type': 'application/json' }
         });
       }
+      // KV writes are scarce (1,000/day on the free tier): skip the put when nothing changed.
+      let changed = false;
       if (env.TUNNEL_KV) {
-        await env.TUNNEL_KV.put('ORIGIN', newOrigin);
+        const current = await env.TUNNEL_KV.get('ORIGIN');
+        if (current !== newOrigin) {
+          await env.TUNNEL_KV.put('ORIGIN', newOrigin);
+          changed = true;
+        }
       }
-      return new Response(JSON.stringify({ ok: true, origin: newOrigin }), {
+      return new Response(JSON.stringify({ ok: true, origin: newOrigin, changed }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
@@ -54,7 +60,8 @@ export default {
     let origin = env.BACKEND_ORIGIN || "https://academics-ira-appraisal-lawn.trycloudflare.com";
     if (env.TUNNEL_KV) {
       try {
-        const kvOrigin = await env.TUNNEL_KV.get('ORIGIN');
+        // Edge-cached for 60s: after a tunnel change, some locations may use the old origin that long.
+        const kvOrigin = await env.TUNNEL_KV.get('ORIGIN', { cacheTtl: 60 });
         if (kvOrigin) origin = kvOrigin;
       } catch (e) {
         // fallback to env.BACKEND_ORIGIN
