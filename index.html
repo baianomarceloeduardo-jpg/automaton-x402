@@ -424,6 +424,15 @@
     }
 
     .endpoint-select:focus { border-color: var(--accent); }
+    .endpoint-select optgroup {
+      background: #0d1527;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .endpoint-select option {
+      background: #090d16;
+      color: #f8fafc;
+    }
 
     .terminal-window {
       background: #06080d;
@@ -820,17 +829,22 @@
         </p>
 
         <select id="endpointSelect" class="endpoint-select" onchange="onEndpointChange()">
-          <option value="/v2/security/scan?address=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">GET /v2/security/scan (Base Token Safety & Honeypot)</option>
-          <option value="/v2/security/scan?address=0x940181a94A35A4569E4529A3CDfB74e38FD98631">GET /v2/security/scan?address=AERO (Aerodrome Scan)</option>
-          <option value="/v2/oracle/base">GET /v2/oracle/base (Signed DeFi Oracle & Gas)</option>
-          <option value="/v2/sentiment?asset=ETH">GET /v2/sentiment?asset=ETH (Risk & Sentiment)</option>
-          <option value="/v1/hash?input=AutomatonSovereign">GET /v1/hash?input=AutomatonSovereign (SHA-256)</option>
-          <option value="/v1/uuid">GET /v1/uuid (RFC-4122 v4)</option>
-          <option value="/v1/echo?msg=HelloAutonomousWorld">GET /v1/echo (High-Speed Ping)</option>
-          <option value="/health">GET /health (Node Diagnostics)</option>
-          <option value="/v2/treasury/balance">GET /v2/treasury/balance (On-Chain Treasury & Gas)</option>
-          <option value="/v2/pulse">GET /v2/pulse (Base L2 Social Pulse & Broadcast)</option>
-          <option value="/v2/pubkey">GET /v2/pubkey (ECDSA P-256 Key)</option>
+          <optgroup label="⚡ Free Live Diagnostics & Primitives">
+            <option value="/health" selected>GET /health (Node Diagnostics & Uptime - Free)</option>
+            <option value="/v2/treasury/balance">GET /v2/treasury/balance (On-Chain Treasury & Gas - Free)</option>
+            <option value="/v2/pulse">GET /v2/pulse (Base L2 Social Pulse & Broadcast - Free)</option>
+            <option value="/v1/echo?msg=HelloAutonomousWorld">GET /v1/echo (High-Speed Ping - Free)</option>
+            <option value="/v2/pubkey">GET /v2/pubkey (ECDSA P-256 Key - Free)</option>
+            <option value="/v1/hash?input=AutomatonSovereign">GET /v1/hash?input=AutomatonSovereign (SHA-256 - Free)</option>
+            <option value="/v1/uuid">GET /v1/uuid (RFC-4122 v4 - Free)</option>
+          </optgroup>
+          <optgroup label="🛡️ Paid Agent Services (x402 Micropayments • 3 Free Daily Trials)">
+            <option value="/v2/simulate?to=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&data=0x18160ddd">GET /v2/simulate (EVM Tx Simulator & Revert Decoder - 0.001 USDC)</option>
+            <option value="/v2/security/scan?address=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">GET /v2/security/scan (Base Token Safety & Honeypot - 0.002 USDC)</option>
+            <option value="/v2/security/scan?address=0x940181a94A35A4569E4529A3CDfB74e38FD98631">GET /v2/security/scan?address=AERO (Aerodrome Scan - 0.002 USDC)</option>
+            <option value="/v2/oracle/base">GET /v2/oracle/base (Signed DeFi Oracle & Gas - 0.001 USDC)</option>
+            <option value="/v2/sentiment?asset=ETH">GET /v2/sentiment?asset=ETH (Risk & Sentiment - 0.001 USDC)</option>
+          </optgroup>
         </select>
 
         <div style="display: flex; gap: 10px; margin-bottom: 12px;">
@@ -1075,11 +1089,21 @@
       setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
+    function apiBase() {
+      if (window.location.protocol === 'file:' || 
+          window.location.hostname.includes('github.io') || 
+          window.location.hostname === 'localhost' || 
+          window.location.hostname === '127.0.0.1') {
+        return 'https://automaton-api.bfzovw.easypanel.host';
+      }
+      return '';
+    }
+
     // Telemetry Init
     async function initTelemetry() {
       const t0 = performance.now();
       try {
-        const res = await fetch('/health');
+        const res = await fetch(apiBase() + '/health');
         const dt = Math.round(performance.now() - t0);
         if (res.ok) {
           const h = await res.json();
@@ -1100,7 +1124,7 @@
       }
 
       try {
-        const trRes = await fetch('/v2/treasury/balance');
+        const trRes = await fetch(apiBase() + '/v2/treasury/balance');
         if (trRes.ok) {
           const tr = await trRes.json();
           const elTreasury = document.getElementById('statTreasury');
@@ -1122,23 +1146,37 @@
       btn.disabled = true;
       resPre.textContent = 'Executing call to ' + ep + '...';
       latTag.textContent = 'Running...';
+      latTag.style.color = 'var(--fg-subtle)';
 
       const t0 = performance.now();
       try {
-        const res = await fetch(ep);
+        const res = await fetch(apiBase() + ep);
         const dt = Math.round(performance.now() - t0);
-        const data = await res.json();
-        resPre.textContent = JSON.stringify(data, null, 2);
-        latTag.textContent = `HTTP ${res.status} • ${dt}ms`;
+        let data;
+        const text = await res.text();
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          data = text;
+        }
+
         if (res.status === 200) {
-          latTag.style.color = '#10b981';
+          latTag.innerHTML = `<span style="color:#10b981;">● HTTP 200 OK</span> • ${dt}ms`;
+          resPre.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        } else if (res.status === 402) {
+          latTag.innerHTML = `<span style="color:#f59e0b;">● HTTP 402 Payment Required</span> • ${dt}ms`;
+          const isExhausted = data && (data.freeTrialExhausted || (data.freeTrial && data.freeTrial.remaining === 0));
+          const banner = isExhausted
+            ? `/* \n * 🛡️ x402 PROTOCOL RESPONSE: HTTP 402 PAYMENT REQUIRED\n * --------------------------------------------------------\n * Status: System operating normally (protocol working as designed)!\n * Free trial quota reached (3/3 daily calls used for this IP).\n * Autonomous agents settle 0.001 - 0.002 USDC on Base via EIP-3009.\n * \n * NOTE: Select any FREE endpoint above (e.g. /health or /v2/treasury/balance)\n * for instant 200 OK evaluation!\n */\n\n`
+            : `/* \n * 🛡️ x402 PROTOCOL CHALLENGE: PAYMENT REQUIRED\n * Endpoint requires micropayment settlement.\n */\n\n`;
+          resPre.textContent = banner + (typeof data === 'object' ? JSON.stringify(data, null, 2) : data);
         } else {
-          latTag.style.color = '#f59e0b';
+          latTag.innerHTML = `<span style="color:#ef4444;">● HTTP ${res.status}</span> • ${dt}ms`;
+          resPre.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
         }
       } catch (err) {
-        resPre.textContent = '// Error executing request: ' + err.message;
-        latTag.textContent = 'Error';
-        latTag.style.color = '#ef4444';
+        resPre.textContent = '// Network error executing request: ' + err.message + '\n// The endpoint could not be reached directly from this browser context.';
+        latTag.innerHTML = '<span style="color:#ef4444;">● Network Error</span>';
       } finally {
         btn.disabled = false;
       }
@@ -1147,12 +1185,13 @@
     function onEndpointChange() {
       const sel = document.getElementById('endpointSelect');
       const badge = document.getElementById('playBadge');
-      if (sel.value.includes('/v2/oracle') || sel.value.includes('/v2/sentiment') || sel.value.includes('/v2/security/scan')) {
+      const val = sel.value;
+      if (val.includes('/v2/oracle') || val.includes('/v2/sentiment') || val.includes('/v2/security/scan') || val.includes('/v2/simulate')) {
         badge.className = 'chip chip-paid';
-        badge.textContent = '0.001 USDC (FREE TRIAL ACTIVE)';
+        badge.textContent = 'x402 (3 FREE DAILY TRIALS)';
       } else {
         badge.className = 'chip chip-free';
-        badge.textContent = 'FREE EVALUATION';
+        badge.textContent = '100% FREE EVALUATION';
       }
     }
 
@@ -1175,7 +1214,7 @@
     async function loadLedger() {
       const stream = document.getElementById('ledgerStream');
       try {
-        const res = await fetch('/v2/ledger?limit=10');
+        const res = await fetch(apiBase() + '/v2/ledger?limit=10');
         if (res.ok) {
           const blocks = await res.json();
           if (Array.isArray(blocks) && blocks.length > 0) {
