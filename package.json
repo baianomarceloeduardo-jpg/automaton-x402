@@ -1,4 +1,10 @@
 {
+  "name": "automaton-x402",
+  "version": "2.1.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "@coinbase/cdp-sdk": "^1.57.0",
     "ethers": "^6.17.0"

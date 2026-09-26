@@ -1,0 +1,7 @@
+node_modules
+.git
+*.log
+tunnel.url
+cloudflared.exe
+.automaton
+scratch
