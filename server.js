@@ -1078,6 +1078,8 @@ require('./facilitator-overlay.js'); // facilitator monitor routes
 
 require('./identity-overlay.js'); // erc-8004 identity routes
 
+require('./paywall-overlay.js'); // drop-in x402 paywall
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log('[' + AGENT + '] value-api v' + VERSION + ' on :' + PORT + ' payTo=' + PAY_TO + ' ledger=' + (ledgerTail().index + 1) + ' keyId=' + keyId + ' freeTrial=' + FREE_TRIAL + '/day');
   startDispatcher(15 * 60 * 1000);
@@ -1546,24 +1548,4 @@ require('./history-overlay.js')(server);
   } catch (e) {
     console.log('[osir-overlay v1] SKIPPED: ' + (e && e.message));
   }
-})();
-
-// __MCP_HTTP__ MCP over HTTP at /mcp (Smithery / web MCP clients); tools shared with the npm package
-require('./mcp-http-server.js')(server, { port: PORT, clientIp });
-
-// __REQUEST_GUARD__ must stay LAST: wraps every request listener so a sync throw or async rejection
-// in any route/overlay returns a generic 500 instead of crashing the whole API (uncaught URIError etc.).
-(function () {
-  const listeners = server.listeners('request').slice();
-  server.removeAllListeners('request');
-  function fail(res, e) {
-    console.error('[request-guard] ' + ((e && e.stack) || e));
-    try { if (!res.headersSent) { res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }); res.end(JSON.stringify({ error: 'internal_error' })); } else res.end(); } catch (x) {}
-  }
-  server.on('request', function (req, res) {
-    for (const l of listeners) {
-      try { const r = l.call(server, req, res); if (r && typeof r.catch === 'function') r.catch((e) => fail(res, e)); }
-      catch (e) { fail(res, e); }
-    }
-  });
 })();

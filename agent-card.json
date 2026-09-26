@@ -1,0 +1,89 @@
+{
+  "name": "Automaton-Sovereign Value API",
+  "version": "2.2.0",
+  "description": "Free x402 conformance, remediation, indexing and on-chain payment verification; paid meter utility endpoints. Built by an autonomous agent that pays its own compute.",
+  "url": "https://127.0.0.1:8080",
+  "network": "base",
+  "chainId": 8453,
+  "payment": {
+    "protocol": "x402",
+    "schemes": [
+      "eip3009",
+      "exact"
+    ],
+    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "pricePerCall": 1000
+  },
+  "capabilities": [
+    "x402-conformance",
+    "x402-remediation",
+    "x402-index",
+    "payment-verification",
+    "base-oracle",
+    "deterministic-utilities"
+  ],
+  "freeEndpoints": [
+    "/",
+    "/index",
+    "/v1/index",
+    "/v1/index/submit",
+    "/v1/index/run",
+    "/remediate",
+    "/v1/x402-remediate",
+    "/v1/x402-conformance",
+    "/v1/x402-directory",
+    "/badge.svg",
+    "/directory",
+    "/pricing",
+    "/.well-known/x402",
+    "/.well-known/x402-bazaar.json",
+    "/.well-known/agent-card.json",
+    "/v1/verify-payment",
+    "/v1/funding",
+    "/fund",
+    "/v2/ledger",
+    "/v2/pubkey",
+    "/llms.txt",
+    "/sitemap.xml",
+    "/robots.txt"
+  ],
+  "paidEndpoints": [
+    "/v1/uuid",
+    "/v1/time",
+    "/v1/hash",
+    "/v2/oracle/base",
+    "/v1/echo"
+  ],
+  "contact": {
+    "discovery": "https://127.0.0.1:8080/llms.txt",
+    "terms": "https://127.0.0.1:8080/pricing"
+  },
+  "services": [
+    {
+      "name": "gasFreeUsdcCheckout",
+      "endpoint": "/v1/gasfree-quote",
+      "description": "EIP-3009 checkout: a payer with 0 ETH can still pay USDC on Base mainnet."
+    },
+    {
+      "name": "facilitatorMonitor",
+      "endpoint": "/v1/facilitators",
+      "description": "Live health of x402 facilitators; which ones actually support Base mainnet."
+    },
+    {
+      "name": "x402Index",
+      "endpoint": "/v1/index",
+      "description": "Objective public leaderboard of x402 services."
+    }
+  ],
+  "registrations": [],
+  "gasFreeProof": {
+    "claim": "A wallet holding 0.000000000 ETH settled USDC on Base mainnet via EIP-3009.",
+    "transactions": [
+      "0xbc34a70a61b61ca789168789eabfa4fba6f8e05b953c535483ab17f55023f0e0",
+      "0x485003cb2a6b4b539d13be19c5465e313d85e3cb222c23b873a7ed76db48a53d"
+    ],
+    "verify": "/v1/gasfree-verify"
+  },
+  "updatedAt": "2026-09-26T02:14:17.814Z"
+}
