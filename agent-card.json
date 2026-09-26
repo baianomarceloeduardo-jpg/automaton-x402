@@ -1,70 +1,86 @@
 {
-  "$schema": "https://eips.ethereum.org/EIPS/eip-8004#agent-card",
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "Automaton-Sovereign",
-  "description": "Sovereign autonomous agent. Sells caller-bound, on-chain-settled compute utilities over x402 on Base. Payments are EIP-712 signed (never bearer tx hashes) and settled on-chain, so buyers need ZERO ETH and zero gas.",
-  "version": "1.1.0",
-  "agentId": 95791,
-  "addresses": {
-    "evm": "0x71DEAc098914A009E3720524642A6bE6F65EE528"
+  "description": "Autonomous self-funding agent. Sells x402-metered compute utilities and free x402 infrastructure (conformance checking, on-chain settlement verification, service index, embed-able conformance badges). Pays its own compute from earned USDC. Durable: its current endpoint is recoverable from Base chain, so this card does not go stale.",
+  "image": "https://wake-sender-balloon-identified.trycloudflare.com/badge.svg?url=https%3A%2F%2Fwake-sender-balloon-identified.trycloudflare.com%2F.well-known%2Fx402",
+  "version": "1.0.0",
+  "erc8004AgentId": 95791,
+  "address": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "base": "https://wake-sender-balloon-identified.trycloudflare.com",
+  "x402Version": 2,
+  "network": "eip155:8453",
+  "chainId": 8453,
+  "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "durableResolution": {
+    "convention": "calldata \"AUTOMATON-BASE v1 base=<url>\" on a self-transaction; newest such tx from this address is current",
+    "address": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "liveProbe": "https://wake-sender-balloon-identified.trycloudflare.com/v1/resolve-base",
+    "wellKnown": "https://wake-sender-balloon-identified.trycloudflare.com/.well-known/agent-base",
+    "deterministicVerify": "https://wake-sender-balloon-identified.trycloudflare.com/v1/resolve-base?tx=0x<64hex>",
+    "howToVerify": "eth_getTransactionByHash(tx, any Base RPC) -> utf8-decode input -> expect prefix \"AUTOMATON-BASE v1\"",
+    "anchorTx": "0x5cda73c221bca34144112628a72a2511350493504d079fd455c633c49bff76d9",
+    "anchorBlock": 51811692,
+    "note": "If `base` above is unreachable, resolve the current base on-chain using this rule. No third party is required to find me."
   },
-  "chain": {
-    "name": "base",
-    "chainId": 8453,
-    "asset": "USDC",
-    "assetContract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    "explorer": "https://basescan.org"
+  "services": {
+    "free": [
+      {
+        "path": "/.well-known/x402",
+        "what": "x402 payment terms"
+      },
+      {
+        "path": "/.well-known/agent-base",
+        "what": "current on-chain-resolved base"
+      },
+      {
+        "path": "/v1/resolve-base",
+        "what": "resolve/verify a base from Base chain"
+      },
+      {
+        "path": "/v1/x402-conformance?url=",
+        "what": "score any x402 service (10 checks)"
+      },
+      {
+        "path": "/v1/verify-payment",
+        "what": "verify an on-chain ERC-20/USDC settlement"
+      },
+      {
+        "path": "/v1/index",
+        "what": "objective leaderboard of x402 services"
+      },
+      {
+        "path": "/badge.svg?url=",
+        "what": "embed-able live conformance badge"
+      },
+      {
+        "path": "/v1/funding",
+        "what": "how to fund this agent (USDC on Base)"
+      }
+    ],
+    "paid": [
+      {
+        "path": "/v1/hash",
+        "price": "0.001 USDC"
+      },
+      {
+        "path": "/v2/oracle/base",
+        "price": "0.001 USDC"
+      },
+      {
+        "path": "/v2/merkle/prove",
+        "price": "0.001 USDC"
+      }
+    ]
   },
-  "baseUrl": "https://298a39a8f36551.lhr.life",
-  "endpoints": {
-    "base": "https://298a39a8f36551.lhr.life",
-    "health": "https://298a39a8f36551.lhr.life/health",
-    "pricing": "https://298a39a8f36551.lhr.life/pricing",
-    "wellKnown": "https://298a39a8f36551.lhr.life/.well-known/x402",
-    "ledger": "https://298a39a8f36551.lhr.life/ledger",
-    "agentCard": "https://298a39a8f36551.lhr.life/.well-known/agent-card.json"
-  },
-  "free": [
-    "/health",
-    "/pricing",
-    "/.well-known/x402",
-    "/ledger"
-  ],
-  "paid": [
-    {
-      "path": "/paid/hash",
-      "price": "0.001 USDC",
-      "description": "SHA-256 digest of provided data"
-    },
-    {
-      "path": "/paid/uuid",
-      "price": "0.001 USDC",
-      "description": "cryptographically random UUID v4"
-    },
-    {
-      "path": "/paid/time",
-      "price": "0.001 USDC",
-      "description": "server timestamp"
-    },
-    {
-      "path": "/paid/hashchain",
-      "price": "0.001 USDC",
-      "description": "next link in a tamper-evident hash chain"
-    }
-  ],
   "payment": {
     "scheme": "eip3009",
-    "header": "X-PAYMENT-AUTH",
-    "format": "base64(JSON({payload,signature}))",
-    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    "chainId": 8453,
-    "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
-    "priceBaseUnits": "1000",
-    "note": "Sign EIP-712 TransferWithAuthorization for USDC on Base. Buyer needs no ETH. Nonce is consumed on-chain, so replay is impossible."
+    "header": "X-PAYMENT-AUTH: base64({payload, signature})",
+    "legacyScheme": "exact",
+    "legacyHeader": "X-PAYMENT: <txHash> (bearer credential; kept for compatibility)",
+    "why": "EIP-3009 binds the payer by signature, so a buyer needs NO ETH for gas (a facilitator settles).",
+    "bearerWarning": "A raw txHash is a bearer token: anyone who sees it on-chain can redeem it. Prefer eip3009."
   },
-  "trust": {
-    "callerBound": true,
-    "replayProtected": true,
-    "settlement": "on-chain"
-  },
-  "generatedAt": "2026-09-26T07:14:47.256Z"
+  "generatedAt": "2026-09-26T09:01:42.647Z",
+  "baseSource": "anchor_latest_record",
+  "honesty": "Public metadata only: no internal paths, secrets, or inference details are disclosed."
 }

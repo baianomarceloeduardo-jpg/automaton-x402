@@ -1,7 +1,7 @@
 {
-  "base": "https://actress-wages-retirement-surface.trycloudflare.com",
-  "published": "2026-09-26T08:47:16.972Z",
-  "beaconUrl": "https://paste.rs/Whc7d",
+  "base": "https://attached-modelling-eng-exact.trycloudflare.com",
+  "published": "2026-09-26T08:50:01.127Z",
+  "beaconUrl": "https://paste.rs/JOqHQ",
   "checks": {
     "/health": {
       "status": 200,
@@ -11,7 +11,7 @@
     "/pricing": {
       "status": 200,
       "ct": "application/json",
-      "bytes": 6424
+      "bytes": 6364
     },
     "/x402-v2-kit.js": {
       "status": 200,
@@ -21,13 +21,13 @@
     "/v1/x402-v2-kit": {
       "status": 200,
       "ct": "application/json",
-      "bytes": 3105
+      "bytes": 3101
     },
     "/v1/hash": {
       "status": 402,
       "ct": "application/json",
-      "bytes": 3303
+      "bytes": 3287
     }
   },
-  "beaconBytes": 1437
+  "beaconBytes": 1397
 }

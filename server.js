@@ -1647,3 +1647,6 @@ function __livePricing(req) {
   } catch (e) { return PRICING; }
 }
 // END __PRICING_LIVE_OVERLAY__
+
+// __DURABLE_OVERLAY__
+require("./durable-overlay.js");

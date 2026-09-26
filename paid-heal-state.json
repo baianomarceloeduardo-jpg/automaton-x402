@@ -1,9 +1,9 @@
 {
   "ok": true,
-  "baseUrl": "https://a5f215cc1597ba.lhr.life",
-  "action": "none",
-  "beacon": "https://paste.rs/flPmO",
+  "baseUrl": "https://fd02426541abb6.lhr.life",
+  "action": "rotated",
+  "beacon": "https://paste.rs/JB3OP",
   "paidChallenge": 402,
-  "updatedAt": "2026-09-26T08:47:46.427Z",
+  "updatedAt": "2026-09-26T09:03:22.594Z",
   "reason": "not_routable"
 }
