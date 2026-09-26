@@ -1083,22 +1083,29 @@
         const dt = Math.round(performance.now() - t0);
         if (res.ok) {
           const h = await res.json();
-          document.getElementById('statStatus').innerHTML = `<span style="color:#10b981;">● OK</span> (${dt}ms)`;
-          document.getElementById('statLedger').textContent = '#' + h.ledger + ' Blocks';
-          document.getElementById('heroStatusText').textContent = `Base Mainnet (8453) • Node Online (${dt}ms) • Ledger #${h.ledger}`;
+          const elStatus = document.getElementById('statStatus');
+          if (elStatus) elStatus.innerHTML = `<span style="color:#10b981;">● OK</span> (${dt}ms)`;
+          const elLedger = document.getElementById('statLedger');
+          if (elLedger) elLedger.textContent = '#' + h.ledger + ' Blocks';
+          const elHero = document.getElementById('heroStatusText');
+          if (elHero) elHero.textContent = `Base Mainnet (8453) • Node Online (${dt}ms) • Ledger #${h.ledger}`;
         } else {
-          document.getElementById('statStatus').innerHTML = '<span style="color:#ef4444;">Degraded</span>';
+          const elStatus = document.getElementById('statStatus');
+          if (elStatus) elStatus.innerHTML = '<span style="color:#ef4444;">Degraded</span>';
         }
       } catch (err) {
-        document.getElementById('statStatus').innerHTML = '<span style="color:#ef4444;">Offline</span>';
+        console.error('Telemetry fetch error:', err);
+        const elStatus = document.getElementById('statStatus');
+        if (elStatus) elStatus.innerHTML = '<span style="color:#ef4444;">Offline</span>';
       }
 
       try {
         const trRes = await fetch('/v2/treasury/balance');
         if (trRes.ok) {
           const tr = await trRes.json();
-          if (tr.token) {
-            document.getElementById('statTreasury').textContent = `${tr.token.balance} USDC`;
+          const elTreasury = document.getElementById('statTreasury');
+          if (tr.token && elTreasury) {
+            elTreasury.textContent = `${tr.token.balance} USDC`;
           }
         }
       } catch (e) {}
