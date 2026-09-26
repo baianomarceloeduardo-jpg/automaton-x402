@@ -13,7 +13,7 @@ const path = require('path');
 
 const BOT_DIR = path.join(__dirname, '..', 'telegram-bot');
 const DEX_LABEL = { 'uniswap-v4': 'Uniswap v4', 'uniswap-v3': 'Uniswap v3', 'aerodrome': 'Aerodrome', 'aerodrome-slipstream': 'Aerodrome Slipstream' };
-const RISK_LABEL = { SAFE: 'BAIXO', MODERATE_RISK: 'MODERADO' };
+const RISK_LABEL = { SAFE: 'LOW', MODERATE_RISK: 'MODERATE' };
 
 function readJson(file) { try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { return null; } }
 
@@ -34,14 +34,14 @@ const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 
 function formatAlert({ dex, token, scan, botUsername }) {
   return [
-    '🚨 <b>Novo Token Detectado na Base</b>',
+    '🚨 <b>New Token Detected on Base</b>',
     `Dex: ${esc(DEX_LABEL[dex] || dex)}`,
     `Token: <code>${esc(token)}</code>`,
-    `Risco: ${RISK_LABEL[scan.verdict] || esc(scan.verdict)} (score ${scan.riskScore}/100)`,
-    `Auditado em ${scan.scanMs}ms pelo Automaton Sentinel.`,
+    `Risk: ${RISK_LABEL[scan.verdict] || esc(scan.verdict)} (score ${scan.riskScore}/100)`,
+    `Audited in ${scan.scanMs}ms by Automaton Sentinel.`,
     `<a href="https://basescan.org/token/${token}">Basescan</a> | <a href="https://dexscreener.com/base/${token}">DexScreener</a>`,
-    '<i>Análise estática de bytecode: não detecta rug de liquidez nem é recomendação de compra.</i>',
-    botUsername ? `👉 Analise a fundo no @${esc(botUsername)}` : null
+    '<i>Static bytecode analysis: does not detect liquidity rug. Not financial advice. DYOR.</i>',
+    botUsername ? `👉 Deep audit & simulate at @${esc(botUsername)}` : null
   ].filter(Boolean).join('\n');
 }
 
