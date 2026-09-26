@@ -72,6 +72,31 @@ function loadAlertConfig(env = process.env, botDir = BOT_DIR) {
 
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+async function fetchTokenLiquidity(tokenAddress) {
+  try {
+    if (!globalThis.fetch) return null;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 2000);
+    const r = await globalThis.fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`, {
+      headers: { 'Accept': 'application/json' },
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    const j = await r.json().catch(() => null);
+    if (!j || !j.pairs || !j.pairs.length) return null;
+    const basePairs = j.pairs.filter(p => p.chainId === 'base');
+    const pairs = basePairs.length ? basePairs : j.pairs;
+    const best = pairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0))[0];
+    if (best && best.liquidity && best.liquidity.usd) {
+      return {
+        usd: Math.round(best.liquidity.usd),
+        quoteSymbol: best.quoteToken?.symbol || null
+      };
+    }
+  } catch (_) {}
+  return null;
+}
+
 function formatAlert({ dex, token, scan, botUsername, quoteSymbol }) {
   const sym = scan.symbol ? esc(scan.symbol.replace(/^\$/, '')) : null;
   const name = scan.name ? esc(scan.name) : null;
@@ -216,7 +241,17 @@ function createTelegramAlerter({
     for (const c of candidates) {
       if (budgetLeft() <= 0) break;
       if (botUsername === undefined) { try { botUsername = (await api('getMe')).username || null; } catch (e) { botUsername = null; } }
-      const text = formatAlert({ ...c, botUsername });
+
+      let liqInfo = null;
+      try { liqInfo = await fetchTokenLiquidity(c.token); } catch (_) {}
+
+      const scanWithLiq = {
+        ...c.scan,
+        ...(liqInfo && liqInfo.usd ? { liquidityUsd: liqInfo.usd } : {})
+      };
+      const quoteSymbol = (liqInfo && liqInfo.quoteSymbol) || c.quoteSymbol || 'USDC';
+
+      const text = formatAlert({ ...c, scan: scanWithLiq, quoteSymbol, botUsername });
       sentAt.push(now());
       sent++;
       for (const chatId of to) {
