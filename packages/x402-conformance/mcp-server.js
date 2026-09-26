@@ -22,6 +22,7 @@ const https = require('https');
 const { URL } = require('url');
 const PKG = require('./package.json');
 const linter = require('./index.js');
+const simulator = require('./tx-simulator.js');
 
 const BASE = (process.env.VALUE_API_BASE || 'https://api.automaton-sovereign.workers.dev').replace(/\/+$/, '');
 const PAYMENT = process.env.VALUE_API_PAYMENT || '';
@@ -49,6 +50,8 @@ function httpJson(method, urlStr, headers, body) {
 const TOOLS = [
   { name: 'x402_conformance_check', description: 'FREE, runs locally. Lint any x402 paid endpoint for protocol conformance: HTTP 402 challenge, x402Version, accepts[] (exact scheme), Base network and addresses, EIP-712 domain, and rejection of malformed, forged, expired, underpaid and wrong-recipient EIP-3009 payments. Returns verdict, grade and per-check results.',
     inputSchema: { type: 'object', properties: { url: { type: 'string', description: 'Full URL of the x402-protected endpoint to check.' } }, required: ['url'] } },
+  { name: 'simulate_base_transaction', description: 'FREE, runs locally against Base Mainnet RPC. Dry-run a transaction before sending it: eth_call + eth_estimateGas at the latest block. Predicts whether it will revert and decodes the reason (Error(string), Panic(uint256) codes, custom-error selector, or node rejection such as insufficient funds). Returns { ok, willRevert, revertReason, estimatedGas, returnData }.',
+    inputSchema: { type: 'object', properties: { to: { type: 'string', description: 'Target contract or recipient address on Base (0x...).' }, data: { type: 'string', description: 'Calldata as 0x-hex (default 0x for a plain ETH transfer).' }, value: { type: 'string', description: 'ETH value in wei, decimal or 0x-hex (default 0).' }, from: { type: 'string', description: 'Optional sender address; needed for balance/allowance-dependent calls.' } }, required: ['to'] } },
   { name: 'security_scan', description: 'PAID 0.001 USDC/call, or free trial (3/day/IP). Base token safety analysis: honeypot detection, mint traps, selfdestruct/delegatecall, proxy and tax risks from contract bytecode, with a risk score and signed verdict. On 402, pay the accepts[] terms then retry with the payment tx hash.',
     inputSchema: { type: 'object', properties: { address: { type: 'string', description: 'Token or contract address on Base (0x...).' }, payment: { type: 'string', description: 'Optional X-PAYMENT base tx hash of the USDC payment.' } }, required: ['address'] } },
   { name: 'attest', description: 'Create a SIGNED, hash-chained, append-only attestation (verifiable proof-of-existence) for a payload. PAID: 0.001 USDC/call, or free trial (3/day/IP). On 402, pay the accepts[] terms then retry with the payment tx hash.',
@@ -89,6 +92,10 @@ async function callTool(name, args, opts) {
     case 'x402_conformance_check': {
       if (!/^https?:\/\//i.test(args.url || '')) throw new Error('url must be an absolute http(s) URL');
       return { status: 200, body: await linter.run(args.url) };
+    }
+    case 'simulate_base_transaction': {
+      const r = await simulator.simulate({ to: args.to, data: args.data, value: args.value, from: args.from });
+      return { status: r.ok ? 200 : 400, body: r };
     }
     case 'security_scan': return httpJson('GET', B + '/v2/security/scan?' + q({ address: args.address }), payHeader);
     case 'attest': return httpJson('POST', B + '/v2/attest', payHeader, { data: args.data });

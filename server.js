@@ -33,6 +33,7 @@ const BADGE = require('./badge.js');
 const { URL } = require('url');
 const merkle = require('./merkle');
 const { scanTokenContract } = require('./token-security.js');
+const SIMULATOR = require('./packages/x402-conformance/tx-simulator.js');
 const { getTreasuryBalances } = require('./treasury.js');
 const { generateBasePulse } = require('./base-pulse.js');
 const { startDispatcher, HISTORY_FILE } = require('./broadcast-dispatcher.js');
@@ -52,7 +53,8 @@ const ROUTE_PRICES = {
   '/v2/security/scan': 2000n,  // 0.002 USDC - token safety / honeypot scan
   '/v2/attest': 50000n,        // 0.05 USDC - signed, hash-chained attestation
   '/v2/batch': 50000n,         // 0.05 USDC - signed merkle-root batch attestation
-  '/v2/oracle/base': 1000n     // 0.001 USDC - signed DeFi oracle
+  '/v2/oracle/base': 1000n,    // 0.001 USDC - signed DeFi oracle
+  '/v2/simulate': 1000n        // 0.001 USDC - Base tx dry-run (eth_call + estimateGas)
 };
 function priceUnitsFor(endpoint) { return ROUTE_PRICES[endpoint] || PRICE_BASE_UNITS; }
 function priceUsdcFor(endpoint) { const u = priceUnitsFor(endpoint); const w = u / 1000000n, f = (u % 1000000n).toString().padStart(6, '0').replace(/0+$/, ''); return f ? w + '.' + f : w.toString(); }
@@ -266,7 +268,7 @@ function clientIp(req) {
 }
 
 const PAID_UTIL = ['/v1/hash', '/v1/echo', '/v1/uuid', '/v1/random'];
-const PAID = PAID_UTIL.concat(['/v2/attest', '/v2/batch', '/v2/oracle/base', '/v2/merkle/prove', '/v2/sentiment', '/v2/security/scan']);
+const PAID = PAID_UTIL.concat(['/v2/attest', '/v2/batch', '/v2/oracle/base', '/v2/merkle/prove', '/v2/sentiment', '/v2/security/scan', '/v2/simulate']);
 
 const PRICING = {
   service: 'automaton-value-api', version: VERSION, agent: AGENT, currency: 'USDC', network: NETWORK, chainId: CHAIN_ID,
@@ -284,7 +286,8 @@ const PRICING = {
     { path: '/v2/oracle/base', method: 'GET', priceUsdc: priceUsdcFor('/v2/oracle/base'), priceBaseUnits: priceUnitsFor('/v2/oracle/base').toString(), params: {}, returns: 'ECDSA P-256 signed Base L2 gas & price oracle' },
     { path: '/v2/merkle/prove', method: 'POST', priceUsdc: priceUsdcFor('/v2/merkle/prove'), priceBaseUnits: priceUnitsFor('/v2/merkle/prove').toString(), params: { items: 'string[]', target: 'string|int' }, returns: 'Merkle inclusion proof + signed root' },
     { path: '/v2/sentiment', method: 'GET', priceUsdc: priceUsdcFor('/v2/sentiment'), priceBaseUnits: priceUnitsFor('/v2/sentiment').toString(), params: { asset: 'string (e.g. ETH, AERO)' }, returns: 'Risk, liquidity & sentiment index with signed verdict' },
-    { path: '/v2/security/scan', method: 'GET|POST', priceUsdc: priceUsdcFor('/v2/security/scan'), priceBaseUnits: priceUnitsFor('/v2/security/scan').toString(), params: { address: 'string (0x...)' }, returns: 'Honeypot, risk score & bytecode vulnerability analysis with signed verdict' }
+    { path: '/v2/security/scan', method: 'GET|POST', priceUsdc: priceUsdcFor('/v2/security/scan'), priceBaseUnits: priceUnitsFor('/v2/security/scan').toString(), params: { address: 'string (0x...)' }, returns: 'Honeypot, risk score & bytecode vulnerability analysis with signed verdict' },
+    { path: '/v2/simulate', method: 'GET|POST', priceUsdc: priceUsdcFor('/v2/simulate'), priceBaseUnits: priceUnitsFor('/v2/simulate').toString(), params: { to: 'address', data: '0x-hex calldata', value: 'wei (decimal or 0x)', from: 'address (optional)' }, returns: 'Base Mainnet dry-run: willRevert, decoded revertReason (Error/Panic/custom), estimatedGas, returnData' }
   ],
   free: ['/health', '/pricing', '/.well-known/x402', '/.well-known/x402-bazaar.json', '/.well-known/agent-card.json', '/.well-known/ai-plugin.json', '/openapi.json', '/stats', '/v2/pubkey', '/v2/verify', '/v2/ledger', '/v2/proof', '/v2/batch/verify', '/v2/merkle/verify', '/', '/v1/verify-payment', '/v2/treasury/balance', '/v2/pulse', '/v2/pulse/history', '/v2/pulse/feed', '/FUNDING.md', '/x402-toolkit.js', '/v1/x402-conformance', '/v1/x402-directory', '/robots.txt', '/sitemap.xml', '/directory', '/badge.svg', '/fund', '/v1/funding']
 };
@@ -398,6 +401,7 @@ function openApiSpec() {
       '/v2/merkle/verify': { post: { summary: 'Verify Merkle inclusion proof (free)', responses: { '200': okJson('proof verification') } } },
       '/v2/sentiment': { get: { summary: 'Token & Contract sentiment / risk analysis', parameters: [p, { in: 'query', name: 'asset', schema: { type: 'string' } }], responses: { '200': okJson('sentiment analysis'), ...paid402 } } },
       '/v2/security/scan': { get: { summary: 'Base Token Safety & Honeypot Analyzer', parameters: [p, { in: 'query', name: 'address', schema: { type: 'string' } }], responses: { '200': okJson('token security scan'), ...paid402 } }, post: { summary: 'Base Token Safety & Honeypot Analyzer', parameters: [p], responses: { '200': okJson('token security scan'), ...paid402 } } },
+      '/v2/simulate': { get: { summary: 'Simulate a Base Mainnet transaction (revert prediction + gas)', parameters: [p, { in: 'query', name: 'to', required: true, schema: { type: 'string' } }, { in: 'query', name: 'data', schema: { type: 'string' } }, { in: 'query', name: 'value', schema: { type: 'string' } }, { in: 'query', name: 'from', schema: { type: 'string' } }], responses: { '200': okJson('simulation result'), ...paid402 } }, post: { summary: 'Simulate a Base Mainnet transaction (JSON body {to,data,value,from})', parameters: [p], responses: { '200': okJson('simulation result'), ...paid402 } } },
       '/v2/attest': { post: { summary: 'Create signed attestation', parameters: [p], responses: { '200': okJson('entry'), ...paid402 } } },
       '/v2/verify': { get: { summary: 'Verify attestation (free)', responses: { '200': okJson('verification') } } },
       '/v2/pubkey': { get: { summary: 'Public key (free)', responses: { '200': okJson('pubkey') } } },
@@ -812,6 +816,22 @@ const server = http.createServer(async (req, res) => {
       verifyUrl: base() + '/v2/pubkey',
       paid: true
     }), res._settled);
+  }
+
+  // --- Base Mainnet transaction simulator ---
+  if (p === '/v2/simulate') {
+    // Validate input before charging so malformed requests do not burn a payment or trial call.
+    const sp = u.searchParams;
+    let args = { to: sp.get('to'), data: sp.get('data'), value: sp.get('value'), from: sp.get('from') };
+    if (M === 'POST') {
+      try { const b = await readBody(req); if (b) { const j = JSON.parse(b); args = { to: j.to || args.to, data: j.data || args.data, value: j.value !== undefined ? String(j.value) : args.value, from: j.from || args.from }; } }
+      catch (e) { return send(res, 400, { error: 'bad_json_body' }); }
+    }
+    if (!args.to || !/^0x[0-9a-fA-F]{40}$/.test(args.to)) return send(res, 400, { error: 'invalid_params', message: 'to must be a 0x-prefixed 20-byte address', example: '/v2/simulate?to=' + USDC_BASE + '&data=0x18160ddd' });
+    if (!(await authorize(req, res, '/v2/simulate'))) return;
+    const sim = await SIMULATOR.simulate(args, { rpcUrl: RPC_URL });
+    stats.simulations = (stats.simulations || 0) + 1; saveStats();
+    return send(res, sim.ok ? 200 : 502, sim, res._settled);
   }
 
   // --- Attestation Ledger Endpoints ---
