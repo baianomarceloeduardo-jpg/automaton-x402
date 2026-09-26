@@ -102,12 +102,15 @@ function pickAccept(quote) {
   return null;
 }
 
+const { assertSpendAllowed } = require('./services/lib/wallet-guard');
+
 async function payExact(wallet, url, payTo, amt) {
   const erc20 = new ethers.Contract(USDC, ['function transfer(address,uint256) returns (bool)',
     'function balanceOf(address) view returns (uint256)'], wallet);
   const bal = await erc20.balanceOf(wallet.address);
   if (bal < amt) return { ok: false, error: 'insufficient_usdc', bal: bal.toString() };
   if (DRY) return { ok: true, dry: true, wouldSend: { to: payTo, units: amt.toString() } };
+  assertSpendAllowed({ to: payTo, amount: amt.toString(), token: 'USDC', reason: 'autonomous-buy payExact' });
   const tx = await erc20.transfer(payTo, amt, { gasLimit: 80000 });
   const rcpt = await tx.wait();
   return { ok: true, txHash: tx.hash, block: rcpt.blockNumber, status: rcpt.status };
@@ -122,6 +125,7 @@ async function payEip3009(wallet, url, payTo, amt) {
   const payload = { from: wallet.address, to: payTo, value: amt.toString(),
     validAfter: String(now - 60), validBefore: String(now + 1800), nonce: '0x' + crypto.randomBytes(32).toString('hex') };
   if (DRY) return { ok: true, dry: true, wouldSign: payload };
+  assertSpendAllowed({ to: payTo, amount: amt.toString(), token: 'USDC', reason: 'autonomous-buy payEip3009' });
   const signature = await wallet.signTypedData(domain, types, payload);
   return { ok: true, header: 'X-PAYMENT-AUTH',
     value: Buffer.from(JSON.stringify({ scheme: 'eip3009', payload, signature })).toString('base64'), payload };

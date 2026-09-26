@@ -20,14 +20,18 @@ function parseKey(raw) {
   return s;
 }
 
+const { createGuardedWallet, assertSpendAllowed, isSpendLocked } = require('./wallet-guard');
+
 function loadSigner(env = process.env) {
   let raw = env.AUTOMATON_SIGNER_KEY;
   if (!raw && env.AUTOMATON_SIGNER_KEYFILE) raw = fs.readFileSync(env.AUTOMATON_SIGNER_KEYFILE, 'utf8');
   if (!raw) return null;
-  const wallet = new ethers.Wallet(parseKey(raw));
-  return { address: wallet.address, wallet, signMessage: m => wallet.signMessage(m) };
+  const rawWallet = new ethers.Wallet(parseKey(raw));
+  const wallet = createGuardedWallet(rawWallet, { env });
+  return { address: rawWallet.address, wallet, signMessage: m => rawWallet.signMessage(m) };
 }
 
 const recoverSigner = (message, signature) => ethers.verifyMessage(message, signature);
 
-module.exports = { loadSigner, recoverSigner, parseKey };
+module.exports = { loadSigner, recoverSigner, parseKey, createGuardedWallet, assertSpendAllowed, isSpendLocked };
+

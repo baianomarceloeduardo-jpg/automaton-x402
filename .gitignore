@@ -1,7 +1,7 @@
 # Security & Secrets
 *.pem
 *.key
-wallet*
+wallet*.json
 attestation_key.pem
 live_pubkey.pem
 cdp*

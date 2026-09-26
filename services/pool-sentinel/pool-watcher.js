@@ -89,9 +89,48 @@ function newTokensOf(p) {
   return [p.token0, p.token1].filter(t => !QUOTES.has(t));
 }
 
+function decodeAbiString(hex) {
+  if (!hex || hex === '0x' || hex.length < 66) return null;
+  try {
+    const [str] = ethers.AbiCoder.defaultAbiCoder().decode(['string'], hex);
+    const clean = String(str || '').replace(/\0/g, '').trim();
+    return clean || null;
+  } catch (_) {
+    try {
+      const [b32] = ethers.AbiCoder.defaultAbiCoder().decode(['bytes32'], hex);
+      const clean = ethers.decodeBytes32String(b32).replace(/\0/g, '').trim();
+      return clean || null;
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+async function fetchTokenMetadata(token, rpcCall) {
+  try {
+    const [symRaw, nameRaw] = await Promise.all([
+      rpcCall('eth_call', [{ to: token, data: '0x95d89b41' }, 'latest']).catch(() => null),
+      rpcCall('eth_call', [{ to: token, data: '0x06fdde03' }, 'latest']).catch(() => null)
+    ]);
+    return {
+      symbol: decodeAbiString(symRaw),
+      name: decodeAbiString(nameRaw)
+    };
+  } catch (_) {
+    return { symbol: null, name: null };
+  }
+}
+
 function summarizeScan(s) {
   if (!s || s.error) return { error: (s && (s.error || s.message)) || 'scan_failed' };
-  return { riskScore: s.riskScore, verdict: s.verdict, flags: s.flags || [], isContract: s.isContract !== false };
+  return {
+    riskScore: s.riskScore,
+    verdict: s.verdict,
+    flags: s.flags || [],
+    isContract: s.isContract !== false,
+    ...(s.symbol ? { symbol: s.symbol } : {}),
+    ...(s.name ? { name: s.name } : {})
+  };
 }
 
 class PoolSentinel {
@@ -121,7 +160,26 @@ class PoolSentinel {
     const t0 = Date.now();
     let res;
     try { res = await this.scan(token, (m, p) => this.rpc.call(m, p)); } catch (e) { res = { error: 'scan_exception', message: e.message }; }
-    const out = { ...summarizeScan(res), scanMs: Date.now() - t0 };
+
+    let meta = { symbol: null, name: null };
+    if (res && !res.error && res.isContract !== false) {
+      if (res.knownAsset) {
+        meta = { symbol: res.knownAsset.symbol || null, name: res.knownAsset.name || null };
+      } else if (res.symbol || res.name) {
+        meta = { symbol: res.symbol || null, name: res.name || null };
+      } else if (this.rpc && typeof this.rpc.call === 'function') {
+        try {
+          meta = await fetchTokenMetadata(token, (m, p) => this.rpc.call(m, p));
+        } catch (_) {}
+      }
+    }
+
+    const out = {
+      ...summarizeScan(res),
+      ...(meta.symbol ? { symbol: meta.symbol } : {}),
+      ...(meta.name ? { name: meta.name } : {}),
+      scanMs: Date.now() - t0
+    };
     const st = this.state.stats;
     if (out.error) st.scanErrors++;
     else {
@@ -224,4 +282,4 @@ async function main() {
 
 if (require.main === module) main();
 
-module.exports = { PoolSentinel, decodeLog, newTokensOf, summarizeScan, SOURCES, QUOTES };
+module.exports = { PoolSentinel, decodeLog, newTokensOf, summarizeScan, decodeAbiString, fetchTokenMetadata, SOURCES, QUOTES };

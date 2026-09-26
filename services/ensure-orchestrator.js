@@ -38,6 +38,24 @@ function ensure() {
   return child.pid;
 }
 
-if (require.main === module) ensure();
+function restart() {
+  const pid = running();
+  if (pid) {
+    try {
+      const { execSync } = require('child_process');
+      execSync(`taskkill /F /T /PID ${pid}`, { stdio: 'ignore' });
+    } catch (_) {}
+  }
+  return ensure();
+}
 
-module.exports = { running, ensure };
+if (require.main === module) {
+  if (process.argv.includes('--restart')) restart();
+  else if (process.argv.includes('--status')) {
+    const pid = running();
+    console.log(pid ? `running pid=${pid}` : 'stopped');
+  } else ensure();
+}
+
+module.exports = { running, ensure, restart };
+

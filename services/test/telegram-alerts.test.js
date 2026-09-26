@@ -97,3 +97,67 @@ test('PoolSentinel hands new records to onRecords without blocking the tick', as
   assert.equal(calls, 1);
   assert.equal(got[0].newTokens[0], tok('a'));
 });
+
+test('Quality Filter: maxRiskScore rejects tokens above threshold', async () => {
+  const tg = fakeTelegram();
+  const a = createTelegramAlerter({ token: 't', channelId: '-1', maxRiskScore: 15, fetchImpl: tg.fetchImpl });
+  const records = [
+    { dex: 'uniswap-v4', newTokens: [tok('1')], scans: { [tok('1')]: { verdict: 'SAFE', riskScore: 10, scanMs: 100 } } },
+    { dex: 'uniswap-v4', newTokens: [tok('2')], scans: { [tok('2')]: { verdict: 'SAFE', riskScore: 18, scanMs: 100 } } },
+    { dex: 'uniswap-v4', newTokens: [tok('3')], scans: { [tok('3')]: { verdict: 'SAFE', riskScore: 25, scanMs: 100 } } }
+  ];
+  const sent = await a.notify(records);
+  assert.equal(sent, 1, 'Only riskScore <= 15 is sent');
+  assert.match(tg.sent[0].text, new RegExp(tok('1')));
+});
+
+test('Quality Filter: requireQuotePair rejects phantom token-token pairs with no quote asset', async () => {
+  const tg = fakeTelegram();
+  const WETH = '0x4200000000000000000000000000000000000006';
+  const a = createTelegramAlerter({ token: 't', channelId: '-1', requireQuotePair: true, fetchImpl: tg.fetchImpl });
+  const records = [
+    // Real liquidity: paired with WETH
+    { dex: 'uniswap-v4', token0: WETH, token1: tok('1'), newTokens: [tok('1')], scans: { [tok('1')]: { verdict: 'SAFE', riskScore: 10, scanMs: 50 } } },
+    // Phantom pair: two unknown tokens with zero backing
+    { dex: 'uniswap-v4', token0: tok('x'), token1: tok('2'), newTokens: [tok('2')], scans: { [tok('2')]: { verdict: 'SAFE', riskScore: 10, scanMs: 50 } } }
+  ];
+  const sent = await a.notify(records);
+  assert.equal(sent, 1, 'Only the token paired against WETH quote asset was alerted');
+  assert.match(tg.sent[0].text, new RegExp(tok('1')));
+});
+
+test('Quality Filter: rejectUnverifiedHooks drops custom/unverified v4 hooks', async () => {
+  const tg = fakeTelegram();
+  const WETH = '0x4200000000000000000000000000000000000006';
+  const ZERO = '0x0000000000000000000000000000000000000000';
+  const CLANKER_HOOK = '0xbdf938149ac6a781f94faa0ed45e6a0e984c6544';
+  const MALICIOUS_HOOK = '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef';
+
+  const a = createTelegramAlerter({ token: 't', channelId: '-1', rejectUnverifiedHooks: true, fetchImpl: tg.fetchImpl });
+  const records = [
+    { dex: 'uniswap-v4', hooks: ZERO, token0: WETH, token1: tok('1'), newTokens: [tok('1')], scans: { [tok('1')]: { verdict: 'SAFE', riskScore: 10, scanMs: 50 } } },
+    { dex: 'uniswap-v4', hooks: CLANKER_HOOK, token0: WETH, token1: tok('2'), newTokens: [tok('2')], scans: { [tok('2')]: { verdict: 'SAFE', riskScore: 10, scanMs: 50 } } },
+    { dex: 'uniswap-v4', hooks: MALICIOUS_HOOK, token0: WETH, token1: tok('3'), newTokens: [tok('3')], scans: { [tok('3')]: { verdict: 'SAFE', riskScore: 10, scanMs: 50 } } }
+  ];
+  const sent = await a.notify(records);
+  assert.equal(sent, 2, 'Zero hook and verified Clanker hook passed; malicious hook dropped');
+});
+
+test('Quality Filter: anti-clone and anti-phishing filter drops spam names and duplicates', async () => {
+  const tg = fakeTelegram();
+  const a = createTelegramAlerter({ token: 't', channelId: '-1', dedupSymbols: true, fetchImpl: tg.fetchImpl });
+  // PoolSentinel outputs newest first; notify reverses to process oldest to newest
+  const records = [
+    // Duplicate clone created later (newest):
+    { dex: 'uniswap-v4', newTokens: [tok('3')], scans: { [tok('3')]: { verdict: 'SAFE', riskScore: 10, symbol: 'PEPE', name: 'Pepe Clone 2', scanMs: 50 } } },
+    // First legit token (earlier):
+    { dex: 'uniswap-v4', newTokens: [tok('2')], scans: { [tok('2')]: { verdict: 'SAFE', riskScore: 10, symbol: 'PEPE', name: 'Pepe Base', scanMs: 50 } } },
+    // Phishing / spam token name:
+    { dex: 'uniswap-v4', newTokens: [tok('1')], scans: { [tok('1')]: { verdict: 'SAFE', riskScore: 10, symbol: 'AIRDROP', name: 'Claim at http://free.io', scanMs: 50 } } }
+  ];
+  const sent = await a.notify(records);
+  assert.equal(sent, 1, 'Only genuine first PEPE was announced; phishing and clone dropped');
+  assert.match(tg.sent[0].text, /\$PEPE/);
+  assert.match(tg.sent[0].text, /Pepe Base/);
+});
+

@@ -44,6 +44,8 @@ function call(url, headers) {
   const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC || 'https://mainnet.base.org');
   const wallet = new ethers.Wallet(key, provider);
   const erc20 = new ethers.Contract(acc.asset, ['function transfer(address,uint256) returns (bool)'], wallet);
+  const { assertSpendAllowed } = require('./services/lib/wallet-guard');
+  assertSpendAllowed({ to: acc.payTo, amount: acc.maxAmountRequired, token: 'USDC', reason: 'x402-buyer outbound purchase' });
   console.log('Sending ' + acc.maxAmountRequired + ' units to ' + acc.payTo + ' ...');
   const tx = await erc20.transfer(acc.payTo, acc.maxAmountRequired);
   console.log('tx: ' + tx.hash + '  waiting 1 confirmation...');
