@@ -13,10 +13,8 @@ let src = fs.readFileSync(SERVER, 'utf8');
 const had = src.indexOf(MARK) !== -1;
 
 // strip any existing overlay block (idempotent)
-if (had) {
-  const idx = src.lastIndexOf('// ' + MARK);
-  if (idx !== -1) src = src.slice(0, idx).replace(/\s+$/, '') + '\n';
-}
+// Remove only the exact block; slicing to EOF deleted every overlay appended after it.
+if (had) src = src.split(BLOCK.trim() + '\n').join('').split(BLOCK.trim()).join('');
 src = src.replace(/\s+$/, '') + '\n' + BLOCK;
 fs.writeFileSync(SERVER, src);
 

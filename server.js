@@ -1118,6 +1118,13 @@ server.listen(PORT, '0.0.0.0', () => {
 process.on('SIGTERM', () => server.close(() => process.exit(0)));
 process.on('SIGINT', () => server.close(() => process.exit(0)));
 
+// Kept ABOVE every overlay marker: generators that re-append from their marker to EOF must not
+// truncate these (that is how /mcp and the request guard were lost in 5b20b92).
+// MCP over HTTP at /mcp (Smithery / web MCP clients); tools shared with the npm package.
+require('./mcp-http-server.js')(server, { port: PORT, clientIp });
+// Wraps the FINAL listener chain on 'listening' (after all overlays load): no route can crash the API.
+require('./request-guard.js')(server);
+
 /* __HARDENING_OVERLAY__ */
 // Sentinela audit remediations (P0 replay/bearer, P1 hex-status/chain/log-sum, P2 rpc-consensus).
 const __hv = require('./pay-verify-hardened.js');
@@ -1252,7 +1259,17 @@ verifyPayment = async function (txHash) {
 
         // queue the signed authorization and serve the call, reporting status honestly.
 
-        if (!st || !st.ok) {
+        // Queueing is only for INFRASTRUCTURE failures on a payment that is actually backed: a valid
+        // signature alone is not a payment (an empty wallet can sign unlimited authorizations).
+        // Payer-side failures (revert / insufficient balance / bad or used nonce) are never queued,
+        // and the payer's on-chain USDC balance must cover the authorization (0 on RPC error = fail closed).
+        const __settleReason = String((st && (st.reason || st.error)) || '');
+        const __payerFault = /revert|exceeds balance|insufficient|invalid|signature|nonce|already|expired|not_yet_valid|CALL_EXCEPTION|no_settleable|no_signature/i.test(__settleReason);
+        let __funded = false;
+        if (st && !st.ok && !__payerFault) {
+          try { __funded = (await FACILITATOR.getUsdcBalance(v.from)) >= BigInt(v.value); } catch (e) { __funded = false; }
+        }
+        if (st && !st.ok && __funded) {
 
           const __q = path.join(__dirname, "settlement-queue.jsonl");
 
@@ -1623,6 +1640,7 @@ require('./history-overlay.js')(server);
     console.log('[osir-overlay v1] SKIPPED: ' + (e && e.message));
   }
 })();
+/* ==== END OSIR DOMAIN OVERLAY v1 ==== */
 
 /* __SOVEREIGN_SETTLE_OVERLAY__ */
 require("./sovereign-settle-overlay.js");
@@ -1655,3 +1673,13 @@ require("./durable-overlay.js");
 // Chain-anchored service discovery (free, credential-free): GET /v1/discover-base?address=0x..|self=1
 try { require("./discover-overlay.js").wrap(server); }
 catch (e) { console.error("discover_overlay_attach_failed", e && e.message); }
+
+// ===================== __CONSENSUS_OVERLAY__ =====================
+try { require("./consensus-overlay.js").wrap(server); }
+catch (e) { console.error("[consensus] overlay attach failed: " + (e && e.message)); }
+// ===================== __END_CONSENSUS_OVERLAY__ =====================
+
+// ===================== __CATALOG_OVERLAY__ =====================
+try { require("./catalog-overlay.js").wrap(server); }
+catch (e) { console.error("[catalog] overlay attach failed: " + (e && e.message)); }
+// ===================== __END_CATALOG_OVERLAY__ =====================

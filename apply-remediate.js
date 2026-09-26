@@ -9,9 +9,13 @@ const SERVER = 'server.js';
 const OVERLAY = 'remediation-overlay.js';
 const PROBE_PORT = 8084;
 
+// Remove only the exact overlay text. Slicing from the marker to EOF deleted every overlay
+// appended after this one (e.g. /mcp and the request guard in 5b20b92).
 function strip(src) {
-  const i = src.indexOf('// ===================== ' + MARK);
-  return i >= 0 ? src.slice(0, i).replace(/\s+$/, '') + '\n' : src;
+  const block = fs.readFileSync(OVERLAY, 'utf8').replace(/\s+$/, '');
+  if (src.indexOf(block) >= 0) return src.split(block).join('');
+  console.error('apply-remediate: installed block differs from ' + OVERLAY + '; refusing to truncate server.js');
+  process.exit(1);
 }
 
 let src = fs.readFileSync(SERVER, 'utf8');

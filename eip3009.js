@@ -95,16 +95,70 @@ function makeEip3009(provider, signerWallet) {
       }
       return { ok: true, reason: 'authorized', from: a.from, to: a.to, value: value.toString(), nonce: a.nonce, validBefore: a.validBefore };
     } catch (e) {
-      return { ok: false, reason: 'verify_error', detail: String(e.message).slice(0, 80) };
+      // surface the true reason (e.g. nonce_state_unavailable) so a rejection is never masked
+      return { ok: false, reason: (e && e.reason) || 'verify_error', detail: String(e.message).slice(0, 80) };
     }
   }
 
   // authorizationState(address,bytes32) -> bool  (selector 0xe94a7ae9)
+  // __BOUNDED_NONCE_STATE__ RACE several independent RPCs with a HARD deadline. A single slow provider used to
+  // hang the paid route past 60s. Fail-closed if no provider answers in time: a payment we cannot
+  // independently confirm must be REJECTED, never accepted and never left hanging.
+  const NONCE_RPCS = (process.env.NONCE_RPCS || [
+    'https://mainnet.base.org',
+    'https://base.llamarpc.com',
+    'https://base-rpc.publicnode.com',
+    'https://1rpc.io/base',
+    'https://base.drpc.org'
+  ].join(',')).split(',').map((x) => x.trim()).filter(Boolean);
+  const NONCE_DEADLINE = Number(process.env.NONCE_DEADLINE_MS || 3000);
+
+  function _nonceStateVia(url, iface, data, authorizer, nonce, ms) {
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (v) => { if (!settled) { settled = true; resolve(v); } };
+      let u; try { u = new URL(url); } catch (_) { return finish({ ok: false, err: 'badurl' }); }
+      const mod = u.protocol === 'https:' ? require('https') : require('http');
+      const payload = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_call', params: [{ to: USDC_BASE, data }, 'latest'] });
+      const req = mod.request({
+        hostname: u.hostname, port: u.port || (u.protocol === 'https:' ? 443 : 80), path: u.pathname + u.search,
+        method: 'POST', timeout: ms,
+        headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(payload) }
+      }, (r) => {
+        let d = ''; r.on('data', (c) => d += c);
+        r.on('end', () => {
+          try {
+            const j = JSON.parse(d);
+            if (j.error || typeof j.result !== 'string') return finish({ ok: false, err: (j.error && j.error.message) || 'rpc_error' });
+            finish({ ok: true, used: Boolean(iface.decodeFunctionResult('authorizationState', j.result)[0]), url });
+          } catch (e) { finish({ ok: false, err: 'badjson' }); }
+        });
+      });
+      req.on('error', (e) => finish({ ok: false, err: e.code || 'error' }));
+      req.on('timeout', () => { req.destroy(); finish({ ok: false, err: 'timeout' }); });
+      req.write(payload); req.end();
+    });
+  }
+
   async function authorizationState(authorizer, nonce) {
     const iface = new ethers.Interface(['function authorizationState(address,bytes32) view returns (bool)']);
     const data = iface.encodeFunctionData('authorizationState', [authorizer, nonce]);
-    const raw = await provider.call({ to: USDC_BASE, data });
-    return Boolean(iface.decodeFunctionResult('authorizationState', raw)[0]);
+    const t0 = Date.now();
+    const responses = await Promise.all(NONCE_RPCS.map((u) => _nonceStateVia(u, iface, data, authorizer, nonce, NONCE_DEADLINE)));
+    const winners = responses.filter((r) => r.ok);
+    if (!winners.length) {
+      // FAIL CLOSED: cannot confirm the nonce is unused -> do not authorize.
+      const err = new Error('nonce_state_unavailable');
+      err.reason = 'nonce_state_unavailable';
+      err.providersTried = NONCE_RPCS.length;
+      err.ms = Date.now() - t0;
+      throw err;
+    }
+    // majority of responding providers
+    const usedCount = winners.filter((w) => w.used).length;
+    const used = usedCount > winners.length / 2;
+    console.log('[eip3009] nonce state ' + (used ? 'USED' : 'unused') + ' via ' + winners.length + '/' + NONCE_RPCS.length + ' rpcs in ' + (Date.now() - t0) + 'ms');
+    return used;
   }
 
   // Settle on-chain: the FACILITATOR (this signer) pays gas; USDC moves payer->payTo.

@@ -38,6 +38,13 @@ function buildSandbox() {
   // No outbound broadcast / diary writes from the test instance.
   fs.writeFileSync(path.join(dir, 'broadcast-dispatcher.js'),
     "module.exports={startDispatcher(){return null},HISTORY_FILE:__dirname+'/pulse-history.jsonl',dispatchOnce:async()=>null};\n");
+  // The real settler loads the operator wallet from an ABSOLUTE path and can broadcast on mainnet:
+  // the sandbox must never touch it. The stub fails like an unavailable settler (infrastructure
+  // failure), which is exactly the case where unfunded authorizations must still be refused.
+  const realSettler = fs.readFileSync(path.join(SRC, 'local-settler.js'), 'utf8');
+  if (!/module\.exports\s*=\s*\{[^}]*settleAuthorization/.test(realSettler)) throw new Error('local-settler.js exports changed; update the sandbox stub');
+  fs.writeFileSync(path.join(dir, 'local-settler.js'),
+    "module.exports={settleAuthorization:async()=>({ok:false,error:'sandbox_wallet_missing'}),check:async()=>1,domain:{},TYPES:{},USDC:'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',CHAIN_ID:8453};\n");
   fs.symlinkSync(path.join(SRC, 'node_modules'), path.join(dir, 'node_modules'), 'junction');
   return dir;
 }
@@ -94,6 +101,29 @@ async function main() {
   let exited = null; srv.on('exit', (c) => { exited = c; });
   try {
     if (!(await waitUp())) { console.log(log.slice(-2000)); throw new Error('server did not start'); }
+
+    // --- 0. Regression: pieces that overlay generators once silently truncated (5b20b92) ---
+    check('request guard is installed over the final listener chain', /\[request-guard\] active/.test(log), (log.match(/\[request-guard\][^\n]*/) || ['not in boot log'])[0]);
+    const mcpInfo = await req('GET', '/mcp');
+    check('MCP over HTTP (/mcp) is attached and lists simulate_base_transaction', mcpInfo.status === 200 && mcpInfo.json && Array.isArray(mcpInfo.json.tools) && mcpInfo.json.tools.includes('simulate_base_transaction'), 'status=' + mcpInfo.status);
+
+    // --- 0b. ssrf-guard: must keep response callbacks (dropping them hung every outbound call)
+    //          and must block IP-literal private targets (Node skips `lookup` for literals) ---
+    const guardProbe = require('child_process').spawnSync(process.execPath, ['-e', `
+      require('./ssrf-guard.js'); const http = require('http');
+      const out = {};
+      const done = () => { if (Object.keys(out).length === 3) { console.log(JSON.stringify(out)); process.exit(0); } };
+      const srv = http.createServer((q, s) => s.end('ok')).listen(0, '127.0.0.1', () => {
+        process.env.SSRF_SELF_PORT; // informational
+        http.get('http://169.254.169.254/', () => { out.metadata = 'NOT_BLOCKED'; done(); }).on('error', (e) => { out.metadata = e.code; done(); });
+        http.get('http://10.1.2.3/', () => { out.private10 = 'NOT_BLOCKED'; done(); }).on('error', (e) => { out.private10 = e.code; done(); });
+        http.get({ hostname: 'localhost', port: ${PORT}, path: '/health' }, (r) => { r.resume(); r.on('end', () => { out.callback = 'OK'; done(); }); }).on('error', (e) => { out.callback = 'ERR ' + e.code; done(); });
+      });
+      setTimeout(() => { console.log(JSON.stringify(Object.assign({ timeout: true }, out))); process.exit(0); }, 8000);
+    `], { cwd: dir, env: Object.assign({}, process.env, { SSRF_SELF_PORT: String(PORT) }), encoding: 'utf8', timeout: 15000 });
+    let gp = {}; try { gp = JSON.parse((guardProbe.stdout || '').trim().split('\n').pop()); } catch (e) {}
+    check('ssrf-guard preserves response callbacks (outbound calls do not hang)', gp.callback === 'OK', JSON.stringify(gp));
+    check('ssrf-guard blocks IP-literal metadata/private targets', gp.metadata === 'SSRF_BLOCKED' && gp.private10 === 'SSRF_BLOCKED', JSON.stringify(gp));
 
     // --- 1. Crash / DoS: malformed percent-encoding must not kill the process ---
     if (process.env.SKIP_CRASH !== '1') for (const p of ['/v1/domain/check?domain=%E0%A4%A', '/domain?domain=%ZZ', '/v1/x402-remediate?url=%E0%A4%A', '/v1/index/submit?url=%E0%A4%A', '/%E0%A4%A']) {

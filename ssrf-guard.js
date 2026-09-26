@@ -89,32 +89,63 @@ function makeLookup(prevLookup, port) {
   return ours;
 }
 
-function normalizeArgs(args) {
-  if (typeof args[0] === 'string' || args[0] instanceof URL) return Object.assign({}, args[1] || {});
-  return Object.assign({}, args[0] || {});
+// Accepts every Node signature: (url[, options][, cb]) and (options[, cb]).
+// DEFECT FIXED (2026-09-26): the response callback was dropped, so every callback-style outbound
+// call (payment verification, oracle, RPC) sent its request, received the response, and then hung
+// forever (no 'response' listener, socket closed cleanly, so no timeout ever fired either).
+function normalizeArgs(args, defaultPort) {
+  const cb = typeof args[args.length - 1] === 'function' ? args[args.length - 1] : undefined;
+  const hasUrl = typeof args[0] === 'string' || args[0] instanceof URL;
+  const src = hasUrl ? args[1] : args[0];
+  const options = Object.assign({}, (src && typeof src === 'object') ? src : {});
+  let port = options.port;
+  if (!port && hasUrl) { try { port = new URL(String(args[0])).port; } catch (e) {} }
+  return { hasUrl, options, cb, port: port || defaultPort };
+}
+
+function hostOf(hasUrl, args, options) {
+  let h = options.hostname || options.host;
+  if (!h && hasUrl) { try { h = new URL(String(args[0])).hostname; } catch (e) {} }
+  return String(h || '').replace(/^\[|\]$/g, '');
+}
+
+function guarded(orig, defaultPort) {
+  return function (...args) {
+    const { hasUrl, options, cb, port } = normalizeArgs(args, defaultPort);
+    // Node skips `lookup` entirely for IP-literal hosts, so check those here: otherwise
+    // http://169.254.169.254/ or http://127.0.0.1:22/ connect straight past the guard.
+    const host = hostOf(hasUrl, args, options);
+    if (net.isIP(host)) {
+      const blocked = checkRecords([{ address: host, family: net.isIP(host) }], port);
+      if (blocked) {
+        if (DEBUG) console.error('[ssrf-guard] BLOCKED literal ' + host + ' (port ' + port + ')');
+        // Route to an unresolvable name whose lookup fails with the SSRF error, so callers get
+        // the usual async 'error' event on a real ClientRequest (never a sync throw).
+        const failOpts = Object.assign({}, options, { hostname: 'ssrf-blocked.invalid', host: undefined, port,
+          lookup: Object.assign((h, o, done) => process.nextTick(() => done(blocked)), { __ssrfGuard: true }) });
+        if (hasUrl) {
+          const u = new URL(String(args[0]));
+          failOpts.protocol = u.protocol; failOpts.path = failOpts.path || (u.pathname + u.search);
+        }
+        return orig(failOpts, cb);
+      }
+    }
+    // never double-wrap (prevents infinite recursion if this module is required twice)
+    if (!(options.lookup && options.lookup.__ssrfGuard)) {
+      options.lookup = makeLookup(options.lookup, port);
+    }
+    return hasUrl ? orig(args[0], options, cb) : orig(options, cb);
+  };
 }
 
 function wrap(lib, defaultPort) {
   const origRequest = lib.request;
   const origGet = lib.get;
 
-  lib.request = function (...args) {
-    const options = normalizeArgs(args);
-    // never double-wrap (prevents infinite recursion if this module is required twice)
-    if (!(options.lookup && options.lookup.__ssrfGuard)) {
-      options.lookup = makeLookup(options.lookup, options.port || defaultPort);
-    }
-    if (typeof args[0] === 'string' || args[0] instanceof URL) return origRequest(args[0], options);
-    return origRequest(options);
-  };
+  lib.request = guarded(origRequest, defaultPort);
 
   lib.get = function (...args) {
-    const options = normalizeArgs(args);
-    if (!(options.lookup && options.lookup.__ssrfGuard)) {
-      options.lookup = makeLookup(options.lookup, options.port || defaultPort);
-    }
-    if (typeof args[0] === 'string' || args[0] instanceof URL) return origGet(args[0], options);
-    return origGet(options);
+    return guarded(origGet, defaultPort).apply(this, args);
   };
 }
 

@@ -1,12 +1,20 @@
 // osir-overlay.js - appends FREE domain-availability + pricing endpoints to server.js
 // Uses the same server.on('request') early-return pattern as the other overlays.
-// Idempotent: strips its own marker block before re-appending.
+// Idempotent: replaces only its own MARK..END block; everything after it is preserved.
 const fs = require('fs');
 const P = 'server.js';
 let src = fs.readFileSync(P, 'utf8');
 const MARK = '\n/* ==== OSIR DOMAIN OVERLAY v1 ==== */';
+const END = '\n/* ==== END OSIR DOMAIN OVERLAY v1 ==== */\n';
+let tail = '';
 const i = src.indexOf(MARK);
-if (i >= 0) src = src.slice(0, i);
+if (i >= 0) {
+  const j = src.indexOf(END, i);
+  // Never slice to EOF: that silently deleted every overlay appended after this one.
+  if (j < 0) { console.error('osir-overlay: block found without END marker; refusing to truncate server.js'); process.exit(1); }
+  tail = src.slice(j + END.length);
+  src = src.slice(0, i);
+}
 
 const overlay = MARK + `
 (function () {
@@ -60,5 +68,6 @@ const overlay = MARK + `
 })();
 `;
 
-fs.writeFileSync(P, src + overlay);
-console.log('osir-overlay appended, total bytes=' + (src + overlay).length);
+const out = src + overlay.replace(/\n$/, '') + END + tail;
+fs.writeFileSync(P, out);
+console.log('osir-overlay applied, total bytes=' + out.length);
