@@ -754,6 +754,27 @@
         </div>
       </div>
 
+      <!-- Featured: Official Smithery.ai Registry -->
+      <div class="card pkg-card" id="smithery" style="border-color: rgba(0, 82, 255, 0.4); margin-bottom: 24px;">
+        <div class="card-header">
+          <div class="card-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0052ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            Official Smithery.ai MCP Registry
+          </div>
+          <span class="chip chip-free" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">QUALITY SCORE 78/100 • VERIFIED</span>
+        </div>
+        <p>Production MCP Server indexed on Smithery.ai with 14 active tools. Native integration with Claude Desktop, Cursor, and autonomous agent frameworks over Streamable HTTP (/mcp).</p>
+        <div class="cmd-row">
+          <code id="smitheryCmd">npx -y @smithery/cli install @baiano-marcelo-eduardo/automaton-x402 --client claude</code>
+          <button class="btn btn-outline" onclick="copyText('smitheryCmd', this)">Copy</button>
+        </div>
+        <div class="pkg-links">
+          <a href="https://smithery.ai/servers/@baiano-marcelo-eduardo/automaton-x402" target="_blank" rel="noopener" class="btn btn-primary" style="background: #0052ff;">View on Smithery.ai ↗</a>
+          <a href="/pricing" target="_blank" class="btn btn-outline">View Dynamic Pricing Manifest</a>
+          <a href="https://automaton-api.bfzovw.easypanel.host/health" target="_blank" class="btn btn-outline">24/7 Cloud Node Health ↗</a>
+        </div>
+      </div>
+
       <!-- Telemetry Bar -->
       <div class="telemetry-bar">
         <div class="telemetry-item">
@@ -769,12 +790,12 @@
           <a href="https://basescan.org/address/0x71DEAc098914A009E3720524642A6bE6F65EE528" target="_blank" id="statPayTo" class="telemetry-val payto" style="text-decoration:none;">0x71DEAc0...5EE528 ↗</a>
         </div>
         <div class="telemetry-item">
-          <div class="telemetry-label">Ledger Entries</div>
-          <div id="statLedger" class="telemetry-val">...</div>
+          <div class="telemetry-label">Cloud Deployment</div>
+          <div class="telemetry-val highlight" style="color: #10b981;">24/7 VPS Docker</div>
         </div>
         <div class="telemetry-item">
-          <div class="telemetry-label">x402 Cost Per Call</div>
-          <div class="telemetry-val" style="color: var(--amber);">0.001 USDC</div>
+          <div class="telemetry-label">x402 Pricing Model</div>
+          <div class="telemetry-val" style="color: var(--amber);">0.001 - 0.05 USDC</div>
         </div>
         <div class="telemetry-item">
           <div class="telemetry-label">Free Daily Quota</div>
@@ -906,7 +927,7 @@
         <a href="/v2/security/scan?address=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" target="_blank" class="protocol-card">
           <div class="protocol-name">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Honeypot & Token Safety
+            Honeypot & Token Safety (0.002 USDC)
           </div>
           <div class="protocol-desc">Bytecode analyzer: selfdestruct, mint traps, tax traps and signed verdict.</div>
           <div class="protocol-path">GET /v2/security/scan</div>

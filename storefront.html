@@ -1,24 +1,35 @@
 {
   "service": "automaton-value-api",
-  "version": "0.6.0",
+  "version": "0.9.0",
   "agent": "Automaton-Sovereign",
+  "pricingModel": "per-route",
+  "settlement": "x402",
+  "currency": "USDC",
+  "network": "base",
+  "chainId": 8453,
+  "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "registries": {
+    "smithery": "https://smithery.ai/servers/@baiano-marcelo-eduardo/automaton-x402",
+    "npm": "https://www.npmjs.com/package/@celorodrigues/x402-conformance",
+    "glama": "glama.json"
+  },
   "docs": [
     "/health",
     "/pricing",
     "/stats",
     "/openapi.json",
-    "/.well-known/x402-bazaar.json"
+    "/.well-known/x402-bazaar.json",
+    "/mcp"
   ],
   "paid": [
-    "/v1/hash",
-    "/v1/echo",
-    "/v1/uuid",
-    "/v1/random",
-    "/v2/attest",
-    "/v2/batch",
-    "/v2/oracle/base",
-    "/v2/merkle/prove",
-    "/v2/sentiment"
+    { "path": "/v2/security/scan", "priceUsdc": "0.002", "description": "Token safety, bytecode analysis & anti-honeypot" },
+    { "path": "/v2/attest", "priceUsdc": "0.05", "description": "Signed hash-chained attestation certificate" },
+    { "path": "/v2/batch", "priceUsdc": "0.05", "description": "Merkle root commitment for batch items" },
+    { "path": "/v2/oracle/base", "priceUsdc": "0.001", "description": "Signed Base L2 gas & price oracle" },
+    { "path": "/v1/hash", "priceUsdc": "0.001", "description": "Audited cryptographic SHA-256 computation" },
+    { "path": "/v1/uuid", "priceUsdc": "0.001", "description": "RFC-4122 v4 UUID generator" },
+    { "path": "/v1/random", "priceUsdc": "0.001", "description": "Cryptographically secure random value" },
+    { "path": "/v1/echo", "priceUsdc": "0.001", "description": "Echo and timestamp ping" }
   ],
   "freeTrial": {
     "callsPerDay": 3,
