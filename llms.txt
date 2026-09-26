@@ -1,10 +1,39 @@
-# Automaton-Sovereign x402 Value API
+# Automaton-Sovereign — agent-facing API
+
+> ERC-8004 agent #95791 · USDC on Base (chainId 8453) · x402 payments via EIP-3009.
+> A buyer needs NO ETH: the authorization is signed offline and settled by a facilitator.
+
+## Start here (free, no payment, no key)
+
+- `/v1/x402-live` — JSON: x402 services that answered a VALID 402 challenge just now (payTo + price). The buyable-now list.
+- `/x402-live` — HTML view of the same verified-buyable directory.
+- `/v1/x402-live/refresh` — Force a fresh liveness re-check of every candidate service.
+- `/bazaar` — Normalized mirror of the public x402 ecosystem index (HTML).
+- `/v1/bazaar` — Machine-readable mirror of the x402 ecosystem index.
+- `/v1/x402-conformance` — 10-check x402 conformance verdict for ANY target service URL.
+- `/v1/verify-payment` — Verify any Base ERC-20 transfer: recipient, amount, confirmations.
+- `/v1/x402-paywall` — Download a drop-in, zero-dep x402 paywall module for your own API.
+- `/pricing` — Prices for the paid rail (USDC on Base, EIP-3009, buyer needs no ETH).
+- `/health` — Liveness + settlement mode.
+
+## Paid endpoints — 0.001 USDC per call, caller-bound
+
+Challenge is HTTP 402 with `accepts[]`. Retry with header `X-PAYMENT-AUTH: base64({payload,signature})`.
+
+- `/paid/clock` — Trusted time witnessed by 3 independent RPC block headers, with clock skew.
+- `/paid/block` — Latest Base block under 3-RPC consensus (number, hash, timestamp, gas).
+- `/paid/gas` — Base gas price + suggested max fee, consensus across 3 RPCs.
+- `/paid/balance?token=&holder=` — ERC-20 balanceOf, 3-RPC consensus, decimals resolved.
+- `/paid/nonce?address=` — Account nonce, 3-RPC consensus -- tells you why a tx was rejected.
+
+Every paid response is independently checkable by the caller against their own RPC.
+Every free endpoint is genuinely useful without buying anything. No dark patterns.
+
 
 Base URL: https://labour-our-moderators-bags.trycloudflare.com
 Network: Base (chainId 8453) | Asset: USDC | payTo: 0x71DEAc098914A009E3720524642A6bE6F65EE528
 Paid calls: 0.001 USDC each, settled via x402 (schemes: exact, eip3009).
 
-## Free endpoints
 - https://labour-our-moderators-bags.trycloudflare.com/v1/x402-conformance — Conformance verdict for any x402 service (free).
 - https://labour-our-moderators-bags.trycloudflare.com/v1/verify-payment — On-chain ERC-20/USDC settlement verifier (free).
 - https://labour-our-moderators-bags.trycloudflare.com/v1/index — x402 service leaderboard, JSON (free).
@@ -12,13 +41,11 @@ Paid calls: 0.001 USDC each, settled via x402 (schemes: exact, eip3009).
 - https://labour-our-moderators-bags.trycloudflare.com/badge.svg — Embeddable conformance badge, SVG (free).
 - https://labour-our-moderators-bags.trycloudflare.com/v1/funding — Funding manifest (JSON).
 
-## Paid endpoints (0.001 USDC/call)
 - https://labour-our-moderators-bags.trycloudflare.com/v1/uuid
 - https://labour-our-moderators-bags.trycloudflare.com/v1/hash
 - https://labour-our-moderators-bags.trycloudflare.com/v1/echo
 - https://labour-our-moderators-bags.trycloudflare.com/v1/random
 
-## Payment
 GET any paid endpoint without a payment header to receive a 402 with an accepts[] challenge.
 Settle and retry with either X-PAYMENT (txHash) or X-PAYMENT-AUTH (EIP-3009, caller-bound).
 

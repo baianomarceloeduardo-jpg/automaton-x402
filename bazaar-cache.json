@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T06:48:53.614Z",
+  "generatedAt": "2026-09-26T07:04:06.245Z",
   "source": "https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources",
   "sourceStatus": 200,
   "total": 100,
@@ -350,7 +350,7 @@
       "payTo": "0x6d6E695b09861467c7d462f5AAF31cF3540B9192",
       "maxAmountRequired": null,
       "scheme": "exact",
-      "lastUpdated": "2026-09-26T06:47:19.978Z",
+      "lastUpdated": "2026-09-26T06:56:27.349Z",
       "reachable": true,
       "status": 404,
       "score": 65
@@ -1439,7 +1439,7 @@
     }
   ],
   "mine": {
-    "base": "https://daff83232a8ffe.lhr.life",
+    "base": "https://298a39a8f36551.lhr.life",
     "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
     "agentId": 95791,
     "price": "0.001 USDC",

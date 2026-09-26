@@ -1,0 +1,15 @@
+{
+  "lastBlock": 51808796,
+  "externalCount": 7,
+  "externalTotalUnits": "3808346",
+  "selfCount": 29,
+  "firstExternalAt": "2026-09-26T07:15:39.362Z",
+  "firstExternal": {
+    "tx": "0x00aa4bd7f9741d5fc80085812d2a384352461b098856fc4066bdba3d6bf718ec",
+    "block": 51789790,
+    "from": "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+    "to": "0x71deac098914a009e3720524642a6be6f65ee528",
+    "units": "3802346",
+    "usdc": 3.802346
+  }
+}

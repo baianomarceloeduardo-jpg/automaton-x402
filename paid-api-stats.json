@@ -3,7 +3,7 @@
   "free": 0,
   "paidCalls": 14,
   "rejected": 15,
-  "challenges": 42,
+  "challenges": 43,
   "settledUnits": "14000",
   "byEndpoint": {
     "/paid/uuid": 4,

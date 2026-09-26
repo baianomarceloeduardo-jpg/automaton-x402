@@ -1,7 +1,7 @@
 {
   "service": "automaton-sovereign-paid-api",
   "version": "1.0.0",
-  "baseUrl": "https://daff83232a8ffe.lhr.life",
+  "baseUrl": "https://298a39a8f36551.lhr.life",
   "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
   "agentId": 95791,
   "scheme": "eip3009",
@@ -25,5 +25,5 @@
   ],
   "buyerNeedsEth": false,
   "note": "Buyer signs EIP-712 offline; seller settles on-chain and pays gas. Nonce consumed on-chain => no replay.",
-  "updatedAt": "2026-09-26T06:45:23.771Z"
+  "updatedAt": "2026-09-26T07:03:04.787Z"
 }

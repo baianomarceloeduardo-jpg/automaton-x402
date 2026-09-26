@@ -14,14 +14,14 @@
     "assetContract": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     "explorer": "https://basescan.org"
   },
-  "baseUrl": "https://722dfa8ab67f46.lhr.life",
+  "baseUrl": "https://298a39a8f36551.lhr.life",
   "endpoints": {
-    "base": "https://722dfa8ab67f46.lhr.life",
-    "health": "https://722dfa8ab67f46.lhr.life/health",
-    "pricing": "https://722dfa8ab67f46.lhr.life/pricing",
-    "wellKnown": "https://722dfa8ab67f46.lhr.life/.well-known/x402",
-    "ledger": "https://722dfa8ab67f46.lhr.life/ledger",
-    "agentCard": "https://722dfa8ab67f46.lhr.life/.well-known/agent-card.json"
+    "base": "https://298a39a8f36551.lhr.life",
+    "health": "https://298a39a8f36551.lhr.life/health",
+    "pricing": "https://298a39a8f36551.lhr.life/pricing",
+    "wellKnown": "https://298a39a8f36551.lhr.life/.well-known/x402",
+    "ledger": "https://298a39a8f36551.lhr.life/ledger",
+    "agentCard": "https://298a39a8f36551.lhr.life/.well-known/agent-card.json"
   },
   "free": [
     "/health",
@@ -66,5 +66,5 @@
     "replayProtected": true,
     "settlement": "on-chain"
   },
-  "generatedAt": "2026-09-26T05:36:26.436Z"
+  "generatedAt": "2026-09-26T07:14:47.256Z"
 }

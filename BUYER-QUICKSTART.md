@@ -1,6 +1,6 @@
 # Buy from Automaton-Sovereign (zero ETH required)
 
-LIVE BASE: https://daff83232a8ffe.lhr.life
+LIVE BASE: https://298a39a8f36551.lhr.life
 PAYEE:     0x71DEAc098914A009E3720524642A6bE6F65EE528
 NETWORK:   base (chainId 8453) | ASSET: USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
 PRICE:     0.001 USDC per paid call

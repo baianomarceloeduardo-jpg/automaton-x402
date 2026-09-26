@@ -1,0 +1,13 @@
+{
+  "at": "2026-09-26T07:14:00.912Z",
+  "chainId": 8453,
+  "sha256": "a834b0bdd1cb0323bccc4d3381dfdfe61850db344fc3774a64df25552a810ca0",
+  "payload": "AUTOMATON-X402-IDX v1 sha256=a834b0bdd1cb0323bccc4d3381dfdfe61850db344fc3774a64df25552a810ca0 n=33 https://298a39a8f36551.lhr.life",
+  "buyableCount": 33,
+  "checked": 60,
+  "txHash": "0x162860dc8566b419d8cb390932090dc510ea2285d6c346fd978eb176c51e455c",
+  "blockNumber": 51808746,
+  "status": 1,
+  "explorer": "https://basescan.org/tx/0x162860dc8566b419d8cb390932090dc510ea2285d6c346fd978eb176c51e455c",
+  "verify": "sha256(index-snapshot.json canonicalized) must equal a834b0bdd1cb0323bccc4d3381dfdfe61850db344fc3774a64df25552a810ca0; the tx calldata must utf8-decode to the payload."
+}

@@ -1,0 +1,307 @@
+{
+  "v": 1,
+  "kind": "x402-verified-buyable-index",
+  "generatedAt": "2026-09-26T07:04:10.257Z",
+  "checked": 60,
+  "buyableCount": 33,
+  "deadCount": 27,
+  "buyable": [
+    {
+      "url": "https://api.loyalspark.online/x402-gateway/recipient-api/offers",
+      "host": "api.loyalspark.online",
+      "priceUnits": "1000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x40a8CdD6a10EC1a8cB3dFb2834675e7a2CF4ad8b"
+    },
+    {
+      "url": "https://api.loyalspark.online/x402-gateway/recipient-api/rewards",
+      "host": "api.loyalspark.online",
+      "priceUnits": "1000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x40a8CdD6a10EC1a8cB3dFb2834675e7a2CF4ad8b"
+    },
+    {
+      "url": "https://api.loyalspark.online/x402-gateway/recipient-api/workflow/reward-status",
+      "host": "api.loyalspark.online",
+      "priceUnits": "1000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x40a8CdD6a10EC1a8cB3dFb2834675e7a2CF4ad8b"
+    },
+    {
+      "url": "https://api.oblique.markets/api/v1/paid/bazaar-pulse",
+      "host": "api.oblique.markets",
+      "priceUnits": "2000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x970007590aCC5C938cd51345B17AF51B1B40D3Ab"
+    },
+    {
+      "url": "https://api.oblique.markets/api/v1/paid/time",
+      "host": "api.oblique.markets",
+      "priceUnits": "10000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x970007590aCC5C938cd51345B17AF51B1B40D3Ab"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/allowance",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/block-number",
+      "host": "api.onesource.io",
+      "priceUnits": "1000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/block/:number",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/call",
+      "host": "api.onesource.io",
+      "priceUnits": "5000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/chain-id",
+      "host": "api.onesource.io",
+      "priceUnits": "1000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/code/:address",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/contract/:address",
+      "host": "api.onesource.io",
+      "priceUnits": "5000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/ens/:input",
+      "host": "api.onesource.io",
+      "priceUnits": "5000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/erc1155-balance",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/erc20-balance",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/erc20-transfers",
+      "host": "api.onesource.io",
+      "priceUnits": "5000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/erc721-tokens",
+      "host": "api.onesource.io",
+      "priceUnits": "8000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/estimate-gas",
+      "host": "api.onesource.io",
+      "priceUnits": "4000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/events",
+      "host": "api.onesource.io",
+      "priceUnits": "5000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/live-balance",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/network-info",
+      "host": "api.onesource.io",
+      "priceUnits": "1000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/nft-metadata",
+      "host": "api.onesource.io",
+      "priceUnits": "8000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/nft-owner",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/nonce/:address",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/pending",
+      "host": "api.onesource.io",
+      "priceUnits": "10000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/proxy/:address",
+      "host": "api.onesource.io",
+      "priceUnits": "5000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/receipt/:hash",
+      "host": "api.onesource.io",
+      "priceUnits": "5000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/storage",
+      "host": "api.onesource.io",
+      "priceUnits": "5000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/total-supply",
+      "host": "api.onesource.io",
+      "priceUnits": "3000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.onesource.io/api/chain/tx/:hash",
+      "host": "api.onesource.io",
+      "priceUnits": "8000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x52E29e0d2Aa49bfBfC548C0A9F2196F4aa51f3ea"
+    },
+    {
+      "url": "https://api.xfuel.app/v1/chat/completions",
+      "host": "api.xfuel.app",
+      "priceUnits": "2000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x23f713411c30BBd9A989c9cbC22EB0b55F7f7334"
+    },
+    {
+      "url": "https://cheaptokens.ai/api/buy",
+      "host": "cheaptokens.ai",
+      "priceUnits": "1000000",
+      "scheme": "exact",
+      "network": "base",
+      "chainId": null,
+      "payTo": "0x213c8d7434E2ae7AA1C392767c5120778D413215"
+    },
+    {
+      "url": "https://hypernatt.com/api/m2m/liq-radar",
+      "host": "hypernatt.com",
+      "priceUnits": "1000",
+      "scheme": "exact",
+      "network": "eip155:8453",
+      "chainId": null,
+      "payTo": "0x5a78ace5dd133316c8aaf7e156fbfc57e1209cf9"
+    }
+  ]
+}

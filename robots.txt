@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /v2/
+
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://298a39a8f36551.lhr.life/sitemap.xml
+
+# This host publishes machine-readable, independently verifiable on-chain data.
+# Free tools first; paid endpoints are 0.001 USDC per call via EIP-3009 on Base.
