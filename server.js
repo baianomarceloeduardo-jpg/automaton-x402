@@ -95,7 +95,9 @@ function trialRemaining(ip) {
 function consumeTrial(ip) {
   const d = dayKey();
   trial.days[d] = trial.days[d] || {};
-  trial.days[d][ip] = (trial.days[d][ip] || 0) + 1; saveTrial();
+  trial.days[d][ip] = (trial.days[d][ip] || 0) + 1;
+  for (const k of Object.keys(trial.days)) if (k < d) delete trial.days[k];
+  saveTrial();
 }
 
 // ---------- attestation identity ----------
@@ -259,12 +261,27 @@ function readBody(req, limit = 65536) {
     req.on('data', c => { n += c.length; if (n > limit) { req.destroy(); return resolve(null); } d += c; });
     req.on('end', () => resolve(d)); req.on('error', () => resolve(null)); });
 }
+function isPrivatePeer(ip) {
+  const v = String(ip || '').toLowerCase().replace(/^::ffff:/, '');
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(v)) {
+    const [a, b] = v.split('.').map(Number);
+    return a === 127 || a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127);
+  }
+  return v === '::1' || v.startsWith('fc') || v.startsWith('fd');
+}
+// Forwarding headers are client-controlled unless they were set by our own proxy (cloudflared on
+// loopback, or a private-network load balancer). Direct public peers get their socket IP, so they
+// cannot mint free-trial quota by rotating X-Forwarded-For / CF-Connecting-IP.
+// TRUST_PROXY=1 always trusts headers, TRUST_PROXY=0 never does.
 function clientIp(req) {
+  const peer = (req.socket && req.socket.remoteAddress) || 'unknown';
+  const tp = process.env.TRUST_PROXY;
+  if (tp === '0' || (tp !== '1' && !isPrivatePeer(peer))) return peer;
   const cf = req.headers['cf-connecting-ip'];
   if (cf) return String(cf).trim();
   const f = req.headers['x-forwarded-for'];
-  if (f) return String(f).split(',')[0].trim();
-  return (req.socket && req.socket.remoteAddress) || 'unknown';
+  if (f) { const hops = String(f).split(',').map(s => s.trim()).filter(Boolean); if (hops.length) return hops[hops.length - 1]; }
+  return peer;
 }
 
 const PAID_UTIL = ['/v1/hash', '/v1/echo', '/v1/uuid', '/v1/random'];
@@ -824,12 +841,13 @@ const server = http.createServer(async (req, res) => {
     const sp = u.searchParams;
     let args = { to: sp.get('to'), data: sp.get('data'), value: sp.get('value'), from: sp.get('from') };
     if (M === 'POST') {
-      try { const b = await readBody(req); if (b) { const j = JSON.parse(b); args = { to: j.to || args.to, data: j.data || args.data, value: j.value !== undefined ? String(j.value) : args.value, from: j.from || args.from }; } }
+      try { const b = await readBody(req); if (b) { const j = JSON.parse(b); args = { to: j.to || args.to, data: j.data || args.data, value: j.value !== undefined ? j.value : args.value, from: j.from || args.from }; } }
       catch (e) { return send(res, 400, { error: 'bad_json_body' }); }
     }
-    if (!args.to || !/^0x[0-9a-fA-F]{40}$/.test(args.to)) return send(res, 400, { error: 'invalid_params', message: 'to must be a 0x-prefixed 20-byte address', example: '/v2/simulate?to=' + USDC_BASE + '&data=0x18160ddd' });
+    const invalid = SIMULATOR.validate(args);
+    if (invalid) return send(res, 400, { error: 'invalid_params', message: invalid, example: '/v2/simulate?to=' + USDC_BASE + '&data=0x18160ddd' });
     if (!(await authorize(req, res, '/v2/simulate'))) return;
-    const sim = await SIMULATOR.simulate(args, { rpcUrl: RPC_URL });
+    const sim = await SIMULATOR.simulate(args, { bypassLimit: true });
     stats.simulations = (stats.simulations || 0) + 1; saveStats();
     return send(res, sim.ok ? 200 : 502, sim, res._settled);
   }
@@ -1056,6 +1074,10 @@ const server = http.createServer(async (req, res) => {
 
 require('./gasfree-overlay.js'); // attaches gasfree routes
 
+require('./facilitator-overlay.js'); // facilitator monitor routes
+
+require('./identity-overlay.js'); // erc-8004 identity routes
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log('[' + AGENT + '] value-api v' + VERSION + ' on :' + PORT + ' payTo=' + PAY_TO + ' ledger=' + (ledgerTail().index + 1) + ' keyId=' + keyId + ' freeTrial=' + FREE_TRIAL + '/day');
   startDispatcher(15 * 60 * 1000);
@@ -1102,14 +1124,22 @@ verifyPayment = async function (txHash) {
         if (l.trim()) { try { const r = JSON.parse(l); __used.set(r.nonce, r); } catch (e) {} }
       });
     } catch (e) {}
-    function __claim(nonce, meta) {
+    // reserve (in-memory, synchronous) -> settle -> commit (persist) | release. Reservation happens
+    // before any await so concurrent replays of one authorization cannot both reach settlement.
+    function __reserve(nonce) {
       const n = String(nonce).toLowerCase();
       if (__used.has(n)) return false;
+      __used.set(n, { nonce: n, pending: true });
+      return true;
+    }
+    function __release(nonce) { const n = String(nonce).toLowerCase(); const r = __used.get(n); if (r && r.pending) __used.delete(n); }
+    function __commit(nonce, meta) {
+      const n = String(nonce).toLowerCase();
       const rec = { nonce: n, at: new Date().toISOString(), meta: meta || null };
       __used.set(n, rec);
       try { fs.appendFileSync(__nonceFile, JSON.stringify(rec) + '\n'); } catch (e) {}
-      return true;
     }
+    function __claim(nonce, meta) { if (!__reserve(nonce)) return false; __commit(nonce, meta); return true; }
     global.__E9_DUAL = { verifier: __e9, claim: __claim, used: __used };
 
     // Advertise both schemes on the machine-readable pricing surface.
@@ -1155,13 +1185,35 @@ verifyPayment = async function (txHash) {
         try { v = await __e9.verifyAuthorization(env, { payTo: PAY_TO, minUnits: priceUnitsFor(endpoint), requireUnused: true }); }
         catch (e) { v = { ok: false, reason: 'verify_error' }; }
         if (!v.ok) { stats.rejected++; saveStats(); send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v }); return false; }
-        if (!__claim(v.nonce, { from: v.from, endpoint: endpoint, value: v.value })) {
+        if (!__reserve(v.nonce)) {
           stats.rejected++; saveStats();
           send(res, 402, { error: 'payment_invalid', reason: 'nonce_replayed_local' });
           return false;
         }
+        // A valid signature is only a promise to pay. Settle transferWithAuthorization on-chain
+        // (via the CDP facilitator, same path as X-PAYMENT) BEFORE serving; fail closed otherwise.
+        const a = env.payload || env;
+        const exactPayload = { x402Version: 1, scheme: 'exact', network: NETWORK, payload: { signature: env.signature || env.sig,
+          authorization: { from: a.from, to: a.to, value: String(a.value), validAfter: String(a.validAfter), validBefore: String(a.validBefore), nonce: a.nonce } } };
+        const requirements = FACILITATOR.buildPaymentRequired(endpoint, {
+          payTo: PAY_TO, priceBaseUnits: priceUnitsFor(endpoint).toString(), priceUsdc: priceUsdcFor(endpoint),
+          baseUrl: requestBase(req), method: req.method, description: 'Automaton-Sovereign Value API call'
+        }).accepts[0];
+        let st;
+        try {
+          st = FACILITATOR.facilitatorConfigured()
+            ? await FACILITATOR.facilitatorSettle(exactPayload, requirements)
+            : { ok: false, reason: 'settlement_unavailable' };
+        } catch (e) { st = { ok: false, reason: 'settlement_error' }; }
+        if (!st.ok) {
+          __release(v.nonce);
+          stats.rejected++; saveStats();
+          send(res, 402, { error: 'payment_invalid', reason: 'eip3009_not_settled', detail: String(st.reason || '').slice(0, 200) });
+          return false;
+        }
+        __commit(v.nonce, { from: v.from, endpoint: endpoint, value: v.value, tx: st.transaction });
         stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
-        res._settled = { 'X-Payment-Settled': 'true', 'X-Payment-Scheme': 'eip3009', 'X-Payment-From': v.from, 'X-Payment-Caller-Bound': 'true' };
+        res._settled = { 'X-Payment-Settled': 'true', 'X-Payment-Scheme': 'eip3009', 'X-Payment-From': v.from, 'X-Payment-Caller-Bound': 'true', 'X-Payment-Tx': String(st.transaction || '') };
         return true;
       }
       return __origAuthorize(req, res, endpoint);
@@ -1457,7 +1509,7 @@ require('./history-overlay.js')(server);
     server.on('request', function (req, res) {
       let p = '/', query = '';
       try { const s = (req.url || '/').split('?'); p = decodeURIComponent(s[0]); query = s[1] || ''; } catch (e) { p = (req.url || '/').split('?')[0]; }
-      function qs(name) { const m = new RegExp('(?:^|&)' + name + '=([^&]*)').exec(query); return m ? decodeURIComponent(m[1]) : ''; }
+      function qs(name) { const m = new RegExp('(?:^|&)' + name + '=([^&]*)').exec(query); if (!m) return ''; try { return decodeURIComponent(m[1]); } catch (e) { return ''; } }
       if (p === '/v1/domain/tlds') {
         return osir.tlds().then(function (t) {
           res.writeHead(t.ok ? 200 : 502, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, max-age=3600' });
@@ -1498,3 +1550,20 @@ require('./history-overlay.js')(server);
 
 // __MCP_HTTP__ MCP over HTTP at /mcp (Smithery / web MCP clients); tools shared with the npm package
 require('./mcp-http-server.js')(server, { port: PORT, clientIp });
+
+// __REQUEST_GUARD__ must stay LAST: wraps every request listener so a sync throw or async rejection
+// in any route/overlay returns a generic 500 instead of crashing the whole API (uncaught URIError etc.).
+(function () {
+  const listeners = server.listeners('request').slice();
+  server.removeAllListeners('request');
+  function fail(res, e) {
+    console.error('[request-guard] ' + ((e && e.stack) || e));
+    try { if (!res.headersSent) { res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }); res.end(JSON.stringify({ error: 'internal_error' })); } else res.end(); } catch (x) {}
+  }
+  server.on('request', function (req, res) {
+    for (const l of listeners) {
+      try { const r = l.call(server, req, res); if (r && typeof r.catch === 'function') r.catch((e) => fail(res, e)); }
+      catch (e) { fail(res, e); }
+    }
+  });
+})();

@@ -14,7 +14,10 @@ const https = require('https');
 const http = require('http');
 const { URL } = require('url');
 
-const DEFAULT_RPC = process.env.BASE_RPC_URL || 'https://mainnet.base.org';
+const DEFAULT_RPC = process.env.SIM_RPC_URL || process.env.BASE_RPC_URL || 'https://mainnet.base.org';
+const MAX_DATA_BYTES = 65536;                  // well above any real tx; bounds upstream work
+const MAX_DATA_HEX = 2 + MAX_DATA_BYTES * 2;
+const MAX_RPC_RESPONSE = 2 * 1024 * 1024;      // cap memory per upstream response
 const BASE_CHAIN_ID = '0x2105'; // 8453
 
 const PANIC_CODES = {
@@ -37,7 +40,8 @@ function rpcCall(rpcUrl, method, params) {
     const payload = JSON.stringify({ jsonrpc: '2.0', id: 1, method, params });
     const req = lib.request({ hostname: u.hostname, port: u.port || (u.protocol === 'http:' ? 80 : 443), path: u.pathname + u.search, method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload), 'User-Agent': 'automaton-simulator/1.0' } }, (res) => {
-      let d = ''; res.on('data', (c) => d += c);
+      let d = '';
+      res.on('data', (c) => { d += c; if (d.length > MAX_RPC_RESPONSE) req.destroy(new Error('rpc_response_too_large')); });
       res.on('end', () => {
         let j; try { j = JSON.parse(d); } catch (e) { return reject(new Error('bad_rpc_response (HTTP ' + res.statusCode + ')')); }
         resolve(j); // caller inspects j.result / j.error (a revert arrives as j.error)
@@ -94,17 +98,64 @@ function revertDataOf(err) {
   return null;
 }
 
+// JSON-RPC error -> 'revert' (execution reverted), 'rejected' (node refuses the tx itself:
+// funds, gas, nonce) or 'transient' (rate limit, capacity, internal: says nothing about the tx).
+function classify(err) {
+  if (!err) return null;
+  if (revertDataOf(err)) return 'revert';
+  const msg = String(err.message || '');
+  if (err.code === 3 || /revert/i.test(msg)) return 'revert';
+  if (/insufficient funds|OutOfFunds|gas required exceeds|intrinsic gas|gas too low|exceeds block gas limit|nonce|invalid opcode|out of gas|stack (over|under)flow|InvalidFEOpcode|OpcodeNotFound/i.test(msg)) return 'rejected';
+  return 'transient';
+}
+
+// Returns an error string for unusable input, or null. Pure and cheap: callers run it before
+// charging a payment or spending an RPC call.
+function validate(input) {
+  input = input || {};
+  if (!isAddr(input.to)) return 'to must be a 0x-prefixed 20-byte address';
+  if (input.from !== undefined && input.from !== null && input.from !== '' && !isAddr(input.from)) return 'from must be a 0x-prefixed 20-byte address';
+  const data = input.data === undefined || input.data === null || input.data === '' ? '0x' : input.data;
+  if (typeof data !== 'string') return 'data must be a 0x-hex string';
+  if (data.length > MAX_DATA_HEX) return 'calldata too large (max ' + MAX_DATA_BYTES + ' bytes)';
+  if (!/^0x([0-9a-fA-F]{2})*$/.test(data)) return 'data must be 0x-prefixed even-length hex';
+  try { toQuantity(input.value); } catch (e) { return e.message; }
+  return null;
+}
+
+// Process-wide limiter: the free MCP tool must not turn this host into an open Base RPC proxy
+// (each simulation costs 4 upstream calls, and the same public RPC verifies our payments).
+const RATE_PER_MIN = parseInt(process.env.SIM_RATE_PER_MIN || '120', 10);
+const MAX_CONCURRENT = parseInt(process.env.SIM_MAX_CONCURRENT || '8', 10);
+let tokens = RATE_PER_MIN, refillAt = Date.now(), inFlight = 0;
+function acquire() {
+  const now = Date.now();
+  tokens = Math.min(RATE_PER_MIN, tokens + ((now - refillAt) / 60000) * RATE_PER_MIN);
+  refillAt = now;
+  if (inFlight >= MAX_CONCURRENT) return 'rate_limited: too many concurrent simulations, retry shortly';
+  if (tokens < 1) return 'rate_limited: simulation quota exceeded (' + RATE_PER_MIN + '/min), retry shortly';
+  tokens -= 1; inFlight++;
+  return null;
+}
+
 async function simulate(input, opts) {
   input = input || {};
   opts = opts || {};
-  const rpcUrl = opts.rpcUrl || DEFAULT_RPC;
   const out = { ok: false, network: 'base', chainId: 8453, willRevert: null, revertReason: null, estimatedGas: null, returnData: null };
+  const invalid = validate(input);
+  if (invalid) { out.error = invalid; return out; }
+  // Paid HTTP calls (already metered by x402) skip the free-tier limiter but not the concurrency cap.
+  if (!opts.bypassLimit) {
+    const limited = acquire();
+    if (limited) { out.error = limited; out.rateLimited = true; return out; }
+  } else inFlight++;
+  try { return await run(input, opts, out); } finally { inFlight--; }
+}
 
-  if (!isAddr(input.to)) { out.error = 'to must be a 0x-prefixed 20-byte address'; return out; }
-  if (input.from !== undefined && input.from !== null && input.from !== '' && !isAddr(input.from)) { out.error = 'from must be a 0x-prefixed 20-byte address'; return out; }
-  const data = input.data === undefined || input.data === null || input.data === '' ? '0x' : String(input.data);
-  if (!/^0x([0-9a-fA-F]{2})*$/.test(data)) { out.error = 'data must be 0x-prefixed even-length hex'; return out; }
-  let value; try { value = toQuantity(input.value); } catch (e) { out.error = e.message; return out; }
+async function run(input, opts, out) {
+  const rpcUrl = opts.rpcUrl || DEFAULT_RPC;
+  const data = input.data === undefined || input.data === null || input.data === '' ? '0x' : input.data;
+  const value = toQuantity(input.value);
 
   const tx = { to: input.to, data, value };
   if (input.from) tx.from = input.from;
@@ -120,9 +171,18 @@ async function simulate(input, opts) {
   out.tx = tx;
 
   let call, gas;
-  try {
-    [call, gas] = await Promise.all([rpcCall(rpcUrl, 'eth_call', [tx, block]), rpcCall(rpcUrl, 'eth_estimateGas', [tx, block])]);
-  } catch (e) { out.error = 'rpc_unreachable: ' + e.message; return out; }
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      [call, gas] = await Promise.all([rpcCall(rpcUrl, 'eth_call', [tx, block]), rpcCall(rpcUrl, 'eth_estimateGas', [tx, block])]);
+    } catch (e) { out.error = 'rpc_unreachable: ' + e.message; return out; }
+    // Rate limits / capacity errors are not reverts: retry once, then report ok:false.
+    if (classify(call.error) !== 'transient' && classify(gas.error) !== 'transient') break;
+    if (attempt === 0) await new Promise((r) => setTimeout(r, 400));
+  }
+  if (classify(call.error) === 'transient') {
+    out.error = 'rpc_error: ' + String(call.error.message || call.error.code || 'unknown').slice(0, 200);
+    return out;
+  }
 
   out.ok = true;
   if (call.error) {
@@ -149,7 +209,8 @@ async function simulate(input, opts) {
   else if (gas.error) {
     out.estimateGasError = String(gas.error.message || 'estimateGas failed');
     // eth_call can pass while estimateGas fails (e.g. gas-dependent logic): still a revert on-chain.
-    if (out.willRevert === false) {
+    // A transient RPC error on estimateGas alone says nothing about the tx, so it does not flip it.
+    if (out.willRevert === false && classify(gas.error) !== 'transient') {
       out.willRevert = true;
       const rd = revertDataOf(gas.error);
       const dec = rd ? decodeRevert(rd) : null;
@@ -162,4 +223,4 @@ async function simulate(input, opts) {
   return out;
 }
 
-module.exports = { simulate, decodeRevert, toQuantity, PANIC_CODES };
+module.exports = { simulate, validate, decodeRevert, toQuantity, PANIC_CODES };

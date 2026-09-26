@@ -123,12 +123,24 @@ module.exports = function installHistoryOverlay(server) {
     }
 
     if (p === '/v1/x402/history/record') {
+      // Write endpoint: only the local publisher (publish-history.ps1 -> 127.0.0.1, no proxy headers)
+      // or a caller presenting HISTORY_RECORD_TOKEN may append. Public callers could otherwise flood
+      // the append-only log and trigger unbounded live ecosystem scans.
+      const peer = String((req.socket && req.socket.remoteAddress) || '').replace(/^::ffff:/, '');
+      const proxied = !!(req.headers['x-forwarded-for'] || req.headers['cf-connecting-ip'] || req.headers['x-forwarded-host']);
+      const token = process.env.HISTORY_RECORD_TOKEN;
+      const local = (peer === '127.0.0.1' || peer === '::1') && !proxied;
+      const authed = !!token && String(req.headers['x-admin-token'] || '') === token;
+      if (!local && !authed) return json(res, 403, { ok: false, reason: 'record_is_operator_only', read: '/v1/x402/history' });
       const live = /(^|&|&amp;)live=1(&|$)/.test(q);
+      if (live && installHistoryOverlay.__liveRunning) return json(res, 429, { ok: false, reason: 'live_scan_in_progress' });
       if (!live) {
         const s = H.append(H.snapshot(indexEntries()));
         return json(res, 200, { ok: true, recorded: true, mode: 'cached', day: s.day, total: s.total, conformant: s.conformant, healthPct: s.healthPct });
       }
+      installHistoryOverlay.__liveRunning = true;
       return runLive(function (err, entries) {
+        installHistoryOverlay.__liveRunning = false;
         if (err) return json(res, 502, { ok: false, reason: 'index_run_failed', detail: String((err && err.message) || err) });
         const s = H.append(H.snapshot(entries || []));
         return json(res, 200, { ok: true, recorded: true, mode: 'live', day: s.day, total: s.total, conformant: s.conformant, healthPct: s.healthPct });
