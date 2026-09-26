@@ -24,7 +24,7 @@ const PKG = require('./package.json');
 const linter = require('./index.js');
 const simulator = require('./tx-simulator.js');
 
-const BASE = (process.env.VALUE_API_BASE || 'https://api.automaton-sovereign.workers.dev').replace(/\/+$/, '');
+const BASE = (process.env.VALUE_API_BASE || 'https://automaton-api.bfzovw.easypanel.host').replace(/\/+$/, '');
 const PAYMENT = process.env.VALUE_API_PAYMENT || '';
 
 function httpJson(method, urlStr, headers, body) {

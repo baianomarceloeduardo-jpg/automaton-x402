@@ -4,7 +4,7 @@ compatibility_date = "2024-09-23"
 account_id = "6f771e0b763e95f4c7a6365f081b6ef1"
 
 [vars]
-BACKEND_ORIGIN = "https://academics-ira-appraisal-lawn.trycloudflare.com"
+BACKEND_ORIGIN = "https://automaton-api.bfzovw.easypanel.host"
 
 [[kv_namespaces]]
 binding = "TUNNEL_KV"

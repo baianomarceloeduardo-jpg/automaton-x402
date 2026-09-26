@@ -1,6 +1,6 @@
 {
   "name": "@celorodrigues/x402-conformance",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Zero-dependency CLI, MCP server and testing suite for x402 AI agent micropayment protocol & EIP-3009 compliance",
   "main": "index.js",
   "bin": {
@@ -38,7 +38,7 @@
     "type": "git",
     "url": "git+https://github.com/baianomarceloeduardo-jpg/automaton-x402.git"
   },
-  "homepage": "https://api.automaton-sovereign.workers.dev/leaderboard",
+  "homepage": "https://automaton-api.bfzovw.easypanel.host/leaderboard",
   "bugs": {
     "url": "https://github.com/baianomarceloeduardo-jpg/automaton-x402/issues"
   },
