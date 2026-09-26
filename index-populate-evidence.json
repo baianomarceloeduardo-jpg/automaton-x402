@@ -1,0 +1,67 @@
+{
+  "at": "2026-09-26T04:14:42.458Z",
+  "base": "https://labour-our-moderators-bags.trycloudflare.com",
+  "engine": {
+    "file": "x402-index.js",
+    "keys": [
+      "run",
+      "load",
+      "save",
+      "leaderboard",
+      "render",
+      "scoreOf",
+      "extractUrls",
+      "SEED"
+    ]
+  },
+  "candidates": 6,
+  "scored": 6,
+  "entriesBefore": 42,
+  "entriesAfter": 42,
+  "detail": [
+    {
+      "url": "http://127.0.0.1:8080/",
+      "verdict": "NON_CONFORMANT",
+      "passed": 0,
+      "total": 1
+    },
+    {
+      "url": "https://x402.org/facilitator",
+      "verdict": "NON_CONFORMANT",
+      "passed": 0,
+      "total": 1
+    },
+    {
+      "url": "https://facilitator.x402.rs/",
+      "verdict": "NON_CONFORMANT",
+      "passed": 0,
+      "total": 1
+    },
+    {
+      "url": "https://api.x402.dev/",
+      "verdict": "UNREACHABLE",
+      "passed": 0,
+      "total": 0
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/uuid",
+      "verdict": "CONFORMANT",
+      "passed": 9,
+      "total": 9
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com",
+      "verdict": "NON_CONFORMANT",
+      "passed": 0,
+      "total": 1
+    }
+  ],
+  "indexShape": [
+    "via",
+    "note",
+    "runs",
+    "lastRun",
+    "count",
+    "scoreboard"
+  ]
+}

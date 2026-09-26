@@ -1,0 +1,92 @@
+{
+  "at": "2026-09-26T05:35:16.125Z",
+  "base": "https://722dfa8ab67f46.lhr.life",
+  "probes": [
+    {
+      "surface": "self",
+      "path": "/.well-known/x402",
+      "status": 200,
+      "bytes": 827
+    },
+    {
+      "surface": "self",
+      "path": "/pricing",
+      "status": 200,
+      "bytes": 827
+    },
+    {
+      "surface": "self",
+      "path": "/health",
+      "status": 200,
+      "bytes": 546
+    },
+    {
+      "surface": "self",
+      "path": "/ledger",
+      "status": 200,
+      "bytes": 1882
+    },
+    {
+      "surface": "x402.org bazaar/resources",
+      "url": "https://x402.org/bazaar/resources",
+      "status": 404,
+      "bytes": 54754,
+      "shape": "non-json",
+      "count": null
+    },
+    {
+      "surface": "x402.org discovery",
+      "url": "https://x402.org/discovery/resources",
+      "status": 404,
+      "bytes": 54754,
+      "shape": "non-json",
+      "count": null
+    },
+    {
+      "surface": "cdp discovery resources",
+      "url": "https://api.cdp.coinbase.com/platform/v2/x402/discovery/resources",
+      "status": 200,
+      "bytes": 354935,
+      "shape": "items,pagination,x402Version",
+      "count": 100
+    },
+    {
+      "surface": "facilitator.x402.rs list",
+      "url": "https://facilitator.x402.rs/list",
+      "status": 200,
+      "bytes": 34402,
+      "shape": "non-json",
+      "count": null
+    },
+    {
+      "surface": "x402scan services",
+      "url": "https://www.x402scan.com/api/services",
+      "status": 404,
+      "bytes": 16567,
+      "shape": "non-json",
+      "count": null
+    },
+    {
+      "surface": "x402scan resources",
+      "url": "https://www.x402scan.com/api/resources",
+      "status": 404,
+      "bytes": 16567,
+      "shape": "non-json",
+      "count": null
+    }
+  ],
+  "submissions": [
+    {
+      "name": "x402scan submit",
+      "url": "https://www.x402scan.com/api/resources",
+      "status": 404,
+      "body": "<!DOCTYPE html><!--9OooDbtmLTFre4oPJNvVn--><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/961cfb3ab2afe"
+    },
+    {
+      "name": "x402scan services submit",
+      "url": "https://www.x402scan.com/api/services",
+      "status": 404,
+      "body": "<!DOCTYPE html><!--9OooDbtmLTFre4oPJNvVn--><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/961cfb3ab2afe"
+    }
+  ]
+}

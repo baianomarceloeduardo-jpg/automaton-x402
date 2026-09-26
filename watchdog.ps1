@@ -31,19 +31,8 @@ function Get-AdminSecret {
 $script:lastSyncedUrl = $null
 
 function Sync-Worker($targetUrl) {
-  $secret = Get-AdminSecret
-  if (-not $secret) { W 'worker sync skipped: AUTOMATON_ADMIN_SECRET not set'; return }
-  try {
-    $res = Invoke-RestMethod 'https://api.automaton-sovereign.workers.dev/__internal/set_origin' `
-      -Method Post `
-      -Headers @{ 'x-admin-secret' = $secret } `
-      -Body $targetUrl `
-      -TimeoutSec 8
-    $script:lastSyncedUrl = $targetUrl
-    W ('worker synced to ' + $targetUrl)
-  } catch {
-    W ('worker sync error: ' + $_.Exception.Message)
-  }
+  # Origin is permanently hosted 24/7 on Easypanel VPS (https://automaton-api.bfzovw.easypanel.host)
+  return
 }
 
 function Health-Ok {

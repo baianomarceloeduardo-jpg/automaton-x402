@@ -1,0 +1,15 @@
+{
+  "startedAt": "2026-09-26T04:29:54.122Z",
+  "free": 0,
+  "paidCalls": 14,
+  "rejected": 15,
+  "challenges": 42,
+  "settledUnits": "14000",
+  "byEndpoint": {
+    "/paid/uuid": 4,
+    "/paid/time": 1,
+    "/paid/clock": 3,
+    "/paid/balance": 3,
+    "/paid/gas": 3
+  }
+}

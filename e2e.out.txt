@@ -1,0 +1,24 @@
+buyer (fresh external customer) = 0xf23e4C3F98D840A0f21CeB6dfBa60798C62E78bB
+buyer ETH = 0.0 (ZERO — must still be able to pay)
+[PASS] buyer funded with 0.01 USDC only — tx=0x41dbe0b70ed5ba2f8958204179ca15c78df4b82474dae395ebcee918460f2540
+[PASS] free /health 200 — body={ "status": "ok", "service": "automaton-paid-api", "version": "1.0.0", "
+[PASS] free /pricing advertises eip3009
+[PASS] unpaid -> 402
+[PASS] 402 challenge well-formed — amount=1000 chain=8453
+[PASS] buyer signed EIP-712 authorization offline — nonce=0x0229f0b002...
+[PASS] forged signer spoof refused
+[PASS] tampered amount refused — reason=signature_not_from_payer
+
+PAID CALL: buyer (0 ETH) -> live server -> facilitator broadcasts on Base...
+  status=200 settled=true tx=0x84ba0b47709693f59860d11af34ef81f51bbc5a13dcca6a5847d6471e39c86be
+[PASS] PAID CALL SERVED (200)
+[PASS] settled=true (real broadcast, not queued)
+[PASS] on-chain tx hash — 0x84ba0b47709693f59860d11af34ef81f51bbc5a13dcca6a5847d6471e39c86be
+[PASS] caller-bound=true
+[PASS] paid payload returned — uuid=fd110e4c-14b7-44e5-ac55-ed37bc3ec79c
+[FAIL] buyer debited exactly 0.001 — spent=0
+[PASS] REPLAY REFUSED (nonce_already_used)
+[PASS] SECOND DISTINCT PURCHASE SERVED — tx=0xab3e2e8535a14f799f6a37c8a7c63bbd3d40e48f4d56a6a7e44694cdbb4fc331
+[PASS] settlement ledger records real txs
+
+=== paid-api E2E: 16/17 PASS ===

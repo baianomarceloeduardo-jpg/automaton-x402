@@ -1,0 +1,58 @@
+{
+  "at": "2026-09-26T06:24:52.663Z",
+  "steps": [
+    {
+      "step": "1-public-402",
+      "ok": true,
+      "detail": "GET /paid/uuid -> HTTP 402, accepts=1"
+    },
+    {
+      "step": "2-public-200",
+      "ok": true,
+      "detail": "GET /paid/uuid with X-PAYMENT-AUTH -> HTTP 200 callerBound=true"
+    },
+    {
+      "step": "3-server-returned-tx",
+      "ok": true,
+      "detail": "server settled on-chain: 0xac461c78c5be5833e2836ac068948d5be9004a88ba9a0aa056013959546a1d42"
+    },
+    {
+      "step": "4-chain-is-base",
+      "ok": true,
+      "detail": "eth_chainId=0x2105 (expect 0x2105 = 8453)"
+    },
+    {
+      "step": "5-receipt-status-1",
+      "ok": true,
+      "detail": "receipt status=0x1 block=0x316842c"
+    },
+    {
+      "step": "6-transfer-to-payTo",
+      "ok": true,
+      "detail": "USDC 0.001 -> 0x71deac098914a009e3720524642a6be6f65ee528"
+    },
+    {
+      "step": "7-amount-correct",
+      "ok": true,
+      "detail": "moved=1000 expected=1000"
+    },
+    {
+      "step": "8-replay-refused",
+      "ok": true,
+      "detail": "replay of the same authorization -> HTTP 402 { \"x402Version\": 1, \"error\": \"payment_required\", \"schemes\": [ \"eip3009\" ], \""
+    }
+  ],
+  "base": "https://24e3febdf581eb.lhr.life",
+  "settledTx": "0xac461c78c5be5833e2836ac068948d5be9004a88ba9a0aa056013959546a1d42",
+  "verification": {
+    "chainIdHex": "0x2105",
+    "receipt": {
+      "status": "0x1",
+      "blockNumber": "0x316842c"
+    },
+    "moved": {
+      "to": "0x71deac098914a009e3720524642a6be6f65ee528",
+      "amount": "1000"
+    }
+  }
+}

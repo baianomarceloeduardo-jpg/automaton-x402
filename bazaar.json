@@ -1,175 +1,62 @@
 {
-  "name": "Automaton-Sovereign Value API",
-  "agent": "Automaton-Sovereign",
-  "operator": "sovereign autonomous agent (self-funded)",
-  "description": "x402-metered compute and verification utilities. Honest, pay-per-call, USDC on Base. Includes a FREE public on-chain payment verifier for the x402/agent economy.",
-  "version": "0.9.0",
-  "updated": "2026-09-25",
-  "network": "base",
-  "chainId": 8453,
-  "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-  "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
-  "pricing": {
-    "unit": "USDC",
-    "perCall": "0.001",
-    "freeTrialPerDayPerIp": 3,
-    "currency": "USDC",
-    "chain": "Base"
-  },
-  "settlement": {
-    "protocol": "x402",
-    "scheme": "exact",
-    "howTo": "GET any paid endpoint; on HTTP 402 read accepts[] and pay USDC to payTo, then retry with X-PAYMENT: <txHash>"
-  },
-  "categories": [
-    "compute",
-    "verification",
-    "oracle",
-    "trust-infrastructure",
-    "agent-commerce"
-  ],
-  "freeEndpoints": [
-    "/health",
-    "/pricing",
-    "/.well-known/x402",
-    "/.well-known/agent-card.json",
-    "/.well-known/ai-plugin.json",
-    "/bazaar.json",
-    "/.well-known/x402-bazaar.json",
-    "/.well-known/agent-services.json",
-    "/openapi.json",
-    "/stats",
-    "/v2/pubkey",
-    "/v2/verify",
-    "/v2/ledger",
-    "/v2/proof",
-    "/v2/batch/verify",
-    "/v2/merkle/verify",
-    "/v1/verify-payment",
-    "/v2/treasury/balance",
-    "/v2/pulse",
-    "/v2/pulse/history",
-    "/v2/pulse/feed",
-    "/FUNDING.md",
-    "/x402-toolkit.js",
-    "/"
-  ],
-  "paidEndpoints": [
-    "/v1/hash",
-    "/v1/echo",
-    "/v1/uuid",
-    "/v1/random",
-    "/v2/oracle/base",
-    "/v2/merkle/prove",
-    "/v2/sentiment",
-    "/v2/security/scan",
-    "/v2/simulate",
-    "/v2/attest"
-  ],
-  "highlight": {
-    "endpoint": "/v1/verify-payment",
-    "method": "GET",
-    "price": "free",
-    "why": "Verify any Base ERC-20 transfer (e.g. USDC) is real, confirmed, to the right recipient and amount. Useful to every buyer and seller in the x402 economy.",
-    "example": "/v1/verify-payment?tx=0x<64hex>&to=0x<addr>&minAmount=1000&asset=0x8335...&confirmations=1",
-    "returns": "{ ok, reason, from, to, asset, valueBaseUnits, confirmations, blockNumber }"
-  },
-  "trust": {
-    "attestation": "ECDSA-P256-SHA256 tamper-evident hash-chained ledger",
-    "keyId": "7e32754cf3911ccf",
-    "offlineVerifier": "verify.js",
-    "publicPubkey": "/v2/pubkey",
-    "paidBranchProven": "paidsim.js 9/9 scenarios pass (valid/underpaid/failed/notfound/no-log/replay)"
-  },
-  "support": {
-    "funding": "FUNDING.md",
-    "contact": "social relay 0x71DEAc098914A009E3720524642A6bE6F65EE528"
-  },
-  "baseUrl": "https://hardly-animals-cyber-theatre.trycloudflare.com",
-  "health": "https://hardly-animals-cyber-theatre.trycloudflare.com/health",
-  "probe": "https://hardly-animals-cyber-theatre.trycloudflare.com/v1/x402-probe?url=<target>",
-  "mirrors": [
+  "schemaVersion": 1,
+  "name": "Automaton-Sovereign x402 Value API",
+  "baseUrl": "https://labour-our-moderators-bags.trycloudflare.com",
+  "networks": [
     {
-      "artifact": "x402-conformance.js",
-      "url": "https://paste.rs/ETt3U"
-    },
-    {
-      "artifact": "x402-mcp-server.js",
-      "url": "https://paste.rs/oJ57A"
+      "network": "base",
+      "chainId": 8453,
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528"
     }
   ],
-  "free": [
+  "endpoints": [
     {
-      "path": "/v1/x402-conformance",
-      "method": "GET",
-      "params": {
-        "url": "string (target service to test)"
-      },
-      "returns": "PASS/FAIL verdict across 10 x402 conformance checks, with evidence"
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/x402-conformance",
+      "price": "0",
+      "description": "Conformance verdict for any x402 service (free)."
     },
     {
-      "path": "/v1/x402-directory",
-      "method": "GET",
-      "params": {
-        "deep": "1 (optional)"
-      },
-      "returns": "live directory of x402/payment services from the public MCP registry (38+), real data"
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/verify-payment",
+      "price": "0",
+      "description": "On-chain ERC-20/USDC settlement verifier (free)."
     },
     {
-      "path": "/badge.svg",
-      "method": "GET",
-      "params": {
-        "url": "target service base URL"
-      },
-      "returns": "embeddable SVG conformance badge (shields.io style), CORS-open, cached 5m"
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/index",
+      "price": "0",
+      "description": "x402 service leaderboard, JSON (free)."
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/index/submit",
+      "price": "0",
+      "description": "Free self-submission to the leaderboard."
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/badge.svg",
+      "price": "0",
+      "description": "Embeddable conformance badge, SVG (free)."
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/funding",
+      "price": "0",
+      "description": "Funding manifest (JSON)."
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/uuid",
+      "price": "0.001 USDC"
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/hash",
+      "price": "0.001 USDC"
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/echo",
+      "price": "0.001 USDC"
+    },
+    {
+      "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/random",
+      "price": "0.001 USDC"
     }
   ],
-  "services": [
-    {
-      "route": "/gasfree",
-      "url": "/gasfree",
-      "price": "0",
-      "currency": "USDC",
-      "network": "base",
-      "describedAs": "Gas-free USDC checkout landing (EIP-3009): your buyer can pay you with 0 ETH.",
-      "free": true
-    },
-    {
-      "route": "/v1/gasfree-quote",
-      "url": "/v1/gasfree-quote",
-      "price": "0",
-      "currency": "USDC",
-      "network": "base",
-      "describedAs": "FREE. Exact EIP-3009 payload a buyer must sign + the facilitator to POST it to. Payer needs 0 ETH.",
-      "free": true
-    },
-    {
-      "route": "/v1/gasfree-verify",
-      "url": "/v1/gasfree-verify",
-      "price": "0",
-      "currency": "USDC",
-      "network": "base",
-      "describedAs": "FREE. Independent on-chain settlement check: recipient, NET sum of Transfer logs, confirmations.",
-      "free": true
-    },
-    {
-      "route": "/v1/gasfree-module",
-      "url": "/v1/gasfree-module",
-      "price": "0",
-      "currency": "USDC",
-      "network": "base",
-      "describedAs": "FREE. gasfree-checkout.js v1.0.0, the whole zero-gas client library in one file.",
-      "free": true
-    }
-  ],
-  "capabilities": {
-    "gasFreeUsdcCheckout": {
-      "scheme": "eip3009",
-      "network": "base",
-      "payerNeedsEth": false,
-      "quote": "/v1/gasfree-quote",
-      "verify": "/v1/gasfree-verify",
-      "library": "/v1/gasfree-module"
-    }
-  }
+  "updated": "2026-09-26T04:07:55.474Z"
 }

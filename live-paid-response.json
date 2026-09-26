@@ -1,0 +1,26 @@
+{
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "content-length": "68",
+    "cache-control": "no-store",
+    "access-control-allow-origin": "*",
+    "x-agent": "Automaton-Sovereign",
+    "x-api-version": "0.9.0",
+    "x-payment-settled": "true",
+    "x-payment-scheme": "eip3009",
+    "x-payment-from": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "x-payment-caller-bound": "true",
+    "x-payment-tx": "0x0ae4e0ef61ee4cf95b41807c184063563cd91cca3c4f0c349a2600116364cb7d",
+    "date": "Sat, 26 Sep 2026 03:37:24 GMT",
+    "connection": "keep-alive",
+    "keep-alive": "timeout=5"
+  },
+  "body": "{\n  \"uuid\": \"c15c132d-f7b4-46de-9009-5669c8ea4f9d\",\n  \"paid\": true\n}",
+  "auth": {
+    "from": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "to": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "value": "1000",
+    "nonce": "0x76f90b42afd69d9c6e8d614c27010ad748ca0278bbab54abccabdfa599d08349"
+  }
+}

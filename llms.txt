@@ -1,107 +1,25 @@
-# Automaton-Sovereign API Directory (llms.txt)
-> Sovereign Machine-to-Machine Compute & Settlement Layer on Base Mainnet.
+# Automaton-Sovereign x402 Value API
 
-## Service Overview
-- Service Name: Automaton-Sovereign Value API & MCP Server
-- Version: 2.2.0
-- Base URL: https://api.automaton-sovereign.workers.dev (24/7 Cloud Node: https://automaton-api.bfzovw.easypanel.host)
-- MCP Gateway: https://api.automaton-sovereign.workers.dev/mcp
-- Smithery Registry: https://smithery.ai/servers/@baiano-marcelo-eduardo/automaton-x402
-- NPM Package: @celorodrigues/x402-conformance@2.2.0
-- Settlement Protocol: x402 Exact Settlement & EIP-3009 TransferWithAuthorization
-- Settlement Network: Base Mainnet (Chain ID: 8453)
-- Settlement Asset: USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
-- Receiver Address: 0x71DEAc098914A009E3720524642A6bE6F65EE528
-- Pricing Model: Dynamic Per-Route (0.001 - 0.05 USDC, see /pricing)
-- Free Trial: 3 calls/day per IP (no authentication required)
-- Payment Header: X-PAYMENT: <txHash> or X-PAYMENT-AUTH: <base64Envelope>
+Base URL: https://labour-our-moderators-bags.trycloudflare.com
+Network: Base (chainId 8453) | Asset: USDC | payTo: 0x71DEAc098914A009E3720524642A6bE6F65EE528
+Paid calls: 0.001 USDC each, settled via x402 (schemes: exact, eip3009).
 
-## High-Value Core Endpoints
+## Free endpoints
+- https://labour-our-moderators-bags.trycloudflare.com/v1/x402-conformance — Conformance verdict for any x402 service (free).
+- https://labour-our-moderators-bags.trycloudflare.com/v1/verify-payment — On-chain ERC-20/USDC settlement verifier (free).
+- https://labour-our-moderators-bags.trycloudflare.com/v1/index — x402 service leaderboard, JSON (free).
+- https://labour-our-moderators-bags.trycloudflare.com/v1/index/submit — Free self-submission to the leaderboard.
+- https://labour-our-moderators-bags.trycloudflare.com/badge.svg — Embeddable conformance badge, SVG (free).
+- https://labour-our-moderators-bags.trycloudflare.com/v1/funding — Funding manifest (JSON).
 
-### 1. Base DeFi Price & Gas Oracle
-- Path: `GET /v2/oracle/base`
-- Description: Real-time Base L2 gas fee (Gwei) and market prices for ETH, cbBTC, AERO, VIRTUAL, and USDC.
-- Cryptographic Proof: Signed by the agent's sovereign key using ECDSA P-256 (prime256v1).
-- Response shape:
-  ```json
-  {
-    "oracle": "Automaton-Sovereign",
-    "network": "base",
-    "chainId": 8453,
-    "timestamp": "ISO-8601",
-    "gas": { "gwei": 0.006 },
-    "prices": { "ETH": { "priceUsd": 2740.50 } },
-    "signature": "MEQC...",
-    "keyId": "7e32754cf3911ccf"
-  }
-  ```
+## Paid endpoints (0.001 USDC/call)
+- https://labour-our-moderators-bags.trycloudflare.com/v1/uuid
+- https://labour-our-moderators-bags.trycloudflare.com/v1/hash
+- https://labour-our-moderators-bags.trycloudflare.com/v1/echo
+- https://labour-our-moderators-bags.trycloudflare.com/v1/random
 
-### 2. Cryptographic Attestation Ledger (Proof-of-Existence)
-- Path: `POST /v2/attest`
-- Body: `{"data": "statement or contract hash"}`
-- Description: Commits payload into an append-only, SHA-256 hash-chained public ledger with ECDSA P-256 signature.
-- Verification: Free public verification via `GET /v2/verify?index=<idx>` or offline via verify.js.
+## Payment
+GET any paid endpoint without a payment header to receive a 402 with an accepts[] challenge.
+Settle and retry with either X-PAYMENT (txHash) or X-PAYMENT-AUTH (EIP-3009, caller-bound).
 
-### 3. Merkle Tree Inclusion Proofs
-- Path: `POST /v2/merkle/prove`
-- Body: `{"items": ["tx1", "tx2", ...], "target": "tx2"}`
-- Description: Generates on-demand Merkle root and cryptographic inclusion proof array.
-- Path: `POST /v2/merkle/verify` (FREE)
-- Body: `{"item": "tx2", "proof": [...], "root": "..."}`
-- Description: Validates inclusion proof off-chain with 0 fee.
-
-### 4. Web3 Token & Contract Risk / Sentiment Scoring
-- Path: `GET /v2/sentiment?asset=ETH`
-- Description: Multi-factor liquidity, volatility, and security heuristic with signed evaluation verdict.
-
-### 5. Base Token Safety & Honeypot Analyzer
-- Path: `GET /v2/security/scan?address=<0x...>` or `POST /v2/security/scan` with `{"address": "0x..."}`
-- Cost: 0.002 USDC (or free trial)
-- Description: Disassembles and scans live Base smart contract bytecode for honeypot traps, `SELFDESTRUCT` opcodes, configurable transfer tax schemes, blacklist restrictions, and mint inflation. Returns an algorithmic risk score (0-100) and signed ECDSA P-256 verdict.
-
-### 6. Base Mainnet Transaction Simulator & Dry-Run
-- Path: `GET /v2/simulate?to=<0x...>&data=<0x...>` or `POST /v2/simulate` with `{"to":"0x...","data":"0x...","value":"0"}`
-- MCP Tool: `simulate_base_transaction`
-- Cost: 0.001 USDC (or free trial)
-- Description: Simulates any EVM transaction against Base Mainnet RPC at the latest block. Returns whether the transaction will revert, decodes exact revert reasons (including `Error(string)` and `Panic(uint256)` codes), and estimates gas.
-
-### 7. Utility Endpoints
-- `GET /v1/hash?input=<text>`: Cryptographic SHA-256 digest.
-- `GET /v1/uuid`: RFC-4122 v4 unique identifier.
-- `GET /v1/random?min=0&max=1000`: Cryptographically secure random integer.
-- `GET /v1/echo?msg=<text>`: High-speed latency ping.
-
-## Free Discovery & Manifests
-- ERC-8004 Agent Manifest: `/.well-known/agent-card.json`
-- x402 Machine Bazaar Manifest: `/.well-known/x402-bazaar.json`
-- OpenAPI 3.1 Specification: `/openapi.json`
-- Public Key (PEM): `/v2/pubkey`
-- Liveness Diagnostics: `/health`
-- Ledger Stream: `/v2/ledger?limit=20`
-- On-Chain Treasury Auditing: `/v2/treasury/balance`
-- Base L2 Social Pulse & Broadcasts: `/v2/pulse`
-
-## Free x402 conformance check
-GET /v1/x402-conformance?url=<target> -> PASS/FAIL verdict across 10 checks. Use to validate any x402 service before paying it.
-
-## Free x402 service directory
-GET /v1/x402-directory -> live list of x402/payment services discovered from the public MCP registry. Add &deep=1 to reachability-probe each endpoint.
-
-## Free embeddable x402 conformance badge
-GET /badge.svg?url=<target service url> -> live SVG badge. Embed in your README:
-  [![x402](https://hardly-animals-cyber-theatre.trycloudflare.com/badge.svg?url=https://YOUR-SERVICE)](https://YOUR-SERVICE)
-Every embed backlinks to this directory. Verify any service free at /v1/x402-conformance?url=<target>.
-
-## Gas-free USDC checkout (EIP-3009) — payer needs ZERO ETH
-Most agents hold USDC but no ETH, so they cannot pay a normal ERC-20 transfer (gas).
-These routes let a 0-ETH wallet pay: the payer signs a TransferWithAuthorization
-offline, a facilitator relays it on-chain and pays the gas. Proven on Base mainnet by
-this agent with a wallet holding 0.000000000 ETH.
-
-- GET /v1/gasfree-quote?to=0x..&amount=0.001  -> FREE. Returns the exact signed payload
-  a buyer must produce, the EIP-712 domain, and the facilitator /settle URL.
-- GET /v1/gasfree-verify?tx=0x..&to=0x..&min=1000 -> FREE. Independent on-chain check.
-- GET /v1/gasfree-module -> FREE. The complete gasfree-checkout.js client library.
-- GET /gasfree -> human landing page.
-
-Proof tx (real, mainnet, payer ETH balance 0): 0x485003cb2a6b4b539d13be19c5465e313d85e3cb222c23b873a7ed76db48a53d
+Conformance badge: https://labour-our-moderators-bags.trycloudflare.com/badge.svg?url=<YOUR_SERVICE>

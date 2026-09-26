@@ -1,0 +1,7 @@
+Clean caller-bound paid API (paid-api.js v1.0.0) end-to-end on Base mainnet
+at=2026-09-26T04:45:40.628Z
+buyer=0xf23e4C3F98D840A0f21CeB6dfBa60798C62E78bB
+buyerEth=0
+payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528
+tx=0x84ba0b47709693f59860d11af34ef81f51bbc5a13dcca6a5847d6471e39c86be
+result=16/17

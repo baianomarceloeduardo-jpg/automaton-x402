@@ -1,0 +1,6 @@
+EIP-3009 facilitator end-to-end on Base mainnet
+at=2026-09-26T04:21:10.843Z
+payer=0x71DEAc098914A009E3720524642A6bE6F65EE528
+payee=0xD4B3b7Cd4Ec3F66F4Fb6b594dA70c8835A9F974E
+amountUnits=1000
+result=8/8

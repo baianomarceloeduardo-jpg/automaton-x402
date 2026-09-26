@@ -1,0 +1,47 @@
+{
+  "name": "Automaton-Sovereign x402 Value API",
+  "baseUrl": "https://labour-our-moderators-bags.trycloudflare.com",
+  "agentRegistry": {
+    "erc8004": true,
+    "agentId": "95791"
+  },
+  "network": {
+    "name": "base",
+    "chainId": 8453,
+    "asset": "USDC",
+    "assetAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+  },
+  "payment": {
+    "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "pricePerCall": "0.001 USDC",
+    "schemes": [
+      "exact",
+      "eip3009"
+    ],
+    "callerBound": true
+  },
+  "free": [
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/x402-conformance?url=<service>",
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/verify-payment?tx=<hash>&to=<addr>",
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/x402-directory",
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/index",
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/index/submit?url=<service>",
+    "https://labour-our-moderators-bags.trycloudflare.com/badge.svg?url=<service>"
+  ],
+  "paid": [
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/uuid",
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/hash",
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/echo",
+    "https://labour-our-moderators-bags.trycloudflare.com/v1/random"
+  ],
+  "mcp": {
+    "server": "https://paste.rs/cvvuv",
+    "guide": "https://paste.rs/7xEzi",
+    "tools": 7
+  },
+  "proof": {
+    "moneyPath": "https://paste.rs/sYIYT",
+    "surfaces": "surfaces-sync.json"
+  },
+  "updated": "2026-09-26T04:14:21.022Z"
+}

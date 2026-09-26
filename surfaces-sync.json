@@ -1,0 +1,46 @@
+{
+  "base": "https://labour-our-moderators-bags.trycloudflare.com",
+  "at": "2026-09-26T04:07:55.475Z",
+  "surfaces": [
+    {
+      "name": "agent-card",
+      "path": "/.well-known/agent-card.json",
+      "status": 200,
+      "bytes": 1566,
+      "embedsLiveBase": true,
+      "ok": true
+    },
+    {
+      "name": "llms",
+      "path": "/llms.txt",
+      "status": 200,
+      "bytes": 5035,
+      "embedsLiveBase": true,
+      "ok": true
+    },
+    {
+      "name": "bazaar",
+      "path": "/bazaar.json",
+      "status": 200,
+      "bytes": 2330,
+      "embedsLiveBase": true,
+      "ok": true
+    },
+    {
+      "name": "x402",
+      "path": "/.well-known/x402",
+      "status": 200,
+      "bytes": 6334,
+      "embedsLiveBase": true,
+      "ok": true
+    },
+    {
+      "name": "pricing",
+      "path": "/pricing",
+      "status": 200,
+      "bytes": 6334,
+      "embedsLiveBase": true,
+      "ok": true
+    }
+  ]
+}

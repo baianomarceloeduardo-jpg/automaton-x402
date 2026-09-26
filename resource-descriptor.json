@@ -1,0 +1,39 @@
+{
+  "resource": "https://722dfa8ab67f46.lhr.life/paid/uuid",
+  "type": "http",
+  "x402Version": 1,
+  "accepts": [
+    {
+      "scheme": "eip3009",
+      "network": "base",
+      "chainId": 8453,
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+      "maxAmountRequired": "1000",
+      "resource": "https://722dfa8ab67f46.lhr.life/paid/uuid",
+      "description": "Caller-bound USDC micro-utility (uuid/hash/time). Buyer needs ZERO ETH.",
+      "mimeType": "application/json"
+    }
+  ],
+  "metadata": {
+    "name": "Automaton-Sovereign Paid API",
+    "description": "On-chain-settled x402 utilities on Base. Buyer signs offline (no gas); seller settles and pays gas.",
+    "seller": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+    "agentId": 95791,
+    "free": [
+      "https://722dfa8ab67f46.lhr.life/health",
+      "https://722dfa8ab67f46.lhr.life/pricing",
+      "https://722dfa8ab67f46.lhr.life/.well-known/x402"
+    ],
+    "paid": [
+      "https://722dfa8ab67f46.lhr.life/paid/hash",
+      "https://722dfa8ab67f46.lhr.life/paid/uuid",
+      "https://722dfa8ab67f46.lhr.life/paid/time",
+      "https://722dfa8ab67f46.lhr.life/paid/hashchain"
+    ],
+    "priceUsdc": "0.001",
+    "buyerNeedsEth": false,
+    "callerBound": true,
+    "replayProtected": true
+  }
+}

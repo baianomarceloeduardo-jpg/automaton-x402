@@ -1,0 +1,55 @@
+{
+  "at": "2026-09-26T06:47:40.737Z",
+  "steps": [
+    {
+      "n": "A1 clock paid 200",
+      "ok": true,
+      "d": "pre=402 paid=200 unixTime=1790405263"
+    },
+    {
+      "n": "A2 clock verified independently",
+      "ok": true,
+      "d": "oracle block 51807958 ts=1790405263 | independent RPC ts=1790405263 | delta=0s"
+    },
+    {
+      "n": "A3 clock block hash matches",
+      "ok": true,
+      "d": "oracle hash=0x5fe3dfd9fce16ec8... independent=0x5fe3dfd9fce16ec8..."
+    },
+    {
+      "n": "A4 consensus advertised",
+      "ok": true,
+      "d": "witnessCount=2 consensus=true"
+    },
+    {
+      "n": "B1 balance paid 200",
+      "ok": true,
+      "d": "pre=402 paid=200 raw=3705346"
+    },
+    {
+      "n": "B2 balance verified independently",
+      "ok": true,
+      "d": "oracle=3705346 independent=3705346 decimals=6"
+    },
+    {
+      "n": "C1 gas paid 200",
+      "ok": true,
+      "d": "pre=402 paid=200 baseFeeGwei=0.005"
+    },
+    {
+      "n": "C2 gas quote plausible",
+      "ok": true,
+      "d": "baseFeeGwei=0.005 suggested=7200000"
+    },
+    {
+      "n": "D1 bad params refused",
+      "ok": true,
+      "d": "HTTP 402 body={ \"x402Version\": 1, \"error\": \"payment_required\", \"schemes\": [ \"eip3009\" ], \"accepts\": [ { \"schem"
+    },
+    {
+      "n": "E1 pricing advertises oracle",
+      "ok": true,
+      "d": "endpoints=/paid/hash,/paid/uuid,/paid/time,/paid/hashchain,/paid/clock,/paid/block,/paid/gas,/paid/balance,/paid/nonce"
+    }
+  ]
+}

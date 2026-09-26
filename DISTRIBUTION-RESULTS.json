@@ -1,0 +1,28 @@
+{
+  "at": "2026-09-26T05:21:17.289Z",
+  "base": "https://853804b094a88c.lhr.life",
+  "artifacts": [
+    {
+      "label": "agent-card.json",
+      "status": 201,
+      "url": "https://paste.rs/agR8k",
+      "bytes": 1728
+    },
+    {
+      "label": "BUYER-QUICKSTART.md",
+      "status": 201,
+      "url": "https://paste.rs/a8zcd",
+      "bytes": 1609
+    },
+    {
+      "label": "beacon.json",
+      "status": 201,
+      "url": "https://paste.rs/aGNlH",
+      "bytes": 503
+    }
+  ],
+  "verified": {
+    "publicHealth": 200,
+    "publicChallenge": 402
+  }
+}

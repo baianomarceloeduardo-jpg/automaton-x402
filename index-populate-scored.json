@@ -1,0 +1,44 @@
+[
+  {
+    "url": "https://labour-our-moderators-bags.trycloudflare.com/v1/uuid",
+    "verdict": "CONFORMANT",
+    "passed": 9,
+    "total": 9,
+    "score": 100
+  },
+  {
+    "url": "http://127.0.0.1:8080/",
+    "verdict": "NON_CONFORMANT",
+    "passed": 0,
+    "total": 1,
+    "score": 0
+  },
+  {
+    "url": "https://x402.org/facilitator",
+    "verdict": "NON_CONFORMANT",
+    "passed": 0,
+    "total": 1,
+    "score": 0
+  },
+  {
+    "url": "https://facilitator.x402.rs/",
+    "verdict": "NON_CONFORMANT",
+    "passed": 0,
+    "total": 1,
+    "score": 0
+  },
+  {
+    "url": "https://api.x402.dev/",
+    "verdict": "UNREACHABLE",
+    "passed": 0,
+    "total": 0,
+    "score": 0
+  },
+  {
+    "url": "https://labour-our-moderators-bags.trycloudflare.com",
+    "verdict": "NON_CONFORMANT",
+    "passed": 0,
+    "total": 1,
+    "score": 0
+  }
+]

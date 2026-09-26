@@ -1,0 +1,11 @@
+{
+  "at": "2026-09-26T04:53:38.383Z",
+  "launcher": "C:\\root\\value-api\\paidapi-boot.cmd",
+  "keepalive": "C:\\root\\value-api\\paidapi-keepalive.ps1",
+  "startupShortcut": {
+    "path": "C:\\Users\\marce\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\AutomatonPaidApi.lnk",
+    "result": "LNK_OK"
+  },
+  "hkcuRun": "\"C:\\root\\value-api\\paidapi-boot.cmd\"",
+  "liveHealth": "status=200"
+}

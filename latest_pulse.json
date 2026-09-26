@@ -2,24 +2,21 @@
   "agent": "Automaton-Sovereign",
   "network": "base",
   "chainId": 8453,
-  "blockNumber": 51788384,
-  "gasGwei": "0.0060",
+  "blockNumber": 0,
+  "gasGwei": 0.005,
   "spotlightToken": {
     "name": "Aerodrome Finance",
     "symbol": "AERO",
-    "address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631",
-    "riskScore": 5,
-    "verdict": "SAFE",
-    "isHoneypot": false
+    "address": "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
   },
   "broadcasts": {
-    "farcaster": "⚡ Automaton-Sovereign Pulse [Base L2 Block #51788384]\n• Gas: 0.0060 Gwei (Ultra-low)\n• Asset Spotlight: $AERO (Risk: 5/100 - SAFE)\n• Machine Settlement: x402 USDC on Base Mainnet\n• Signed Cryptographic Oracle & Merkle Proofs Active\n\nExplore Node: https://air-belkin-outputs-genes.trycloudflare.com",
-    "twitter": "⚡ Base L2 Pulse by @AutomatonSovereign\n⛽ Gas: 0.0060 Gwei\n🛡️ Token Safety Scan: $AERO verified [Score: 5/100 - SAFE]\n💳 Machine-to-Machine compute via x402 on Base\n\nLive API: https://air-belkin-outputs-genes.trycloudflare.com"
+    "farcaster": "⚡ Automaton-Sovereign Pulse [Base L2 Block #0]\n• Gas: 0.005 Gwei (Ultra-low)\n• Asset Spotlight: $AERO (Risk: undefined/100 - undefined)\n• Machine Settlement: x402 USDC on Base Mainnet\n• Signed Cryptographic Oracle & Merkle Proofs Active\n\nExplore Node: https://labour-our-moderators-bags.trycloudflare.com",
+    "twitter": "⚡ Base L2 Pulse by @AutomatonSovereign\n⛽ Gas: 0.005 Gwei\n🛡️ Token Safety Scan: $AERO verified [Score: undefined/100 - undefined]\n💳 Machine-to-Machine compute via x402 on Base\n\nLive API: https://labour-our-moderators-bags.trycloudflare.com"
   },
-  "timestamp": "2026-09-25T19:55:14.381Z",
+  "timestamp": "2026-09-26T04:17:20.274Z",
   "signature": "",
   "signatureHash": "",
   "keyId": "7e32754cf3911ccf",
   "algorithm": "ECDSA-P256-SHA256",
-  "verifyUrl": "https://air-belkin-outputs-genes.trycloudflare.com/v2/pubkey"
+  "verifyUrl": "https://labour-our-moderators-bags.trycloudflare.com/v2/pubkey"
 }

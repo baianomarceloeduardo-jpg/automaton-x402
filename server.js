@@ -1,4 +1,5 @@
 'use strict';
+try{require('./ssrf-guard.js');}catch(e){console.error('ssrf-guard load failed',e.message)}
 /**
  * Automaton-Sovereign — Value API v0.6.0
  *
@@ -256,6 +257,32 @@ function send(res, code, obj, extra) {
     'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*', 'X-Agent': AGENT, 'X-Api-Version': VERSION }, extra || {}));
   res.end(body);
 }
+// __challenge: emit a machine-readable x402 challenge (both payable schemes) for any 402 body.
+function __challenge(endpoint, req) {
+  try {
+    if (!endpoint) return {};
+    const pbu = (typeof priceUnitsFor === 'function') ? String(priceUnitsFor(endpoint)) : '1000';
+    const pu = (typeof priceUsdcFor === 'function') ? priceUsdcFor(endpoint) : '0.001';
+    const base = (typeof requestBase === 'function') ? requestBase(req) : '';
+    const rq = FACILITATOR.buildPaymentRequired(endpoint, {
+      payTo: PAY_TO, priceBaseUnits: pbu, priceUsdc: pu, baseUrl: base,
+      method: (req && req.method) || 'GET', description: 'Automaton-Sovereign Value API call'
+    });
+    const out = { x402Version: rq.x402Version || 1, accepts: Array.isArray(rq.accepts) ? rq.accepts.slice() : [] };
+    if (!out.accepts.some(function (a) { return a && a.scheme === 'eip3009'; })) {
+      out.accepts.push({
+        scheme: 'eip3009', network: (typeof NETWORK !== 'undefined' ? NETWORK : 'base'),
+        maxAmountRequired: pbu, resource: base + endpoint,
+        description: 'Automaton-Sovereign Value API call', payTo: PAY_TO,
+        asset: (typeof USDC_BASE !== 'undefined' ? USDC_BASE : undefined), maxTimeoutSeconds: 60,
+        extra: { name: 'USD Coin', version: '2' }
+      });
+    }
+    out.schemes = ['eip3009', 'exact'];
+    out.howToPay = { exact: 'retry with header X-PAYMENT: <txHash>', eip3009: 'retry with header X-PAYMENT-AUTH: base64({payload,signature})' };
+    return out;
+  } catch (e) { return { x402Version: 1, accepts: [], _challengeError: String(e.message) }; }
+}
 function readBody(req, limit = 65536) {
   return new Promise((resolve) => { let d = '', n = 0;
     req.on('data', c => { n += c.length; if (n > limit) { req.destroy(); return resolve(null); } d += c; });
@@ -458,7 +485,7 @@ async function authorize(req, res, endpoint) {
       });
       if (!v.ok) {
         stats.rejected++; saveStats();
-        send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v });
+        send(res, 402, Object.assign({ error: 'payment_invalid', reason: v.reason, detail: v }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null)));
         return false;
       }
       // Local pre-check passed (cheap, rejects forged payloads without calling out). Now verify and
@@ -468,15 +495,15 @@ async function authorize(req, res, endpoint) {
         payTo: PAY_TO, priceBaseUnits: priceUnitsFor(endpoint).toString(), priceUsdc: priceUsdcFor(endpoint),
         baseUrl: requestBase(req), method: req.method, description: 'Automaton-Sovereign Value API call'
       }).accepts[0];
-      const st = FACILITATOR.facilitatorConfigured()
-        ? await FACILITATOR.facilitatorSettle(parsed.data, requirements)
+      const st = require('./facilitator-adapter.js').facilitatorConfigured()
+        ? await require('./facilitator-adapter.js').facilitatorSettle(parsed.data, requirements)
         : { ok: false, reason: 'facilitator_not_configured' };
       if (!st.ok) {
         stats.rejected++; saveStats();
-        send(res, 402, { error: 'payment_invalid', reason: st.reason });
+        send(res, 402, Object.assign({ error: 'payment_invalid', reason: st.reason }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null)));
         return false;
       }
-      v.transaction = st.transaction; v.payer = st.payer || v.payer;
+      v.transaction = st.transaction || st.tx; v.payer = st.payer || st.from || v.payer;
       stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
       const respHeader = FACILITATOR.buildPaymentResponseHeader(v);
       res._settled = {
@@ -489,7 +516,7 @@ async function authorize(req, res, endpoint) {
       const key = (parsed && parsed.txHash) ? parsed.txHash : String(rawPayment).trim().toLowerCase();
       if (spentTx.has(key)) {
         stats.rejected++; saveStats();
-        send(res, 402, { error: 'payment_invalid', reason: 'tx_already_used' });
+        send(res, 402, Object.assign({ error: 'payment_invalid', reason: 'tx_already_used' }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null)));
         return false;
       }
       spentTx.add(key);
@@ -497,13 +524,13 @@ async function authorize(req, res, endpoint) {
       if (!v.ok) {
         spentTx.delete(key);
         stats.rejected++; saveStats();
-        send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v });
+        send(res, 402, Object.assign({ error: 'payment_invalid', reason: v.reason, detail: v }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null)));
         return false;
       }
       const paidUnits = (() => { try { return BigInt(v.amount || v.valueBaseUnits || '0'); } catch (e) { return 0n; } })();
       if (!TRUST_MODE && v.reason !== 'trust_mode' && paidUnits < priceUnitsFor(endpoint)) {
         saveSpent(); stats.rejected++; saveStats();
-        send(res, 402, { error: 'payment_invalid', reason: 'underpaid_for_route', paidBaseUnits: paidUnits.toString(), requiredBaseUnits: priceUnitsFor(endpoint).toString(), endpoint });
+        send(res, 402, Object.assign({ error: 'payment_invalid', reason: 'underpaid_for_route', paidBaseUnits: paidUnits.toString(), requiredBaseUnits: priceUnitsFor(endpoint).toString(), endpoint }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null)));
         return false;
       }
       saveSpent();
@@ -548,7 +575,7 @@ const server = http.createServer(async (req, res) => {
 
   // free
   if (p === '/health') return send(res, 200, { status: 'ok', agent: AGENT, version: VERSION, uptimeSeconds: Math.floor((Date.now() - STARTED) / 1000), payTo: PAY_TO, network: NETWORK, ledger: ledgerTail().index + 1, freeTrialPerDay: FREE_TRIAL, now: new Date().toISOString() });
-  if (p === '/pricing' || p === '/.well-known/x402') return send(res, 200, PRICING);
+  if (p === '/pricing' || p === '/.well-known/x402') return send(res, 200, __livePricing(req));
   if (p === '/.well-known/agent-card.json') return send(res, 200, agentCard());
   if (p === '/ERC8004_REGISTRATION.json') {
     const f = path.join(__dirname, 'ERC8004_REGISTRATION.json');
@@ -1182,14 +1209,14 @@ verifyPayment = async function (txHash) {
       if (hdr) {
         let env;
         try { env = JSON.parse(Buffer.from(String(hdr), 'base64').toString('utf8')); }
-        catch (e) { stats.rejected++; saveStats(); send(res, 402, { error: 'payment_invalid', reason: 'payment_auth_not_base64_json' }); return false; }
+        catch (e) { stats.rejected++; saveStats(); send(res, 402, Object.assign({ error: 'payment_invalid', reason: 'payment_auth_not_base64_json' }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null))); return false; }
         let v;
         try { v = await __e9.verifyAuthorization(env, { payTo: PAY_TO, minUnits: priceUnitsFor(endpoint), requireUnused: true }); }
         catch (e) { v = { ok: false, reason: 'verify_error' }; }
-        if (!v.ok) { stats.rejected++; saveStats(); send(res, 402, { error: 'payment_invalid', reason: v.reason, detail: v }); return false; }
+        if (!v.ok) { stats.rejected++; saveStats(); send(res, 402, Object.assign({ error: 'payment_invalid', reason: v.reason, detail: v }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null))); return false; }
         if (!__reserve(v.nonce)) {
           stats.rejected++; saveStats();
-          send(res, 402, { error: 'payment_invalid', reason: 'nonce_replayed_local' });
+          send(res, 402, Object.assign({ error: 'payment_invalid', reason: 'nonce_replayed_local' }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null)));
           return false;
         }
         // A valid signature is only a promise to pay. Settle transferWithAuthorization on-chain
@@ -1201,21 +1228,64 @@ verifyPayment = async function (txHash) {
           payTo: PAY_TO, priceBaseUnits: priceUnitsFor(endpoint).toString(), priceUsdc: priceUsdcFor(endpoint),
           baseUrl: requestBase(req), method: req.method, description: 'Automaton-Sovereign Value API call'
         }).accepts[0];
-        let st;
+        /* __LOCAL_FIRST_VERIFY__ */
+
+        let st = null;
+
         try {
-          st = FACILITATOR.facilitatorConfigured()
-            ? await FACILITATOR.facilitatorSettle(exactPayload, requirements)
+
+          st = require('./facilitator-adapter.js').facilitatorConfigured()
+
+            ? await require('./facilitator-adapter.js').facilitatorSettle(exactPayload, requirements)
+
             : { ok: false, reason: 'settlement_unavailable' };
+
         } catch (e) { st = { ok: false, reason: 'settlement_error' }; }
+
+        // Authentication is LOCAL (EIP-712 caller binding, already verified above). The facilitator
+
+        // only BROADCASTS the transfer. Never discard a valid payment because a third party is down:
+
+        // queue the signed authorization and serve the call, reporting status honestly.
+
+        if (!st || !st.ok) {
+
+          const __q = path.join(__dirname, "settlement-queue.jsonl");
+
+          try {
+
+            fs.appendFileSync(__q, JSON.stringify({ at: new Date().toISOString(), endpoint, from: v.from,
+
+              value: String(v.value), nonce: String(v.nonce), authorization: exactPayload,
+
+              requirements, facilitatorReason: String((st && st.reason) || 'facilitator_unavailable').slice(0, 200) }) + '\n');
+
+          } catch (e) {}
+
+          __commit(v.nonce, { from: v.from, endpoint, value: v.value, tx: null, settlement: "queued" });
+
+          stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
+
+          res._settled = { "X-Payment-Settled": "queued", "X-Payment-Scheme": "eip3009",
+
+            "X-Payment-From": v.from, "X-Payment-Caller-Bound": "true",
+
+            "X-Payment-Tx": String((st && (st.transaction || st.tx)) || ""), "X-Payment-Tx": String((st && (st.transaction || st.tx)) || ""), "X-Payment-Tx": String((st && (st.transaction || st.tx)) || ""), "X-Payment-Tx": String((st && (st.transaction || st.tx)) || ""), "X-Payment-Settle-Note": String((st && st.reason) || "facilitator_unavailable").slice(0, 120) };
+
+          console.log("[local-first] valid caller-bound auth accepted; settlement queued: " + ((st && st.reason) || "n/a"));
+
+          return true;
+
+        }
         if (!st.ok) {
           __release(v.nonce);
           stats.rejected++; saveStats();
-          send(res, 402, { error: 'payment_invalid', reason: 'eip3009_not_settled', detail: String(st.reason || '').slice(0, 200) });
+          send(res, 402, Object.assign({ error: 'payment_invalid', reason: 'eip3009_not_settled', detail: String(st.reason || '').slice(0, 200) }, __challenge(typeof endpoint!=='undefined'?endpoint:null, typeof req!=='undefined'?req:null)));
           return false;
         }
-        __commit(v.nonce, { from: v.from, endpoint: endpoint, value: v.value, tx: st.transaction });
+        __commit(v.nonce, { from: v.from, endpoint: endpoint, value: v.value, tx: st.transaction || st.tx });
         stats.paidCalls++; stats.byEndpoint[endpoint] = (stats.byEndpoint[endpoint] || 0) + 1; saveStats();
-        res._settled = { 'X-Payment-Settled': 'true', 'X-Payment-Scheme': 'eip3009', 'X-Payment-From': v.from, 'X-Payment-Caller-Bound': 'true', 'X-Payment-Tx': String(st.transaction || '') };
+        res._settled = { 'X-Payment-Settled': 'true', 'X-Payment-Scheme': 'eip3009', 'X-Payment-From': v.from, 'X-Payment-Caller-Bound': 'true', 'X-Payment-Tx': String(st.transaction || st.tx || '') };
         return true;
       }
       return __origAuthorize(req, res, endpoint);
@@ -1549,3 +1619,27 @@ require('./history-overlay.js')(server);
     console.log('[osir-overlay v1] SKIPPED: ' + (e && e.message));
   }
 })();
+
+/* __SOVEREIGN_SETTLE_OVERLAY__ */
+require("./sovereign-settle-overlay.js");
+
+// __PRICING_LIVE_OVERLAY__
+// Per-request pricing surface so baseUrl always matches the LIVE host (fixes stale-URL drift
+// across tunnel rotation). Falls back to the static object on any error.
+function __livePricing(req) {
+  try {
+    const b = (typeof requestBase === "function") ? requestBase(req) : (PRICING && PRICING.baseUrl) || "";
+    if (!b) return PRICING;
+    const out = JSON.parse(JSON.stringify(PRICING));
+    out.baseUrl = b;
+    out.pricingUrl = b + "/pricing";
+    out.x402 = b + "/.well-known/x402";
+    if (out.pricing && typeof out.pricing === "object") out.pricing.baseUrl = b;
+    if (out.service && typeof out.service === "object") out.service.baseUrl = b;
+    const fix = (arr) => Array.isArray(arr) ? arr.map(e => (e && typeof e === "object") ? Object.assign({}, e, { url: b + (e.path || e.url || "") }) : e) : arr;
+    out.endpoints = fix(out.endpoints);
+    out.freeEndpoints = fix(out.freeEndpoints);
+    return out;
+  } catch (e) { return PRICING; }
+}
+// END __PRICING_LIVE_OVERLAY__

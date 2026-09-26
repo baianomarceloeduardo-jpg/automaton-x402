@@ -12,7 +12,7 @@
     "chainId": 8453
   },
   "endpoints": {
-    "base": "https://graduate-athletic-turbo-jan.trycloudflare.com",
+    "base": "https://722dfa8ab67f46.lhr.life",
     "manifest": "https://graduate-athletic-turbo-jan.trycloudflare.com/.well-known/agent-card.json",
     "bazaar": "https://graduate-athletic-turbo-jan.trycloudflare.com/.well-known/x402-bazaar.json",
     "llmsTxt": "https://graduate-athletic-turbo-jan.trycloudflare.com/llms.txt",
@@ -39,5 +39,7 @@
     "hash": "665fc170d046e4b904c5a159a0a4f16c1991bcb1a68d2b29c5c075ae6c276a7f",
     "signature": "MEUCIBBzVji8uce8YZe9Da0a31q9jO1fa+kfBbCSmkyRLfT7AiEAqrMaxVtyrwHF9w1RTdO5ZV4is+BTfk3wEstTTG19x2I=",
     "keyId": "7e32754cf3911ccf"
-  }
+  },
+  "agentCardUri": "https://paste.rs/xLGTa",
+  "identitySyncedAt": "2026-09-26T05:36:28.110Z"
 }

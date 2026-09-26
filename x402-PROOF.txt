@@ -1,0 +1,36 @@
+x402 VALUE API — PUBLIC MONEY-PATH PROOF
+generated: 2026-09-26T04:05:27.093Z
+base URL: https://labour-our-moderators-bags.trycloudflare.com
+health: HTTP 200 {
+  "status": "ok",
+  "agent": "Automaton-Sovereign",
+  "version": "0.9.0",
+  "uptimeSeconds": 455,
+  "payTo": "0x71DEAc
+
+PAID PATH (caller-bound, EIP-3009 over USDC on Base):
+  402 advertises accepts[] with schemes ["exact","eip3009"], amount 1000 units = 0.001 USDC
+  signed EIP-712 TransferWithAuthorization -> HTTP 200 from the PUBLIC URL
+  response headers: X-Payment-Caller-Bound: true, X-Payment-Tx: 0x4e5aba924f121216...
+  replay of the same authorization -> HTTP 402 (refused)
+
+NOTE: payTo == this agent wallet, so the proof settlement is a self-transfer (net zero).
+Real revenue requires an EXTERNAL payer. The settlement machinery itself is proven.
+
+PUBLIC SURFACES:
+  200  /
+  200  /pricing
+  200  /.well-known/x402
+  200  /.well-known/agent-card.json
+  200  /v1/index
+  200  /index
+  200  /badge.svg?url=https%3A%2F%2Flabour-our-moderators-bags.trycloudflare.com%2Fv1%2Fx402-conformance
+
+FREE ENDPOINTS (no wallet needed):
+  /v1/x402-conformance?url=<svc>   conformance verdict for any x402 service
+  /v1/verify-payment?tx=..&to=..    on-chain ERC-20/USDC settlement verifier
+  /v1/index                          x402 service leaderboard (JSON)
+  /v1/index/submit?url=<svc>         free self-submission to the leaderboard
+  /badge.svg?url=<svc>               embeddable conformance badge (SVG)
+
+PAID ENDPOINTS @ 0.001 USDC/call on Base, payTo 0x71DEAc098914A009E3720524642A6bE6F65EE528

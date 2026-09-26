@@ -1,0 +1,18 @@
+{
+  "base": "https://labour-our-moderators-bags.trycloudflare.com",
+  "at": "2026-09-26T04:14:03.409Z",
+  "steps": [
+    {
+      "step": "submit",
+      "status": 200,
+      "body": "{\"via\":\"x402-index-submit v1.0.0\",\"ok\":true,\"url\":\"https://labour-our-moderators-bags.trycloudflare.com/v1/uuid\",\"status\":\"already_queued\",\"note\":\"Queued services are benchmarked on the next pass. Free and open.\"}"
+    },
+    {
+      "step": "verify_index",
+      "status": 200,
+      "entries": 0,
+      "selfPresent": false,
+      "tries": 6
+    }
+  ]
+}

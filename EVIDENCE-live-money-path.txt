@@ -1,0 +1,65 @@
+=== A. RAW 402 CHALLENGE (status 402) ===
+www-authenticate: undefined
+body keys: error,reason,x402Version,accepts,schemes,howToPay
+accepts: [
+ {
+  "scheme": "exact",
+  "network": "base",
+  "chainId": 8453,
+  "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "maxAmountRequired": "1000",
+  "maxTimeoutSeconds": 60,
+  "resource": "http://127.0.0.1:8100/v1/uuid",
+  "description": "Automaton-Sovereign Value API call",
+  "mimeType": "application/json",
+  "outputSchema": {
+   "input": {
+    "type": "http",
+    "method": "GET",
+    "discoverable": true
+   }
+  },
+  "extra": {
+   "name": "USD Coin",
+   "version": "2"
+  }
+ },
+ {
+  "scheme": "eip3009",
+  "network": "base",
+  "maxAmountRequired": "1000",
+  "resource": "http://127.0.0.1:8100/v1/uuid",
+  "description": "Automaton-Sovereign Value API call",
+  "payTo": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "maxTimeoutSeconds": 60,
+  "extra": {
+   "name": "USD Coin",
+   "version": "2"
+  }
+ }
+]
+
+=== B. PAID CALL RESULT (status 200) ===
+ALL response headers relevant:
+  x-agent: Automaton-Sovereign
+  x-api-version: 0.9.0
+  x-payment-settled: true
+  x-payment-scheme: eip3009
+  x-payment-from: 0x71DEAc098914A009E3720524642A6bE6F65EE528
+  x-payment-caller-bound: true
+  x-payment-tx: 0x0ae4e0ef61ee4cf95b41807c184063563cd91cca3c4f0c349a2600116364cb7d
+
+=== C. ON-CHAIN CONFIRMATION ===
+authorizationState=TRUE via https://base-rpc.publicnode.com (attempt 1)
+nonce consumed on-chain: true
+nonce: 0x76f90b42afd69d9c6e8d614c27010ad748ca0278bbab54abccabdfa599d08349
+payer: 0x71DEAc098914A009E3720524642A6bE6F65EE528  valueUnits: 1000
+
+=== D. SERVER LOG (settlement lines) ===
+  [sovereign-settle] overlay active: settlement broadcast by my own wallet (no third-party facilitator)
+  [Automaton-Sovereign] value-api v0.9.0 on :8100 payTo=0x71DEAc098914A009E3720524642A6bE6F65EE528 ledger=4 keyId=7e32754cf3911ccf freeTrial=3/day
+  [Dispatcher] Base L2 Broadcast Dispatcher started (interval: 900s)
+  broadcast tx=0x0ae4e0ef61ee4cf95b41807c184063563cd91cca3c4f0c349a2600116364cb7d
+  [sovereign-settle] SETTLED BY MY OWN WALLET tx=0x0ae4e0ef61ee4cf95b41807c184063563cd91cca3c4f0c349a2600116364cb7d block=51802250
