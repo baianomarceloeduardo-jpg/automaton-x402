@@ -5,3 +5,8 @@ tunnel.url
 cloudflared.exe
 .automaton
 scratch
+services/logs
+services/**/scanned-pools.json
+services/**/bounty-ledger.json
+services/**/claim-state.json
+services/bounty-hunter/reports

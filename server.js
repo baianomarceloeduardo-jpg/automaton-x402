@@ -45,6 +45,14 @@ const SENTINEL = (() => { try { return require('./services/pool-sentinel/sentine
   const off = { ok: false, error: 'sentinel_not_installed' };
   return { status: () => off, parseLatestQuery: () => ({}), latest: () => off, streamCapacity: () => false, stream: () => {} };
 } })();
+// Container deploys (Dockerfile sets SENTINEL_AUTOSTART=1) supervise the sentinel daemon next to the API.
+// Hosts that run services/autonomous-orchestrator.js themselves must leave this unset (one writer only).
+if (process.env.SENTINEL_AUTOSTART === '1') {
+  try {
+    const ORCH = require('./services/autonomous-orchestrator.js');
+    new ORCH.Supervisor({ daemons: ORCH.DAEMONS.filter(d => d.name === 'pool-sentinel') }).start();
+  } catch (e) { console.error('[sentinel] autostart failed: ' + e.message); }
+}
 const { getTreasuryBalances } = require('./treasury.js');
 const { generateBasePulse } = require('./base-pulse.js');
 const { startDispatcher, HISTORY_FILE } = require('./broadcast-dispatcher.js');

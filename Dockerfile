@@ -13,5 +13,7 @@ COPY . .
 EXPOSE 8080
 ENV PORT=8080
 ENV NODE_ENV=production
+# server.js supervises services/pool-sentinel (feeds /v2/sentinel/*) inside the container
+ENV SENTINEL_AUTOSTART=1
 
 CMD ["node", "server.js"]
