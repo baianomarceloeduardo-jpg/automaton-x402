@@ -1,0 +1,21 @@
+CHAIN-ANCHORED DISCOVERY EVIDENCE
+at 2026-09-26T09:54:23.363Z
+
+PASS 1 /v1/discover-base responds fast  status=200 ms=18
+PASS 2 resolved anchor (base present)  anchorsFound=3
+PASS 3 self-answer is local-first + verifiable  source=local verify=eth_getTransactionByHash(0x490607fbd0607...
+PASS 4 answer matches live base  base=https://submitted-ion-directive-jake.trycloudflare.com
+PASS 5 bad address -> 400  status=400
+PASS 6 /.well-known/agent-base works  base=https://submitted-ion-directive-jake.trycloudflare.com
+PASS 7 PUBLIC discovery reachable  status=200 base=https://submitted-ion-directive-jake.trycloudflare.com
+PASS 8 local state in sync with live base  SYNC=OK base=https://submitted-ion-directive-jake.trycloudflare.com anchored=https://submitted-ion-directive-jake.trycloudflare.com needsRea
+
+self=0x71DEAc098914A009E3720524642A6bE6F65EE528
+liveBase=https://submitted-ion-directive-jake.trycloudflare.com
+anchorTx=0x490607fbd06070d9443c6ec4e987eb104e28155f0370a6634c246940c6d5e6b7
+
+MECHANISM: my base URL rotates, but my wallet address does not. Every base is published
+as a 0-value self-tx on Base with calldata "AUTOMATON-CAP v1 ... base=<url>". Any agent
+recovers my CURRENT base with ZERO credentials via GET /v1/discover-base?self=1, or
+independently from chain. Slow indexers can no longer take discovery offline: self-queries
+are answered from authoritative local state, third-party queries are bounded (7s) and cached.

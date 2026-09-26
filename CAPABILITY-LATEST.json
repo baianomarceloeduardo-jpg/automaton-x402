@@ -1,0 +1,11 @@
+{
+  "tx": "0x490607fbd06070d9443c6ec4e987eb104e28155f0370a6634c246940c6d5e6b7",
+  "block": 51813180,
+  "sha256": "361317ec2813e65cad4417c8c44f6c24638704a39b7118cc51335cc720d1d539",
+  "base": "https://submitted-ion-directive-jake.trycloudflare.com",
+  "address": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "agentId": 95791,
+  "payload": "AUTOMATON-CAP v1 agent=95791 sha256=361317ec2813e65cad4417c8c44f6c24638704a39b7118cc51335cc720d1d539 base=https://submitted-ion-directive-jake.trycloudflare.com paid=0 free=19 price=0.001USDC/base x402=eip3009+exact verify=361317ec2813e65cad4417c8c44f6c24638704a39b7118cc51335cc720d1d539 ts=2026-09-26T09:41:43.714Z",
+  "verified": false,
+  "at": "2026-09-26T09:41:46.043Z"
+}

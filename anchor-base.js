@@ -45,7 +45,7 @@ function loadKey() {
   let provider = null;
   for (const r of RPCS) {
     try {
-      const p = new ethers.JsonRpcProvider(r);
+      const p = new ethers.JsonRpcProvider(r, 8453, { staticNetwork: true });
       const n = await p.getBlockNumber();
       if (n > 0) { provider = p; console.log('rpc: ' + r + ' block=' + n); break; }
     } catch (_) {}

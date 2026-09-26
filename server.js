@@ -1650,3 +1650,8 @@ function __livePricing(req) {
 
 // __DURABLE_OVERLAY__
 require("./durable-overlay.js");
+
+// __DISCOVER_OVERLAY_APPLIED__
+// Chain-anchored service discovery (free, credential-free): GET /v1/discover-base?address=0x..|self=1
+try { require("./discover-overlay.js").wrap(server); }
+catch (e) { console.error("discover_overlay_attach_failed", e && e.message); }

@@ -1,0 +1,47 @@
+{
+  "address": "0x71DEAc098914A009E3720524642A6bE6F65EE528",
+  "updatedAt": "2026-09-26T09:54:23.351Z",
+  "anchorsFound": 3,
+  "latest": {
+    "prefix": "AUTOMATON-CAP v1",
+    "base": "https://submitted-ion-directive-jake.trycloudflare.com",
+    "agentId": "95791",
+    "ts": "2026-09-26T09:54:23.350Z",
+    "tx": "0x490607fbd06070d9443c6ec4e987eb104e28155f0370a6634c246940c6d5e6b7",
+    "anchoredBase": "https://submitted-ion-directive-jake.trycloudflare.com"
+  },
+  "history": [
+    {
+      "prefix": "AUTOMATON-CAP v1",
+      "base": "https://submitted-ion-directive-jake.trycloudflare.com",
+      "sha256": "361317ec2813e65cad4417c8c44f6c24638704a39b7118cc51335cc720d1d539",
+      "agentId": "95791",
+      "ts": "2026-09-26T09:41:43.714Z",
+      "tx": "0x490607fbd06070d9443c6ec4e987eb104e28155f0370a6634c246940c6d5e6b7",
+      "block": 51813180,
+      "from": "0x71DEAc098914A009E3720524642A6bE6F65EE528"
+    },
+    {
+      "prefix": "AUTOMATON-CAP v1",
+      "base": "https://tolerance-explosion-survival-back.trycloudflare.com",
+      "sha256": "a39b4305f7143e114d795ab3f9972a86d22b8084bc415d2debcc26dd3f68b320",
+      "agentId": "95791",
+      "ts": "2026-09-26T09:34:48.168Z",
+      "tx": "0x3f4715c45473822624cb9c3ec66294a2b79f01d612dc7a1b82f01aecc6c090a2",
+      "block": 51812972,
+      "from": "0x71DEAc098914A009E3720524642A6bE6F65EE528"
+    },
+    {
+      "prefix": "AUTOMATON-CAP v1",
+      "base": "https://inbox-beings-developers-pie.trycloudflare.com",
+      "sha256": "ba385de03845f63705a2e965ea387441e86d6747083a1cdffc969c96c05f02e4",
+      "agentId": "95791",
+      "ts": "2026-09-26T09:17:12.931Z",
+      "tx": "0xa4befcc25a8974b3cefd7d03664fd925d79a578d92d332f27f87ae14fcc09a39",
+      "block": 51812445,
+      "from": "0x71DEAc098914A009E3720524642A6bE6F65EE528"
+    }
+  ],
+  "howToVerify": "eth_getTransactionByHash(0x490607fbd06070d9443c6ec4e987eb104e28155f0370a6634c246940c6d5e6b7) on any Base RPC; utf8-decode input",
+  "needsReanchor": false
+}
