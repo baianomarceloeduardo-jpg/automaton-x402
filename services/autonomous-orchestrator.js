@@ -5,6 +5,7 @@
  *  - crash => restart with exponential backoff (1s .. 60s); a run longer than 5 min resets the backoff
  *  - status snapshot every 10s in services/logs/orchestrator-status.json
  *
+ * Daemons: bounty-hunter, pool-sentinel, fee-claimer, telegram-bot.
  * Usage: node autonomous-orchestrator.js [--only pool-sentinel,bounty-hunter]
  */
 const fs = require('fs');
@@ -15,7 +16,9 @@ const LOG_DIR = process.env.ORCH_LOG_DIR || path.join(__dirname, 'logs');
 const DAEMONS = [
   { name: 'bounty-hunter', script: path.join(__dirname, 'bounty-hunter', 'hunter-daemon.js') },
   { name: 'pool-sentinel', script: path.join(__dirname, 'pool-sentinel', 'pool-watcher.js') },
-  { name: 'fee-claimer', script: path.join(__dirname, 'fee-claimer', 'claim-daemon.js') }
+  { name: 'fee-claimer', script: path.join(__dirname, 'fee-claimer', 'claim-daemon.js') },
+  // One poller per bot token: do not also run telegram-bot/start-bot.cmd while this is supervised.
+  { name: 'telegram-bot', script: path.join(__dirname, 'telegram-bot', 'bot.js') }
 ];
 
 class Supervisor {

@@ -16,6 +16,7 @@ const { ethers } = require('ethers');
 const { createRpc, hexToNumber, toHex } = require('../lib/rpc');
 const { readJson, writeJsonAtomic, logger } = require('../lib/store');
 const { scanTokenContract } = require('../../token-security.js');
+const { createTelegramAlerter, loadAlertConfig } = require('./telegram-alerts');
 
 const OUT_FILE = process.env.SENTINEL_FILE || path.join(__dirname, 'scanned-pools.json');
 const POLL_MS = +(process.env.SENTINEL_POLL_MS || 4000);
@@ -94,8 +95,8 @@ function summarizeScan(s) {
 }
 
 class PoolSentinel {
-  constructor({ rpc = createRpc(), file = OUT_FILE, scan = scanTokenContract, now = () => Date.now(), maxPools = MAX_POOLS_KEPT } = {}) {
-    this.rpc = rpc; this.file = file; this.scan = scan; this.now = now; this.maxPools = maxPools;
+  constructor({ rpc = createRpc(), file = OUT_FILE, scan = scanTokenContract, now = () => Date.now(), maxPools = MAX_POOLS_KEPT, onRecords = null } = {}) {
+    this.rpc = rpc; this.file = file; this.scan = scan; this.now = now; this.maxPools = maxPools; this.onRecords = onRecords;
     const prev = readJson(file, null);
     this.state = prev && prev.version === 1 ? prev : {
       version: 1, lastBlock: null, updatedAt: null,
@@ -175,6 +176,8 @@ class PoolSentinel {
         this.state.stats.pools += recs.length;
         this.state.pools = recs.concat(this.state.pools).slice(0, this.maxPools);
         newPools += recs.length;
+        // Fire-and-forget: alert delivery must never slow down or break the scan loop.
+        if (this.onRecords) Promise.resolve().then(() => this.onRecords(recs)).catch(e => log('onRecords error', e.message));
       }
       this.state.lastBlock = end;
       this.dirty = true;
@@ -195,8 +198,11 @@ class PoolSentinel {
 
 async function main() {
   const once = process.argv.includes('--once');
-  const s = new PoolSentinel();
-  log('start', { file: s.file, lastBlock: s.state.lastBlock, rpcs: s.rpc.urls });
+  const alertCfg = loadAlertConfig();
+  const alerter = alertCfg ? createTelegramAlerter({ ...alertCfg, log: m => log('[alerts]', m) }) : null;
+  const s = new PoolSentinel({ onRecords: alerter ? async recs => { const n = await alerter.notify(recs); if (n) log(`[alerts] sent ${n} alert(s) to ${alerter.recipients().length} recipient(s)`); } : null });
+  log('start', { file: s.file, lastBlock: s.state.lastBlock, rpcs: s.rpc.urls,
+    alerts: alerter ? `on (recipients now: ${alerter.recipients().length}, max ${alertCfg.maxPerHour}/h)` : 'off' });
   let stopping = false;
   const stop = () => { stopping = true; s.flush(true); process.exit(0); };
   process.on('SIGINT', stop); process.on('SIGTERM', stop);

@@ -4,4 +4,8 @@ bounty-hunter/bounty-ledger.json
 bounty-hunter/reports/
 pool-sentinel/scanned-pools.json
 fee-claimer/claim-state.json
+# telegram bot: token, user data and claim ledger never go to git
+telegram-bot/config.json
+telegram-bot/users.json
+telegram-bot/used-claims.json
 *.tmp
